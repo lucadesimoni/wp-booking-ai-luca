@@ -1,0 +1,133 @@
+/**
+ * Admin Styles for WP Booking System
+ */
+
+.wpbs-admin-wrap {
+	margin: 20px 20px 0 0;
+}
+
+.wpbs-admin-wrap h1 {
+	font-size: 2rem;
+	font-weight: 300;
+	margin-bottom: 20px;
+}
+
+#wpbs-calendar {
+	max-width: 1200px;
+	margin: 20px 0;
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* FullCalendar Customization */
+.fc {
+	font-family: inherit;
+}
+
+.fc-header-toolbar {
+	margin-bottom: 1.5em;
+}
+
+.fc-button {
+	background: #8B0000;
+	border-color: #8B0000;
+	color: #fff;
+	padding: 8px 16px;
+	border-radius: 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-weight: 500;
+}
+
+.fc-button:hover {
+	background: #6B0000;
+	border-color: #6B0000;
+}
+
+.fc-button:focus {
+	box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.3);
+}
+
+.fc-button-active {
+	background: #6B0000;
+	border-color: #6B0000;
+}
+
+.fc-event {
+	border-radius: 4px;
+	padding: 4px 8px;
+	cursor: pointer;
+}
+
+.fc-day-today {
+	background: rgba(139, 0, 0, 0.05) !important;
+}
+
+/* Booking List Table */
+.wpbs-admin-wrap .wp-list-table {
+	margin-top: 20px;
+}
+
+.wpbs-admin-wrap .wp-list-table th {
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-size: 0.85rem;
+}
+
+.wpbs-admin-wrap .wp-list-table td {
+	vertical-align: middle;
+}
+
+.wpbs-status {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: 12px;
+	font-size: 0.85rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.wpbs-status-pending {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.wpbs-status-confirmed {
+	background: #d4edda;
+	color: #155724;
+}
+
+.wpbs-status-cancelled {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.wpbs-admin-wrap a {
+	color: #8B0000;
+	text-decoration: none;
+}
+
+.wpbs-admin-wrap a:hover {
+	color: #6B0000;
+	text-decoration: underline;
+}
+
+/* Settings Page */
+.wpbs-admin-wrap .form-table th {
+	font-weight: 600;
+	padding: 20px 10px 20px 0;
+	width: 200px;
+}
+
+.wpbs-admin-wrap .form-table td {
+	padding: 15px 10px;
+}
+
+.wpbs-admin-wrap .regular-text {
+	width: 300px;
+}
+

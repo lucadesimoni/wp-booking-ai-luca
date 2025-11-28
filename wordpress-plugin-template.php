@@ -1,19 +1,19 @@
 <?php
 /**
- * Plugin Name: WordPress Plugin Template
+ * Plugin Name: WP Booking System
  * Version: 1.0.0
- * Plugin URI: http://www.hughlashbrooke.com/
- * Description: This is your starter template for your next WordPress plugin.
- * Author: Hugh Lashbrooke
- * Author URI: http://www.hughlashbrooke.com/
- * Requires at least: 4.0
- * Tested up to: 4.0
+ * Plugin URI: https://famiglia-desimoni.ch/
+ * Description: A simple and modern booking system for WordPress with calendar management, email notifications, and price calculations.
+ * Author: Famiglia De Simoni
+ * Author URI: https://famiglia-desimoni.ch/
+ * Requires at least: 5.0
+ * Tested up to: 6.4
  *
- * Text Domain: wordpress-plugin-template
+ * Text Domain: wp-booking-system
  * Domain Path: /lang/
  *
  * @package WordPress
- * @author Hugh Lashbrooke
+ * @author Famiglia De Simoni
  * @since 1.0.0
  */
 
@@ -21,29 +21,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Load plugin class files.
-require_once 'includes/class-wordpress-plugin-template.php';
-require_once 'includes/class-wordpress-plugin-template-settings.php';
+// Define plugin constants.
+define( 'WP_BOOKING_SYSTEM_VERSION', '1.0.0' );
+define( 'WP_BOOKING_SYSTEM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_BOOKING_SYSTEM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Load plugin libraries.
-require_once 'includes/lib/class-wordpress-plugin-template-admin-api.php';
-require_once 'includes/lib/class-wordpress-plugin-template-post-type.php';
-require_once 'includes/lib/class-wordpress-plugin-template-taxonomy.php';
+// Load plugin class files.
+require_once 'includes/class-wp-booking-system.php';
+require_once 'includes/class-wp-booking-system-database.php';
+require_once 'includes/class-wp-booking-system-admin.php';
+require_once 'includes/class-wp-booking-system-frontend.php';
+require_once 'includes/class-wp-booking-system-ajax.php';
+require_once 'includes/class-wp-booking-system-email.php';
+require_once 'includes/class-wp-booking-system-widget.php';
 
 /**
- * Returns the main instance of WordPress_Plugin_Template to prevent the need to use globals.
+ * Returns the main instance of WP_Booking_System to prevent the need to use globals.
  *
  * @since  1.0.0
- * @return object WordPress_Plugin_Template
+ * @return object WP_Booking_System
  */
-function wordpress_plugin_template() {
-	$instance = WordPress_Plugin_Template::instance( __FILE__, '1.0.0' );
-
-	if ( is_null( $instance->settings ) ) {
-		$instance->settings = WordPress_Plugin_Template_Settings::instance( $instance );
-	}
+function wp_booking_system() {
+	$instance = WP_Booking_System::instance( __FILE__, WP_BOOKING_SYSTEM_VERSION );
 
 	return $instance;
 }
 
-wordpress_plugin_template();
+// Register activation hook.
+register_activation_hook( __FILE__, array( 'WP_Booking_System', 'activate' ) );
+
+// Initialize the plugin.
+$wp_booking_system = wp_booking_system();
+
+// Register deactivation hook after plugin is initialized.
+register_deactivation_hook( __FILE__, array( $wp_booking_system, 'deactivate' ) );
