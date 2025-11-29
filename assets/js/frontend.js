@@ -156,7 +156,14 @@
 				if (response.success) {
 					$('#wpbs-total-price').text(response.data.formatted);
 					$('#wpbs-price-summary').show();
+				} else {
+					showMessage('error', response.data.message || 'Unable to calculate price.');
+					$('#wpbs-price-summary').hide();
 				}
+			},
+			error: function() {
+				showMessage('error', 'An error occurred while calculating the price.');
+				$('#wpbs-price-summary').hide();
 			}
 		});
 	}

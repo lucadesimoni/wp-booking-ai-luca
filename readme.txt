@@ -1,4 +1,4 @@
-=== WP Booking System ===
+=== WP booking Luca ===
 Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
@@ -11,7 +11,7 @@ A simple and modern booking system for WordPress with calendar management, email
 
 == Description ==
 
-WP Booking System is a clean and modern booking solution for WordPress. It provides a simple interface for managing bookings with the following features:
+WP booking Luca is a clean and modern booking solution for WordPress. It provides a simple interface for managing bookings with the following features:
 
 * Admin calendar view for managing all bookings
 * Frontend booking form with date selection
@@ -26,8 +26,8 @@ Perfect for vacation rentals, hotels, or any accommodation booking needs.
 
 1. Upload the plugin files to the `/wp-content/plugins/wp-booking-system` directory, or install the plugin through the WordPress plugins screen directly
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to Bookings > Settings to configure pricing and email settings
-4. Use the shortcode `[wp_booking_form]` to display the booking form on any page
+3. Go to WP booking Luca > Settings to configure pricing, email settings, and chalet capacity
+4. Use the shortcode `[wp_booking_form]` to display the booking form on any page, or add the "Booking Calendar" block when editing pages
 5. Create a page with the shortcode `[wp_booking_manage]` for guests to manage their bookings (the token will be sent via email)
 
 == Screenshots ==

@@ -39,7 +39,100 @@ class WP_Booking_System_Email {
 			'From: ' . get_option( 'wpbs_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbs_email_from', get_option( 'admin_email' ) ) . '>',
 		);
 
+		$result = wp_mail( $to, $subject, $message, $headers );
+
+		// Send admin notification.
+		$this->send_admin_notification( $booking );
+
+		return $result;
+	}
+
+	/**
+	 * Send admin notification email for new booking.
+	 *
+	 * @param object $booking Booking object.
+	 * @return bool
+	 */
+	public function send_admin_notification( $booking ) {
+		$admin_email = get_option( 'wpbs_admin_notification_email', get_option( 'admin_email' ) );
+
+		if ( empty( $admin_email ) || ! is_email( $admin_email ) ) {
+			return false;
+		}
+
+		$to      = $admin_email;
+		$subject = sprintf( __( 'New Booking Received - %s', 'wp-booking-system' ), get_bloginfo( 'name' ) );
+
+		$message = $this->get_admin_notification_template( $booking );
+
+		$headers = array(
+			'Content-Type: text/html; charset=UTF-8',
+			'From: ' . get_option( 'wpbs_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbs_email_from', get_option( 'admin_email' ) ) . '>',
+		);
+
 		return wp_mail( $to, $subject, $message, $headers );
+	}
+
+	/**
+	 * Get admin notification email template.
+	 *
+	 * @param object $booking Booking object.
+	 * @return string
+	 */
+	private function get_admin_notification_template( $booking ) {
+		$currency = get_option( 'wpbs_currency', 'CHF' );
+		$admin_url = admin_url( 'admin.php?page=wp-booking-system-list' );
+
+		ob_start();
+		?>
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<meta charset="UTF-8">
+			<style>
+				body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+				.container { max-width: 600px; margin: 0 auto; padding: 20px; }
+				.header { background-color: #8B0000; color: white; padding: 20px; text-align: center; }
+				.content { background-color: #f9f9f9; padding: 20px; }
+				.booking-details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #8B0000; }
+				.booking-details p { margin: 8px 0; }
+				.button { display: inline-block; padding: 12px 24px; background-color: #8B0000; color: white; text-decoration: none; border-radius: 4px; margin-top: 15px; }
+				.footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+			</style>
+		</head>
+		<body>
+			<div class="container">
+				<div class="header">
+					<h1><?php esc_html_e( 'New Booking Received', 'wp-booking-system' ); ?></h1>
+				</div>
+				<div class="content">
+					<p><?php esc_html_e( 'A new booking has been submitted:', 'wp-booking-system' ); ?></p>
+
+					<div class="booking-details">
+						<h3><?php esc_html_e( 'Booking Details', 'wp-booking-system' ); ?></h3>
+						<p><strong><?php esc_html_e( 'Guest:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->first_name . ' ' . $booking->last_name ); ?></p>
+						<p><strong><?php esc_html_e( 'Email:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->email ); ?></p>
+						<p><strong><?php esc_html_e( 'Phone:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->phone ? $booking->phone : __( 'N/A', 'wp-booking-system' ) ); ?></p>
+						<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_in ) ) ); ?></p>
+						<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_out ) ) ); ?></p>
+						<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system' ) ); ?></p>
+						<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . $currency ); ?></p>
+						<p><strong><?php esc_html_e( 'Status:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( ucfirst( $booking->status ) ); ?></p>
+						<?php if ( ! empty( $booking->notes ) ) : ?>
+							<p><strong><?php esc_html_e( 'Notes:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->notes ); ?></p>
+						<?php endif; ?>
+					</div>
+
+					<a href="<?php echo esc_url( $admin_url ); ?>" class="button"><?php esc_html_e( 'View Booking', 'wp-booking-system' ); ?></a>
+				</div>
+				<div class="footer">
+					<p><?php echo esc_html( get_bloginfo( 'name' ) ); ?> | <?php echo esc_url( home_url() ); ?></p>
+				</div>
+			</div>
+		</body>
+		</html>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**

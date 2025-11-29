@@ -4,21 +4,23 @@
 
 ### Step 1: Install Plugin (1 minute)
 1. Upload plugin to `/wp-content/plugins/wp-booking-system/`
-2. Go to **Plugins** → Activate "WP Booking System"
+2. Go to **Plugins** → Activate "WP booking Luca"
 
 ### Step 2: Configure Settings (1 minute)
-1. Go to **Bookings → Settings**
+1. Go to **WP booking Luca → Settings**
 2. Set prices:
    - Price per Adult: `50`
    - Price per Kid: `25`
    - Currency: `CHF`
 3. Set email: Your email address
-4. Click **Save Settings**
+4. Set Chalet Maximum Capacity: `10`
+5. Click **Save Settings**
 
 ### Step 3: Create Booking Page (1 minute)
 1. Go to **Pages → Add New**
 2. Title: "Book Now"
-3. Add shortcode: `[wp_booking_form]`
+3. Option A: Add shortcode: `[wp_booking_form]`
+   Option B: Use Gutenberg editor and add "Booking Calendar" block
 4. Click **Publish**
 5. View the page
 
@@ -33,10 +35,11 @@
 3. ✅ Check your email for confirmation
 
 ### Step 5: Verify in Admin (1 minute)
-1. Go to **Bookings → All Bookings**
+1. Go to **WP booking Luca → All Bookings**
 2. ✅ See your test booking
-3. Go to **Bookings → Booking Calendar**
-4. ✅ See booking on calendar
+3. Check your admin email for notification (if configured)
+4. Go to **WP booking Luca → Booking Calendar**
+5. ✅ See booking on calendar
 
 ## Test Widget (Optional - 2 minutes)
 

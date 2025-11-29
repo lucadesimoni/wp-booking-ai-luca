@@ -1,6 +1,6 @@
-# WP Booking System - Testing Guide
+# WP booking Luca - Testing Guide
 
-This guide will help you test all features of the WP Booking System plugin.
+This guide will help you test all features of the WP booking Luca plugin.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ This guide will help you test all features of the WP Booking System plugin.
 **Option A: Manual Installation**
 1. Copy the entire plugin folder to `/wp-content/plugins/wp-booking-system/`
 2. Go to WordPress Admin → Plugins
-3. Find "WP Booking System" and click "Activate"
+3. Find "WP booking Luca" and click "Activate"
 
 **Option B: ZIP Installation**
 1. Create a ZIP file of the plugin folder
@@ -42,24 +42,26 @@ After activation, you should see:
 ### Phase 1: Admin Configuration
 
 #### Test 1: Settings Page
-1. Go to **Bookings → Settings**
+1. Go to **WP booking Luca → Settings**
 2. Configure the following:
    - Price per Adult: `50` (or your preferred amount)
    - Price per Kid: `25` (or your preferred amount)
    - Currency: `CHF` (or your preferred currency)
    - Email From Address: Your email address
    - Email From Name: Your site name
+   - Admin Notification Email: Email to receive new booking notifications
+   - Chalet Maximum Capacity: `10` (maximum number of guests)
 3. Click "Save Settings"
 4. ✅ **Expected**: Success message appears, settings are saved
 
 #### Test 2: Admin Calendar View
-1. Go to **Bookings → Booking Calendar**
-2. ✅ **Expected**: FullCalendar loads with navigation buttons
+1. Go to **WP booking Luca → Booking Calendar**
+2. ✅ **Expected**: FullCalendar loads with navigation buttons and calendar is visible
 3. Try navigating between months
 4. ✅ **Expected**: Calendar displays correctly (should be empty initially)
 
 #### Test 3: All Bookings List
-1. Go to **Bookings → All Bookings**
+1. Go to **WP booking Luca → All Bookings**
 2. ✅ **Expected**: Empty table with message "No bookings found"
 
 ### Phase 2: Frontend Booking Form
@@ -116,8 +118,9 @@ After activation, you should see:
 3. ✅ **Expected**: 
    - Success message appears
    - Form resets
-   - Confirmation email sent (check email inbox)
-   - Booking appears in admin (Bookings → All Bookings)
+   - Confirmation email sent to guest (check email inbox)
+   - Admin notification email sent (if configured)
+   - Booking appears in admin (WP booking Luca → All Bookings)
 
 ### Phase 3: Calendar Widget
 
@@ -149,6 +152,15 @@ After activation, you should see:
 2. Add shortcode: `[wp_booking_calendar title="Check Availability"]`
 3. Publish and view the page
 4. ✅ **Expected**: Calendar displays with custom title
+
+#### Test 12b: Gutenberg Block Calendar
+1. Create or edit a page using Gutenberg editor
+2. Click the "+" button to add a block
+3. Search for "Booking Calendar" block
+4. Add the block to the page
+5. Configure the block title (optional)
+6. Publish and view the page
+7. ✅ **Expected**: Calendar displays correctly with the configured title
 
 ### Phase 4: Booking Management
 
@@ -240,9 +252,21 @@ After activation, you should see:
 1. Try to submit with 0 adults
 2. ✅ **Expected**: Validation error (at least 1 adult required)
 
-#### Test 25: Very Long Stay
+#### Test 25: Capacity Validation
+1. Set Adults to a number that exceeds the configured capacity (e.g., if capacity is 10, try 12 adults)
+2. Try to submit the booking
+3. ✅ **Expected**: Validation error showing maximum capacity limit
+4. Reduce guests to within capacity
+5. ✅ **Expected**: Booking succeeds
+
+#### Test 26: Very Long Stay
 1. Create a booking for 30+ days
 2. ✅ **Expected**: Price calculates correctly for all nights
+
+#### Test 27: Admin Notification Email
+1. Configure Admin Notification Email in settings
+2. Create a new booking
+3. ✅ **Expected**: Admin receives email notification with booking details
 
 ## Quick Test Script
 

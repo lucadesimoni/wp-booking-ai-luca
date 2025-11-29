@@ -115,6 +115,9 @@ class WP_Booking_System {
 		// Register widget.
 		add_action( 'widgets_init', array( $this, 'register_widget' ) );
 
+		// Initialize block editor support.
+		new WP_Booking_System_Block();
+
 		// Load plugin textdomain.
 		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 	}

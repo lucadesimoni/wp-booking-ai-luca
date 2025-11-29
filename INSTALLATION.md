@@ -50,7 +50,7 @@
 
 3. **Activate**
    - Go to WordPress Admin → Plugins
-   - Find **WP Booking System**
+   - Find **WP booking Luca**
    - Click **Activate**
 
 ## System Requirements
@@ -78,14 +78,16 @@ wp-booking-system/
 │   ├── class-wp-booking-system-database.php
 │   ├── class-wp-booking-system-email.php
 │   ├── class-wp-booking-system-frontend.php
-│   └── class-wp-booking-system-widget.php
+│   ├── class-wp-booking-system-widget.php
+│   └── class-wp-booking-system-block.php
 └── assets/                  (CSS and JavaScript)
     ├── css/
     │   ├── admin.css
     │   └── frontend.css
     └── js/
         ├── admin.js
-        └── frontend.js
+        ├── frontend.js
+        └── block.js
 ```
 
 ## Post-Installation Checklist
@@ -93,9 +95,9 @@ wp-booking-system/
 After installation, verify:
 
 - [ ] Plugin appears in Plugins list
-- [ ] "Bookings" menu appears in admin sidebar
-- [ ] Settings page is accessible (Bookings → Settings)
-- [ ] Calendar page loads (Bookings → Booking Calendar)
+- [ ] "WP booking Luca" menu appears in admin sidebar
+- [ ] Settings page is accessible (WP booking Luca → Settings)
+- [ ] Calendar page loads (WP booking Luca → Booking Calendar)
 - [ ] Booking form shortcode works on frontend
 - [ ] Calendar widget appears in Widgets list
 - [ ] No PHP errors in error log

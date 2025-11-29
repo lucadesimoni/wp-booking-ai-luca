@@ -19,11 +19,21 @@
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	min-height: 600px;
 }
 
 /* FullCalendar Customization */
 .fc {
 	font-family: inherit;
+}
+
+#wpbs-calendar .fc {
+	width: 100%;
+	display: block;
+}
+
+#wpbs-calendar.fc-calendar {
+	visibility: visible;
 }
 
 .fc-header-toolbar {

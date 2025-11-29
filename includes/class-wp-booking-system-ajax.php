@@ -82,6 +82,22 @@ class WP_Booking_System_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Invalid date format.', 'wp-booking-system' ) ) );
 		}
 
+		// Validate capacity.
+		$total_guests = $adults + $kids;
+		$max_capacity = absint( get_option( 'wpbs_chalet_capacity', 10 ) );
+
+		if ( $total_guests > $max_capacity ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %d: Maximum capacity */
+						__( 'The chalet can accommodate a maximum of %d guests. Please reduce the number of guests.', 'wp-booking-system' ),
+						$max_capacity
+					),
+				)
+			);
+		}
+
 		$price = $this->calculate_booking_price( $check_in, $check_out, $adults, $kids );
 		$currency = get_option( 'wpbs_currency', 'CHF' );
 
@@ -139,6 +155,22 @@ class WP_Booking_System_Ajax {
 
 		if ( $data['kids'] < 0 ) {
 			$data['kids'] = 0;
+		}
+
+		// Validate capacity.
+		$total_guests = $data['adults'] + $data['kids'];
+		$max_capacity = absint( get_option( 'wpbs_chalet_capacity', 10 ) );
+
+		if ( $total_guests > $max_capacity ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %d: Maximum capacity */
+						__( 'The chalet can accommodate a maximum of %d guests. Please reduce the number of guests.', 'wp-booking-system' ),
+						$max_capacity
+					),
+				)
+			);
 		}
 
 		// Check availability.

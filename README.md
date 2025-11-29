@@ -1,4 +1,4 @@
-# WP Booking System
+# WP booking Luca
 
 A simple and modern booking system for WordPress with calendar management, email notifications, and price calculations.
 
@@ -17,11 +17,13 @@ A simple and modern booking system for WordPress with calendar management, email
 
 1. Upload the plugin files to `/wp-content/plugins/wp-booking-system/`
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to **Bookings > Settings** to configure:
+3. Go to **WP booking Luca > Settings** to configure:
    - Price per adult (per night)
    - Price per kid (per night)
    - Currency
    - Email settings
+   - Admin notification email
+   - Chalet maximum capacity
 
 ## Usage
 
@@ -52,14 +54,19 @@ Guests will access this page via a unique token sent in their confirmation email
 
 ### Frontend Calendar Widget
 
-Add the booking calendar widget to any sidebar:
+**Option 1: Gutenberg Block (Recommended)**
+1. Edit a page using Gutenberg editor
+2. Click "+" to add a block
+3. Search for "Booking Calendar"
+4. Add the block and configure the title
 
+**Option 2: Classic Widget**
 1. Go to **Appearance > Widgets**
 2. Find the **Booking Calendar** widget
 3. Drag it to your desired sidebar
 4. Configure the widget title (optional)
 
-The widget displays a monthly calendar showing:
+The calendar displays:
 - Available dates (green)
 - Booked dates (red)
 - Click on dates to select them in the booking form
@@ -80,9 +87,9 @@ Or with a custom title:
 
 ### Admin Features
 
-- **Calendar View**: Navigate to **Bookings** in the admin menu to see a visual calendar of all bookings
+- **Calendar View**: Navigate to **WP booking Luca** in the admin menu to see a visual calendar of all bookings
 - **All Bookings**: View a list of all bookings with details and actions
-- **Settings**: Configure pricing and email settings
+- **Settings**: Configure pricing, email settings, and chalet capacity
 
 ## Configuration
 
@@ -95,9 +102,10 @@ Set your pricing in **Bookings > Settings**:
 
 ### Email Settings
 
-Configure email settings in **Bookings > Settings**:
+Configure email settings in **WP booking Luca > Settings**:
 - Email from address
 - Email from name
+- Admin notification email (receives notifications for new bookings)
 
 ## How It Works
 

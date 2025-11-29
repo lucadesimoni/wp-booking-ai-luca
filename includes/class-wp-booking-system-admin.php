@@ -29,7 +29,7 @@ class WP_Booking_System_Admin {
 	public function add_admin_menu() {
 		add_menu_page(
 			__( 'Bookings', 'wp-booking-system' ),
-			__( 'Bookings', 'wp-booking-system' ),
+			__( 'WP booking Luca', 'wp-booking-system' ),
 			'manage_options',
 			'wp-booking-system',
 			array( $this, 'render_calendar_page' ),
@@ -188,21 +188,27 @@ class WP_Booking_System_Admin {
 	public function render_settings_page() {
 		if ( isset( $_POST['wpbs_save_settings'] ) && check_admin_referer( 'wpbs_settings' ) ) {
 			// Validate and sanitize input.
-			$price_adult     = isset( $_POST['wpbs_price_adult'] ) ? floatval( $_POST['wpbs_price_adult'] ) : 0;
-			$price_kid       = isset( $_POST['wpbs_price_kid'] ) ? floatval( $_POST['wpbs_price_kid'] ) : 0;
-			$currency        = isset( $_POST['wpbs_currency'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbs_currency'] ) ) : 'CHF';
-			$email_from      = isset( $_POST['wpbs_email_from'] ) ? sanitize_email( wp_unslash( $_POST['wpbs_email_from'] ) ) : '';
-			$email_from_name = isset( $_POST['wpbs_email_from_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbs_email_from_name'] ) ) : '';
+			$price_adult              = isset( $_POST['wpbs_price_adult'] ) ? floatval( $_POST['wpbs_price_adult'] ) : 0;
+			$price_kid                = isset( $_POST['wpbs_price_kid'] ) ? floatval( $_POST['wpbs_price_kid'] ) : 0;
+			$currency                 = isset( $_POST['wpbs_currency'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbs_currency'] ) ) : 'CHF';
+			$email_from               = isset( $_POST['wpbs_email_from'] ) ? sanitize_email( wp_unslash( $_POST['wpbs_email_from'] ) ) : '';
+			$email_from_name          = isset( $_POST['wpbs_email_from_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbs_email_from_name'] ) ) : '';
+			$admin_notification_email = isset( $_POST['wpbs_admin_notification_email'] ) ? sanitize_email( wp_unslash( $_POST['wpbs_admin_notification_email'] ) ) : '';
+			$chalet_capacity          = isset( $_POST['wpbs_chalet_capacity'] ) ? absint( $_POST['wpbs_chalet_capacity'] ) : 10;
 
-			// Validate email.
+			// Validate emails.
 			if ( ! is_email( $email_from ) ) {
-				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid email address.', 'wp-booking-system' ) . '</p></div>';
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid email from address.', 'wp-booking-system' ) . '</p></div>';
+			} elseif ( ! empty( $admin_notification_email ) && ! is_email( $admin_notification_email ) ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid admin notification email address.', 'wp-booking-system' ) . '</p></div>';
 			} else {
 				update_option( 'wpbs_price_adult', $price_adult );
 				update_option( 'wpbs_price_kid', $price_kid );
 				update_option( 'wpbs_currency', $currency );
 				update_option( 'wpbs_email_from', $email_from );
 				update_option( 'wpbs_email_from_name', $email_from_name );
+				update_option( 'wpbs_admin_notification_email', $admin_notification_email );
+				update_option( 'wpbs_chalet_capacity', $chalet_capacity );
 				echo '<div class="notice notice-success"><p>' . esc_html__( 'Settings saved.', 'wp-booking-system' ) . '</p></div>';
 			}
 		}
@@ -250,19 +256,37 @@ class WP_Booking_System_Admin {
 							<input type="email" id="wpbs_email_from" name="wpbs_email_from" value="<?php echo esc_attr( $email_from ); ?>" class="regular-text" />
 						</td>
 					</tr>
-					<tr>
-						<th scope="row">
-							<label for="wpbs_email_from_name"><?php esc_html_e( 'Email From Name', 'wp-booking-system' ); ?></label>
-						</th>
-						<td>
-							<input type="text" id="wpbs_email_from_name" name="wpbs_email_from_name" value="<?php echo esc_attr( $email_from_name ); ?>" class="regular-text" />
-						</td>
-					</tr>
-				</table>
-				<?php submit_button( __( 'Save Settings', 'wp-booking-system' ), 'primary', 'wpbs_save_settings' ); ?>
-			</form>
-		</div>
-		<?php
+				<tr>
+					<th scope="row">
+						<label for="wpbs_email_from_name"><?php esc_html_e( 'Email From Name', 'wp-booking-system' ); ?></label>
+					</th>
+					<td>
+						<input type="text" id="wpbs_email_from_name" name="wpbs_email_from_name" value="<?php echo esc_attr( $email_from_name ); ?>" class="regular-text" />
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="wpbs_admin_notification_email"><?php esc_html_e( 'Admin Notification Email', 'wp-booking-system' ); ?></label>
+					</th>
+					<td>
+						<input type="email" id="wpbs_admin_notification_email" name="wpbs_admin_notification_email" value="<?php echo esc_attr( get_option( 'wpbs_admin_notification_email', get_option( 'admin_email' ) ) ); ?>" class="regular-text" />
+						<p class="description"><?php esc_html_e( 'Email address to receive notifications when new bookings are made.', 'wp-booking-system' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="wpbs_chalet_capacity"><?php esc_html_e( 'Chalet Maximum Capacity', 'wp-booking-system' ); ?></label>
+					</th>
+					<td>
+						<input type="number" id="wpbs_chalet_capacity" name="wpbs_chalet_capacity" value="<?php echo esc_attr( get_option( 'wpbs_chalet_capacity', 10 ) ); ?>" min="1" class="regular-text" />
+						<p class="description"><?php esc_html_e( 'Maximum number of guests (adults + kids) that can be accommodated.', 'wp-booking-system' ); ?></p>
+					</td>
+				</tr>
+			</table>
+			<?php submit_button( __( 'Save Settings', 'wp-booking-system' ), 'primary', 'wpbs_save_settings' ); ?>
+		</form>
+	</div>
+	<?php
 	}
 }
 

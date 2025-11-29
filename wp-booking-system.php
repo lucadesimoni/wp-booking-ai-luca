@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP Booking System
+ * Plugin Name: WP booking Luca
  * Version: 1.0.0
  * Plugin URI: https://famiglia-desimoni.ch/
  * Description: A simple and modern booking system for WordPress with calendar management, email notifications, and price calculations.
@@ -34,6 +34,7 @@ require_once 'includes/class-wp-booking-system-frontend.php';
 require_once 'includes/class-wp-booking-system-ajax.php';
 require_once 'includes/class-wp-booking-system-email.php';
 require_once 'includes/class-wp-booking-system-widget.php';
+require_once 'includes/class-wp-booking-system-block.php';
 
 /**
  * Returns the main instance of WP_Booking_System to prevent the need to use globals.
