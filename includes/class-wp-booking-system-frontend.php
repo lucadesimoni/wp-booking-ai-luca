@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 /**
  * Frontend class for booking form
  *
- * @package WP_Booking_System
+ * @package WP_Booking_System_Luca
  * @since 1.0.0
  */
 
@@ -11,18 +11,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Booking_System_Frontend Class
+ * WP_Booking_System_Luca_Frontend Class
  */
-class WP_Booking_System_Frontend {
+class WP_Booking_System_Luca_Frontend {
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_shortcode( 'wp_booking_form', array( $this, 'render_booking_form' ) );
-		add_shortcode( 'wp_booking_manage', array( $this, 'render_booking_manage' ) );
-		add_shortcode( 'wp_booking_calendar', array( $this, 'render_booking_calendar' ) );
+		add_shortcode( 'wp_booking_form_luca', array( $this, 'render_booking_form' ) );
+		add_shortcode( 'wp_booking_manage_luca', array( $this, 'render_booking_manage' ) );
+		add_shortcode( 'wp_booking_calendar_luca', array( $this, 'render_booking_calendar' ) );
 	}
 
 	/**
@@ -30,33 +30,33 @@ class WP_Booking_System_Frontend {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_style(
-			'wp-booking-system-frontend',
-			WP_BOOKING_SYSTEM_PLUGIN_URL . 'assets/css/frontend.css',
+			'wp-booking-system-luca-frontend',
+			WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/css/frontend.css',
 			array(),
-			WP_BOOKING_SYSTEM_VERSION
+			WP_BOOKING_SYSTEM_LUCA_VERSION
 		);
 
 		wp_enqueue_script(
-			'wp-booking-system-frontend',
-			WP_BOOKING_SYSTEM_PLUGIN_URL . 'assets/js/frontend.js',
+			'wp-booking-system-luca-frontend',
+			WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/js/frontend.js',
 			array( 'jquery' ),
-			WP_BOOKING_SYSTEM_VERSION,
+			WP_BOOKING_SYSTEM_LUCA_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'wp-booking-system-frontend',
-			'wpbsFrontend',
+			'wp-booking-system-luca-frontend',
+			'wpbslFrontend',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'wp-booking-system-frontend' ),
+				'nonce'   => wp_create_nonce( 'wp-booking-system-luca-frontend' ),
 				'i18n'    => array(
-					'checking'      => __( 'Checking availability...', 'wp-booking-system' ),
-					'available'     => __( 'Available', 'wp-booking-system' ),
-					'unavailable'   => __( 'Unavailable', 'wp-booking-system' ),
-					'selectDates'   => __( 'Please select check-in and check-out dates', 'wp-booking-system' ),
-					'invalidDates'  => __( 'Check-out date must be after check-in date', 'wp-booking-system' ),
-					'calculating'   => __( 'Calculating price...', 'wp-booking-system' ),
+					'checking'      => __( 'Checking availability...', 'wp-booking-system-luca' ),
+					'available'     => __( 'Available', 'wp-booking-system-luca' ),
+					'unavailable'   => __( 'Unavailable', 'wp-booking-system-luca' ),
+					'selectDates'   => __( 'Please select check-in and check-out dates', 'wp-booking-system-luca' ),
+					'invalidDates'  => __( 'Check-out date must be after check-in date', 'wp-booking-system-luca' ),
+					'calculating'   => __( 'Calculating price...', 'wp-booking-system-luca' ),
 				),
 			)
 		);
@@ -103,10 +103,10 @@ class WP_Booking_System_Frontend {
 	public function render_booking_form( $atts = array() ) {
 		$atts = shortcode_atts(
 			array(
-				'title' => __( 'Book Your Stay', 'wp-booking-system' ),
+				'title' => __( 'Book Your Stay', 'wp-booking-system-luca' ),
 			),
 			$atts,
-			'wp_booking_form'
+			'wp_booking_form_luca'
 		);
 
 		ob_start();
@@ -116,64 +116,64 @@ class WP_Booking_System_Frontend {
 			<form id="wpbs-booking-form" class="wpbs-booking-form">
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group">
-						<label for="wpbs-check-in"><?php esc_html_e( 'Check-in', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-check-in"><?php esc_html_e( 'Check-in', 'wp-booking-system-luca' ); ?></label>
 						<input type="text" id="wpbs-check-in" name="check_in" class="wpbs-date-input" required readonly />
 					</div>
 					<div class="wpbs-form-group">
-						<label for="wpbs-check-out"><?php esc_html_e( 'Check-out', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-check-out"><?php esc_html_e( 'Check-out', 'wp-booking-system-luca' ); ?></label>
 						<input type="text" id="wpbs-check-out" name="check_out" class="wpbs-date-input" required readonly />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group">
-						<label for="wpbs-adults"><?php esc_html_e( 'Adults', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-adults"><?php esc_html_e( 'Adults', 'wp-booking-system-luca' ); ?></label>
 						<input type="number" id="wpbs-adults" name="adults" min="1" value="2" required />
 					</div>
 					<div class="wpbs-form-group">
-						<label for="wpbs-kids"><?php esc_html_e( 'Kids', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-kids"><?php esc_html_e( 'Kids', 'wp-booking-system-luca' ); ?></label>
 						<input type="number" id="wpbs-kids" name="kids" min="0" value="0" required />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
-						<label for="wpbs-first-name"><?php esc_html_e( 'First Name', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-first-name"><?php esc_html_e( 'First Name', 'wp-booking-system-luca' ); ?></label>
 						<input type="text" id="wpbs-first-name" name="first_name" required />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
-						<label for="wpbs-last-name"><?php esc_html_e( 'Last Name', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-last-name"><?php esc_html_e( 'Last Name', 'wp-booking-system-luca' ); ?></label>
 						<input type="text" id="wpbs-last-name" name="last_name" required />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
-						<label for="wpbs-email"><?php esc_html_e( 'Email', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-email"><?php esc_html_e( 'Email', 'wp-booking-system-luca' ); ?></label>
 						<input type="email" id="wpbs-email" name="email" required />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
-						<label for="wpbs-phone"><?php esc_html_e( 'Phone', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-phone"><?php esc_html_e( 'Phone', 'wp-booking-system-luca' ); ?></label>
 						<input type="tel" id="wpbs-phone" name="phone" />
 					</div>
 				</div>
 
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
-						<label for="wpbs-notes"><?php esc_html_e( 'Notes', 'wp-booking-system' ); ?></label>
+						<label for="wpbs-notes"><?php esc_html_e( 'Notes', 'wp-booking-system-luca' ); ?></label>
 						<textarea id="wpbs-notes" name="notes" rows="4"></textarea>
 					</div>
 				</div>
 
 				<div class="wpbs-price-summary" id="wpbs-price-summary" style="display: none;">
 					<div class="wpbs-price-row">
-						<span class="wpbs-price-label"><?php esc_html_e( 'Total Price:', 'wp-booking-system' ); ?></span>
+						<span class="wpbs-price-label"><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></span>
 						<span class="wpbs-price-value" id="wpbs-total-price"></span>
 					</div>
 				</div>
@@ -181,7 +181,7 @@ class WP_Booking_System_Frontend {
 				<div class="wpbs-form-messages" id="wpbs-form-messages"></div>
 
 				<button type="submit" class="wpbs-submit-button">
-					<?php esc_html_e( 'Book Now', 'wp-booking-system' ); ?>
+					<?php esc_html_e( 'Book Now', 'wp-booking-system-luca' ); ?>
 				</button>
 			</form>
 		</div>
@@ -199,32 +199,32 @@ class WP_Booking_System_Frontend {
 		$token = isset( $_GET['token'] ) ? sanitize_text_field( $_GET['token'] ) : '';
 
 		if ( empty( $token ) ) {
-			return '<p>' . esc_html__( 'Invalid booking token.', 'wp-booking-system' ) . '</p>';
+			return '<p>' . esc_html__( 'Invalid booking token.', 'wp-booking-system-luca' ) . '</p>';
 		}
 
-		$booking = wp_booking_system()->database->get_booking_by_token( $token );
+		$booking = wp_booking_system_luca()->database->get_booking_by_token( $token );
 
 		if ( ! $booking ) {
-			return '<p>' . esc_html__( 'Booking not found.', 'wp-booking-system' ) . '</p>';
+			return '<p>' . esc_html__( 'Booking not found.', 'wp-booking-system-luca' ) . '</p>';
 		}
 
 		ob_start();
 		?>
 		<div class="wpbs-booking-manage-wrapper">
-			<h2><?php esc_html_e( 'Manage Your Booking', 'wp-booking-system' ); ?></h2>
+			<h2><?php esc_html_e( 'Manage Your Booking', 'wp-booking-system-luca' ); ?></h2>
 			<div class="wpbs-booking-details">
-				<p><strong><?php esc_html_e( 'Guest:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->first_name . ' ' . $booking->last_name ); ?></p>
-				<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_in ) ) ); ?></p>
-				<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_out ) ) ); ?></p>
-				<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system' ) ); ?></p>
-				<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . get_option( 'wpbs_currency', 'CHF' ) ); ?></p>
-				<p><strong><?php esc_html_e( 'Status:', 'wp-booking-system' ); ?></strong> <span class="wpbs-status wpbs-status-<?php echo esc_attr( $booking->status ); ?>"><?php echo esc_html( ucfirst( $booking->status ) ); ?></span></p>
+				<p><strong><?php esc_html_e( 'Guest:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->first_name . ' ' . $booking->last_name ); ?></p>
+				<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_in ) ) ); ?></p>
+				<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_out ) ) ); ?></p>
+				<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system-luca' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system-luca' ) ); ?></p>
+				<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . get_option( 'wpbsl_currency', 'CHF' ) ); ?></p>
+				<p><strong><?php esc_html_e( 'Status:', 'wp-booking-system-luca' ); ?></strong> <span class="wpbs-status wpbs-status-<?php echo esc_attr( $booking->status ); ?>"><?php echo esc_html( ucfirst( $booking->status ) ); ?></span></p>
 			</div>
 
 			<?php if ( $booking->status !== 'cancelled' ) : ?>
 				<div class="wpbs-booking-actions">
 					<button type="button" class="wpbs-cancel-booking" data-token="<?php echo esc_attr( $token ); ?>">
-						<?php esc_html_e( 'Cancel Booking', 'wp-booking-system' ); ?>
+						<?php esc_html_e( 'Cancel Booking', 'wp-booking-system-luca' ); ?>
 					</button>
 				</div>
 			<?php endif; ?>
@@ -244,14 +244,14 @@ class WP_Booking_System_Frontend {
 	public function render_booking_calendar( $atts = array() ) {
 		$atts = shortcode_atts(
 			array(
-				'title' => __( 'Booking Calendar', 'wp-booking-system' ),
+				'title' => __( 'Booking Calendar', 'wp-booking-system-luca' ),
 			),
 			$atts,
-			'wp_booking_calendar'
+			'wp_booking_calendar_luca'
 		);
 
 		// Get unavailable dates.
-		$bookings = wp_booking_system()->database->get_bookings(
+		$bookings = wp_booking_system_luca()->database->get_bookings(
 			array(
 				'status' => '',
 			)
@@ -284,11 +284,11 @@ class WP_Booking_System_Frontend {
 			<div class="wpbs-calendar-legend">
 				<span class="wpbs-legend-item">
 					<span class="wpbs-legend-available"></span>
-					<?php esc_html_e( 'Available', 'wp-booking-system' ); ?>
+					<?php esc_html_e( 'Available', 'wp-booking-system-luca' ); ?>
 				</span>
 				<span class="wpbs-legend-item">
 					<span class="wpbs-legend-booked"></span>
-					<?php esc_html_e( 'Booked', 'wp-booking-system' ); ?>
+					<?php esc_html_e( 'Booked', 'wp-booking-system-luca' ); ?>
 				</span>
 			</div>
 		</div>
@@ -310,7 +310,7 @@ class WP_Booking_System_Frontend {
 								url: wpbsFrontend.ajaxUrl,
 								type: 'GET',
 								data: {
-									action: 'wpbs_get_calendar_availability',
+									action: 'wpbsl_get_calendar_availability',
 									nonce: wpbsFrontend.nonce,
 									start: fetchInfo.startStr,
 									end: fetchInfo.endStr

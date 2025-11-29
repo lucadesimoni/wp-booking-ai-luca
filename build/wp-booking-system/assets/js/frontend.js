@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Frontend JavaScript for WP Booking System
  */
 
@@ -80,7 +80,7 @@
 		if (checkIn && checkOut) {
 			// Validate dates
 			if (new Date(checkOut) <= new Date(checkIn)) {
-				showMessage('error', wpbsFrontend.i18n.invalidDates);
+				showMessage('error', wpbslFrontend.i18n.invalidDates);
 				$('#wpbs-price-summary').hide();
 				return;
 			}
@@ -100,18 +100,18 @@
 	 */
 	function checkAvailability(checkIn, checkOut) {
 		$.ajax({
-			url: wpbsFrontend.ajaxUrl,
+			url: wpbslFrontend.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'wpbs_check_availability',
-				nonce: wpbsFrontend.nonce,
+				action: 'wpbsl_check_availability',
+				nonce: wpbslFrontend.nonce,
 				check_in: checkIn,
 				check_out: checkOut
 			},
 			success: function(response) {
 				if (response.success) {
 					if (!response.data.available) {
-						showMessage('error', wpbsFrontend.i18n.unavailable);
+						showMessage('error', wpbslFrontend.i18n.unavailable);
 					}
 				}
 			}
@@ -138,25 +138,32 @@
 		}
 
 		$.ajax({
-			url: wpbsFrontend.ajaxUrl,
+			url: wpbslFrontend.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'wpbs_calculate_price',
-				nonce: wpbsFrontend.nonce,
+				action: 'wpbsl_calculate_price',
+				nonce: wpbslFrontend.nonce,
 				check_in: checkIn,
 				check_out: checkOut,
 				adults: adults,
 				kids: kids
 			},
 			beforeSend: function() {
-				$('#wpbs-total-price').text(wpbsFrontend.i18n.calculating);
+				$('#wpbs-total-price').text(wpbslFrontend.i18n.calculating);
 				$('#wpbs-price-summary').show();
 			},
 			success: function(response) {
 				if (response.success) {
 					$('#wpbs-total-price').text(response.data.formatted);
 					$('#wpbs-price-summary').show();
+				} else {
+					showMessage('error', response.data.message || 'Unable to calculate price.');
+					$('#wpbs-price-summary').hide();
 				}
+			},
+			error: function() {
+				showMessage('error', 'An error occurred while calculating the price.');
+				$('#wpbs-price-summary').hide();
 			}
 		});
 	}
@@ -176,12 +183,12 @@
 			submitButton.data('original-text', submitButton.text());
 		}
 
-		submitButton.prop('disabled', true).text(wpbsFrontend.i18n.submitting || 'Submitting...');
+		submitButton.prop('disabled', true).text(wpbslFrontend.i18n.submitting || 'Submitting...');
 
 		$.ajax({
-			url: wpbsFrontend.ajaxUrl,
+			url: wpbslFrontend.ajaxUrl,
 			type: 'POST',
-			data: formData + '&action=wpbs_submit_booking&nonce=' + wpbsFrontend.nonce,
+			data: formData + '&action=wpbsl_submit_booking&nonce=' + wpbslFrontend.nonce,
 			success: function(response) {
 				if (response.success) {
 					showMessage('success', response.data.message);
@@ -226,11 +233,11 @@
 		button.prop('disabled', true);
 
 		$.ajax({
-			url: wpbsFrontend.ajaxUrl,
+			url: wpbslFrontend.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'wpbs_cancel_booking',
-				nonce: wpbsFrontend.nonce,
+				action: 'wpbsl_cancel_booking',
+				nonce: wpbslFrontend.nonce,
 				token: token
 			},
 			success: function(response) {

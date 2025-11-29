@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 /**
  * Database class for handling booking data
  *
- * @package WP_Booking_System
+ * @package WP_Booking_System_Luca
  * @since 1.0.0
  */
 
@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Booking_System_Database Class
+ * WP_Booking_System_Luca_Database Class
  */
-class WP_Booking_System_Database {
+class WP_Booking_System_Luca_Database {
 
 	/**
 	 * Table name for bookings.
@@ -27,7 +27,7 @@ class WP_Booking_System_Database {
 	 */
 	public function __construct() {
 		global $wpdb;
-		$this->table_name = $wpdb->prefix . 'wpbs_bookings';
+		$this->table_name = $wpdb->prefix . 'wpbsl_bookings';
 	}
 
 	/**

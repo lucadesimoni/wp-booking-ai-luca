@@ -75,7 +75,7 @@ Write-Host ""
 Write-Host "Verifying essential files..." -ForegroundColor Green
 $EssentialFiles = @(
     "$BuildDir\$PluginName\wp-booking-system.php",
-    "$BuildDir\$PluginName\includes\class-wp-booking-system.php",
+    "$BuildDir\$PluginName\includes\class-wp-booking-system-luca.php",
     "$BuildDir\$PluginName\assets\css\frontend.css",
     "$BuildDir\$PluginName\assets\js\frontend.js"
 )

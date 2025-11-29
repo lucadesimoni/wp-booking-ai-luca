@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Admin JavaScript for WP Booking System
  */
 
@@ -42,11 +42,11 @@
 			},
 			events: function(fetchInfo, successCallback, failureCallback) {
 				$.ajax({
-					url: wpbsAdmin.ajaxUrl,
+					url: wpbslAdmin.ajaxUrl,
 					type: 'GET',
 					data: {
-						action: 'wpbs_get_bookings',
-						nonce: wpbsAdmin.nonce,
+						action: 'wpbsl_get_bookings',
+						nonce: wpbslAdmin.nonce,
 						start: fetchInfo.startStr,
 						end: fetchInfo.endStr
 					},
@@ -78,11 +78,11 @@
 	 */
 	function viewBookingDetails(bookingId) {
 		$.ajax({
-			url: wpbsAdmin.ajaxUrl,
+			url: wpbslAdmin.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'wpbs_get_booking',
-				nonce: wpbsAdmin.nonce,
+				action: 'wpbsl_get_booking',
+				nonce: wpbslAdmin.nonce,
 				id: bookingId
 			},
 			success: function(response) {
@@ -95,7 +95,7 @@
 						<strong>Check-in:</strong> ${booking.check_in}<br>
 						<strong>Check-out:</strong> ${booking.check_out}<br>
 						<strong>Guests:</strong> ${booking.adults} adults, ${booking.kids} kids<br>
-						<strong>Price:</strong> ${booking.total_price} ${wpbsAdmin.currency || 'CHF'}<br>
+						<strong>Price:</strong> ${booking.total_price} ${wpbslAdmin.currency || 'CHF'}<br>
 						<strong>Status:</strong> ${booking.status}<br>
 						${booking.notes ? '<strong>Notes:</strong> ' + booking.notes + '<br>' : ''}
 					`;
@@ -111,7 +111,7 @@
 	function handleDeleteBooking(e) {
 		e.preventDefault();
 
-		if (!confirm(wpbsAdmin.i18n.confirmDelete)) {
+		if (!confirm(wpbslAdmin.i18n.confirmDelete)) {
 			return;
 		}
 
@@ -120,11 +120,11 @@
 		const row = link.closest('tr');
 
 		$.ajax({
-			url: wpbsAdmin.ajaxUrl,
+			url: wpbslAdmin.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'wpbs_delete_booking',
-				nonce: wpbsAdmin.nonce,
+				action: 'wpbsl_delete_booking',
+				nonce: wpbslAdmin.nonce,
 				id: bookingId
 			},
 			success: function(response) {

@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 /**
  * Frontend Calendar Widget Class
  *
- * @package WP_Booking_System
+ * @package WP_Booking_System_Luca
  * @since 1.0.0
  */
 
@@ -11,19 +11,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WP_Booking_System_Widget Class
+ * WP_Booking_System_Luca_Widget Class
  */
-class WP_Booking_System_Widget extends WP_Widget {
+class WP_Booking_System_Luca_Widget extends WP_Widget {
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 		parent::__construct(
-			'wp_booking_system_widget',
-			__( 'Booking Calendar', 'wp-booking-system' ),
+			'WP_Booking_System_Luca_widget',
+			__( 'Booking Calendar', 'wp-booking-system-luca' ),
 			array(
-				'description' => __( 'Display a monthly calendar showing booking availability and allowing date selection.', 'wp-booking-system' ),
+				'description' => __( 'Display a monthly calendar showing booking availability and allowing date selection.', 'wp-booking-system-luca' ),
 			)
 		);
 	}
@@ -37,7 +37,7 @@ class WP_Booking_System_Widget extends WP_Widget {
 	public function widget( $args, $instance ) {
 		echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Booking Calendar', 'wp-booking-system' );
+		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Booking Calendar', 'wp-booking-system-luca' );
 		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
 
 		if ( $title ) {
@@ -53,11 +53,11 @@ class WP_Booking_System_Widget extends WP_Widget {
 			<div class="wpbs-calendar-legend">
 				<span class="wpbs-legend-item">
 					<span class="wpbs-legend-available"></span>
-					<?php esc_html_e( 'Available', 'wp-booking-system' ); ?>
+					<?php esc_html_e( 'Available', 'wp-booking-system-luca' ); ?>
 				</span>
 				<span class="wpbs-legend-item">
 					<span class="wpbs-legend-booked"></span>
-					<?php esc_html_e( 'Booked', 'wp-booking-system' ); ?>
+					<?php esc_html_e( 'Booked', 'wp-booking-system-luca' ); ?>
 				</span>
 			</div>
 		</div>
@@ -79,7 +79,7 @@ class WP_Booking_System_Widget extends WP_Widget {
 								url: wpbsFrontend.ajaxUrl,
 								type: 'GET',
 								data: {
-									action: 'wpbs_get_calendar_availability',
+									action: 'wpbsl_get_calendar_availability',
 									nonce: wpbsFrontend.nonce,
 									start: fetchInfo.startStr,
 									end: fetchInfo.endStr
@@ -149,11 +149,11 @@ class WP_Booking_System_Widget extends WP_Widget {
 	 * @param array $instance Current settings.
 	 */
 	public function form( $instance ) {
-		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Booking Calendar', 'wp-booking-system' );
+		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Booking Calendar', 'wp-booking-system-luca' );
 		?>
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>">
-				<?php esc_html_e( 'Title:', 'wp-booking-system' ); ?>
+				<?php esc_html_e( 'Title:', 'wp-booking-system-luca' ); ?>
 			</label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 		</p>
@@ -180,7 +180,7 @@ class WP_Booking_System_Widget extends WP_Widget {
 	 * @return array Array of date strings (Y-m-d format).
 	 */
 	private function get_unavailable_dates() {
-		$bookings = wp_booking_system()->database->get_bookings(
+		$bookings = wp_booking_system_luca()->database->get_bookings(
 			array(
 				'status' => '',
 			)

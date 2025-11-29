@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Plugin Name: WP Booking System
+ * Plugin Name: WP booking Luca
  * Version: 1.0.0
  * Plugin URI: https://famiglia-desimoni.ch/
  * Description: A simple and modern booking system for WordPress with calendar management, email notifications, and price calculations.
@@ -9,7 +9,7 @@
  * Requires at least: 5.0
  * Tested up to: 6.4
  *
- * Text Domain: wp-booking-system
+ * Text Domain: wp-booking-system-luca
  * Domain Path: /lang/
  *
  * @package WordPress
@@ -22,36 +22,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'WP_BOOKING_SYSTEM_VERSION', '1.0.0' );
-define( 'WP_BOOKING_SYSTEM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WP_BOOKING_SYSTEM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'WP_BOOKING_SYSTEM_LUCA_VERSION', '1.0.0' );
+define( 'WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Load plugin class files.
-require_once 'includes/class-wp-booking-system.php';
-require_once 'includes/class-wp-booking-system-database.php';
-require_once 'includes/class-wp-booking-system-admin.php';
-require_once 'includes/class-wp-booking-system-frontend.php';
-require_once 'includes/class-wp-booking-system-ajax.php';
-require_once 'includes/class-wp-booking-system-email.php';
-require_once 'includes/class-wp-booking-system-widget.php';
+require_once 'includes/class-wp-booking-system-luca.php';
+require_once 'includes/class-wp-booking-system-luca-database.php';
+require_once 'includes/class-wp-booking-system-luca-admin.php';
+require_once 'includes/class-wp-booking-system-luca-frontend.php';
+require_once 'includes/class-wp-booking-system-luca-ajax.php';
+require_once 'includes/class-wp-booking-system-luca-email.php';
+require_once 'includes/class-wp-booking-system-luca-widget.php';
+require_once 'includes/class-wp-booking-system-luca-block.php';
 
 /**
- * Returns the main instance of WP_Booking_System to prevent the need to use globals.
+ * Returns the main instance of WP_Booking_System_Luca to prevent the need to use globals.
  *
  * @since  1.0.0
- * @return object WP_Booking_System
+ * @return object WP_Booking_System_Luca
  */
-function wp_booking_system() {
-	$instance = WP_Booking_System::instance( __FILE__, WP_BOOKING_SYSTEM_VERSION );
+function wp_booking_system_luca() {
+	$instance = WP_Booking_System_Luca::instance( __FILE__, WP_BOOKING_SYSTEM_LUCA_VERSION );
 
 	return $instance;
 }
 
 // Register activation hook.
-register_activation_hook( __FILE__, array( 'WP_Booking_System', 'activate' ) );
+register_activation_hook( __FILE__, array( 'WP_Booking_System_Luca', 'activate' ) );
 
 // Initialize the plugin.
-$wp_booking_system = wp_booking_system();
+$wp_booking_system_luca = wp_booking_system_luca();
 
 // Register deactivation hook after plugin is initialized.
-register_deactivation_hook( __FILE__, array( $wp_booking_system, 'deactivate' ) );
+register_deactivation_hook( __FILE__, array( $wp_booking_system_luca, 'deactivate' ) );
