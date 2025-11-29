@@ -36,3 +36,4 @@ foreach ($file in $phpFiles) {
 Write-Host "Done!" -ForegroundColor Green
 Write-Host ""
 
+
