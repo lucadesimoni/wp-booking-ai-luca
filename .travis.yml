@@ -26,3 +26,9 @@ before_install:
 script:
   - export SNIFFS_IGNORE=*/node/*,*/vendor/*,*Gruntfile.js*,*.min.js*,*.min.css*,*.less*
   - if [[ "$SNIFF" == "1" ]]; then ./vendor/bin/phpcs -p . --standard=WordPress --ignore=$SNIFFS_IGNORE; fi
+
+after_success:
+  # Always create installable ZIP package
+  - chmod +x build-plugin-unix.sh
+  - ./build-plugin-unix.sh --cleanup
+  - ls -lh wp-booking-system-v*.zip || echo "ZIP file creation failed"

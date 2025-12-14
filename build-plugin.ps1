@@ -1,6 +1,10 @@
 # WP Booking System - Plugin Build Script
 # Creates a distributable ZIP file for WordPress upload
 
+param(
+    [switch]$Cleanup  # Automatically remove build directory after creating ZIP
+)
+
 $ErrorActionPreference = "Stop"
 
 # Configuration
@@ -101,8 +105,12 @@ Write-Host ""
 Write-Host "Creating ZIP archive..." -ForegroundColor Green
 try {
     # Compress-Archive requires PowerShell 5.0+
-    $SourcePath = "$BuildDir\$PluginName\*"
-    Compress-Archive -Path $SourcePath -DestinationPath $ZipFile -Force
+    # Change to build directory to ensure proper ZIP structure
+    # Use $PluginName (not $PluginName\*) to include the root directory
+    # This ensures WordPress extracts to wp-booking-system/ folder, not scattered files
+    Push-Location $BuildDir
+    Compress-Archive -Path $PluginName -DestinationPath "..\$ZipFile" -Force
+    Pop-Location
     Write-Host "  [OK] ZIP file created: $ZipFile" -ForegroundColor Green
 } catch {
     Write-Host "  [ERROR] Failed to create ZIP: $_" -ForegroundColor Red
@@ -115,16 +123,26 @@ try {
     exit 1
 }
 
+# Verify ZIP file was created
+if (-not (Test-Path $ZipFile)) {
+    Write-Host "  [ERROR] ZIP file was not created!" -ForegroundColor Red
+    exit 1
+}
+
 # Get file size
 $ZipSize = (Get-Item $ZipFile).Length / 1MB
-    Write-Host "  [OK] File size: $([math]::Round($ZipSize, 2)) MB" -ForegroundColor Gray
+Write-Host "  [OK] File size: $([math]::Round($ZipSize, 2)) MB" -ForegroundColor Gray
 
-# Cleanup build directory (optional)
-Write-Host ""
-$Cleanup = Read-Host "Remove build directory? (y/n)"
-if ($Cleanup -eq "y" -or $Cleanup -eq "Y") {
+# Cleanup build directory (optional via parameter)
+if ($Cleanup) {
+    Write-Host ""
+    Write-Host "Removing build directory..." -ForegroundColor Yellow
     Remove-Item -Recurse -Force $BuildDir
     Write-Host "  [OK] Build directory removed" -ForegroundColor Green
+} else {
+    Write-Host ""
+    Write-Host "Build directory preserved: $BuildDir" -ForegroundColor Gray
+    Write-Host "  Use -Cleanup parameter to remove it automatically" -ForegroundColor Gray
 }
 
 Write-Host ""
