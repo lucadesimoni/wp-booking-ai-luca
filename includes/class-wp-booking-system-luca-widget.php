@@ -35,6 +35,9 @@ class WP_Booking_System_Luca_Widget extends WP_Widget {
 	 * @param array $instance Saved values from database.
 	 */
 	public function widget( $args, $instance ) {
+		// Ensure the calendar assets load wherever this widget is placed.
+		wp_booking_system_luca()->frontend->enqueue_assets();
+
 		echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Booking Calendar', 'wp-booking-system-luca' );

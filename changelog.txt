@@ -1,5 +1,8 @@
 *** WP booking Luca Changelog ***
 
+2026.06.11 - version 1.1.1
+ * New - The booking form and calendar can be embedded on ANY existing page (including page builders like Elementor/Divi/WPBakery); required CSS/JS now load automatically wherever the shortcode, block or widget renders.
+
 2026.06.11 - version 1.1.0
  * Fix - Plugin no longer fatally errors on activation (class files now match the loader; removed a duplicate class).
  * Fix - Stripped UTF-8 BOM from all PHP/JS files that caused "headers already sent" errors.

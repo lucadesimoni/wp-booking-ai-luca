@@ -76,9 +76,23 @@ class WP_Booking_System_Luca_Frontend {
 		);
 
 		if ( $this->should_enqueue_assets() ) {
-			wp_enqueue_style( 'wp-booking-system-luca-frontend' );
-			wp_enqueue_script( 'wp-booking-system-luca-frontend' );
+			$this->enqueue_assets();
 		}
+	}
+
+	/**
+	 * Enqueue the (already registered) booking assets.
+	 *
+	 * Safe to call multiple times and at render time: WordPress de-dupes
+	 * enqueues, and because the scripts are footer scripts this still works
+	 * when called from inside a shortcode/block rendered by a page builder
+	 * (Elementor, Divi, WPBakery, etc.) where the content is not in
+	 * `post_content` and head-time detection cannot see it. This is what makes
+	 * the form/calendar embeddable on any existing page.
+	 */
+	public function enqueue_assets() {
+		wp_enqueue_style( 'wp-booking-system-luca-frontend' );
+		wp_enqueue_script( 'wp-booking-system-luca-frontend' );
 	}
 
 	/**
@@ -125,6 +139,8 @@ class WP_Booking_System_Luca_Frontend {
 	 * @return string
 	 */
 	public function render_booking_form( $atts = array() ) {
+		$this->enqueue_assets();
+
 		$atts = shortcode_atts(
 			array(
 				'title' => __( 'Book Your Stay', 'wp-booking-system-luca' ),
@@ -220,6 +236,8 @@ class WP_Booking_System_Luca_Frontend {
 	 * @return string
 	 */
 	public function render_booking_manage( $atts = array() ) {
+		$this->enqueue_assets();
+
 		$token = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
 
 		if ( empty( $token ) || ! WP_Booking_System_Luca_Helpers::is_valid_token( $token ) ) {
@@ -266,6 +284,8 @@ class WP_Booking_System_Luca_Frontend {
 	 * @return string
 	 */
 	public function render_booking_calendar( $atts = array() ) {
+		$this->enqueue_assets();
+
 		$atts = shortcode_atts(
 			array(
 				'title' => __( 'Booking Calendar', 'wp-booking-system-luca' ),

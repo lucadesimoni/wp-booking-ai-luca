@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ Perfect for vacation rentals, hotels, or any accommodation booking needs.
 
 Activation creates a "Book Now" page for you. To place the form elsewhere, use the shortcode `[wp_booking_form_luca]` or the "Booking Form" block on any page or post.
 
+= Can I embed the form on an existing page (e.g. my Chalet page)? =
+
+Yes. Add `[wp_booking_form_luca]` (booking form) and/or `[wp_booking_calendar_luca]` (availability calendar) anywhere on the page — in the block/classic editor, or in a page builder's shortcode element (Elementor, Divi, WPBakery, etc.). The required styles and scripts load automatically wherever the form or calendar is rendered, so it works even when the page content is managed by a page builder. You can pass a custom heading, e.g. `[wp_booking_form_luca title="Reserve Your Stay"]`.
+
 = How do guests manage their bookings? =
 
 Guests receive an email with a unique magic link to the auto-created "Manage Booking" page (which uses the `[wp_booking_manage_luca]` shortcode), where they can view or cancel their booking.
@@ -55,6 +59,10 @@ Go to Bookings > Settings in your WordPress admin and configure the price per ad
 Currently, email templates are built into the plugin. Future versions may include customizable templates.
 
 == Changelog ==
+
+= 1.1.1 =
+* 2026-06-11
+* Booking form/calendar can now be embedded on any existing page or page builder; assets load automatically wherever they render
 
 = 1.1.0 =
 * 2026-06-11
