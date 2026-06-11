@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Frontend class for booking form
  *
@@ -307,11 +307,11 @@ class WP_Booking_System_Luca_Frontend {
 						height: 'auto',
 						events: function(fetchInfo, successCallback, failureCallback) {
 							$.ajax({
-								url: wpbsFrontend.ajaxUrl,
+								url: wpbslFrontend.ajaxUrl,
 								type: 'GET',
 								data: {
 									action: 'wpbsl_get_calendar_availability',
-									nonce: wpbsFrontend.nonce,
+									nonce: wpbslFrontend.nonce,
 									start: fetchInfo.startStr,
 									end: fetchInfo.endStr
 								},

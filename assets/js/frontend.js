@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Frontend JavaScript for WP Booking System
  */
 

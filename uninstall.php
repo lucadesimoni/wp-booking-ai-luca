@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * This file runs when the plugin in uninstalled (deleted).
  * This will not run when the plugin is deactivated.
@@ -25,6 +25,8 @@ delete_option( 'wpbsl_price_kid' );
 delete_option( 'wpbsl_currency' );
 delete_option( 'wpbsl_email_from' );
 delete_option( 'wpbsl_email_from_name' );
+delete_option( 'wpbsl_admin_notification_email' );
+delete_option( 'wpbsl_chalet_capacity' );
 
 // Clear any cached data.
 wp_cache_flush();

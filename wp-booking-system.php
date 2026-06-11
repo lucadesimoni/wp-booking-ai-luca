@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name: WP booking Luca
  * Version: 1.0.0
@@ -27,14 +27,14 @@ define( 'WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Load plugin class files.
-require_once 'includes/class-wp-booking-system-luca.php';
-require_once 'includes/class-wp-booking-system-luca-database.php';
-require_once 'includes/class-wp-booking-system-luca-admin.php';
-require_once 'includes/class-wp-booking-system-luca-frontend.php';
-require_once 'includes/class-wp-booking-system-luca-ajax.php';
-require_once 'includes/class-wp-booking-system-luca-email.php';
-require_once 'includes/class-wp-booking-system-luca-widget.php';
-require_once 'includes/class-wp-booking-system-luca-block.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-database.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-admin.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-frontend.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-ajax.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-email.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-widget.php';
+require_once WP_BOOKING_SYSTEM_LUCA_PLUGIN_DIR . 'includes/class-wp-booking-system-luca-block.php';
 
 /**
  * Returns the main instance of WP_Booking_System_Luca to prevent the need to use globals.

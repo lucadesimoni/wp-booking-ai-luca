@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Gutenberg Block Class for Booking Calendar
  *

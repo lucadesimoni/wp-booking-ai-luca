@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin class for managing bookings
  *
@@ -85,8 +85,9 @@ class WP_Booking_System_Luca_Admin {
 			'wp-booking-system-luca-admin',
 			'wpbslAdmin',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'wp-booking-system-luca-admin' ),
+				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'wp-booking-system-luca-admin' ),
+				'currency' => get_option( 'wpbsl_currency', 'CHF' ),
 				'i18n'    => array(
 					'confirmDelete' => __( 'Are you sure you want to delete this booking?', 'wp-booking-system-luca' ),
 				),
