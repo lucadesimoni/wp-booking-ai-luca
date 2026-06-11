@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Frontend Calendar Widget Class
  *
@@ -76,11 +76,11 @@ class WP_Booking_System_Luca_Widget extends WP_Widget {
 						height: 'auto',
 						events: function(fetchInfo, successCallback, failureCallback) {
 							$.ajax({
-								url: wpbsFrontend.ajaxUrl,
+								url: wpbslFrontend.ajaxUrl,
 								type: 'GET',
 								data: {
 									action: 'wpbsl_get_calendar_availability',
-									nonce: wpbsFrontend.nonce,
+									nonce: wpbslFrontend.nonce,
 									start: fetchInfo.startStr,
 									end: fetchInfo.endStr
 								},

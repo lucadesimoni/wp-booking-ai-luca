@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Admin JavaScript for WP Booking System
  */
 

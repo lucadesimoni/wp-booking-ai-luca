@@ -1,4 +1,4 @@
-﻿(function(blocks, element, components, blockEditor, i18n) {
+(function(blocks, element, components, blockEditor, i18n) {
 	var el = element.createElement;
 	var registerBlockType = blocks.registerBlockType;
 	var InspectorControls = blockEditor.InspectorControls;

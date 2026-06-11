@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * AJAX class for handling frontend and admin requests
  *

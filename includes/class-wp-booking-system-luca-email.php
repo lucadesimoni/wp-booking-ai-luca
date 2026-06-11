@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Email class for sending booking notifications
  *
