@@ -16,7 +16,58 @@
 
 		// Handle booking view
 		$('.wpbs-view-booking').on('click', handleViewBooking);
+
+		// Handle status changes (confirm / cancel)
+		$('.wpbs-set-status').on('click', handleStatusChange);
 	});
+
+	/**
+	 * Handle confirm/cancel status changes from the bookings list
+	 */
+	function handleStatusChange(e) {
+		e.preventDefault();
+
+		const link = $(this);
+		const bookingId = link.data('id');
+		const status = link.data('status');
+		const row = link.closest('tr');
+
+		if (status === 'cancelled' && !confirm(wpbslAdmin.i18n.confirmCancel)) {
+			return;
+		}
+
+		$.ajax({
+			url: wpbslAdmin.ajaxUrl,
+			type: 'POST',
+			data: {
+				action: 'wpbsl_update_status',
+				nonce: wpbslAdmin.nonce,
+				id: bookingId,
+				status: status
+			},
+			success: function(response) {
+				if (response.success) {
+					const label = status.charAt(0).toUpperCase() + status.slice(1);
+					row.find('.wpbs-status')
+						.removeClass('wpbs-status-pending wpbs-status-confirmed wpbs-status-cancelled')
+						.addClass('wpbs-status-' + status)
+						.text(label);
+
+					if (status === 'confirmed' || status === 'cancelled') {
+						row.find('.wpbs-set-status[data-status="confirmed"]').remove();
+					}
+					if (status === 'cancelled') {
+						row.find('.wpbs-set-status[data-status="cancelled"]').remove();
+					}
+				} else {
+					alert((response.data && response.data.message) || wpbslAdmin.i18n.genericError);
+				}
+			},
+			error: function() {
+				alert(wpbslAdmin.i18n.genericError);
+			}
+		});
+	}
 
 	/**
 	 * Initialize FullCalendar

@@ -1,5 +1,6 @@
 node*
 vendor*
-.gitignore
 .vscode
 .DS_Store
+dist/
+*.zip

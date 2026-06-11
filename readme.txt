@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,11 +24,11 @@ Perfect for vacation rentals, hotels, or any accommodation booking needs.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/wp-booking-system` directory, or install the plugin through the WordPress plugins screen directly
-2. Activate the plugin through the 'Plugins' menu in WordPress
+1. Upload the plugin ZIP through Plugins > Add New > Upload Plugin, or extract it to `/wp-content/plugins/`
+2. Activate the plugin through the 'Plugins' menu in WordPress. On activation it automatically creates a "Book Now" page and a "Manage Booking" page, so everything works immediately.
 3. Go to WP booking Luca > Settings to configure pricing, email settings, and chalet capacity
-4. Use the shortcode `[wp_booking_form]` to display the booking form on any page, or add the "Booking Calendar" block when editing pages
-5. Create a page with the shortcode `[wp_booking_manage]` for guests to manage their bookings (the token will be sent via email)
+4. To embed elsewhere, use the shortcode `[wp_booking_form_luca]` (form), `[wp_booking_calendar_luca]` (availability calendar) or `[wp_booking_manage_luca]` (management page), or add the "Booking Form" / "Booking Calendar" blocks when editing a page
+5. Guests receive a confirmation email containing a unique magic link to the "Manage Booking" page where they can view or cancel their reservation
 
 == Screenshots ==
 
@@ -40,11 +40,11 @@ Perfect for vacation rentals, hotels, or any accommodation booking needs.
 
 = How do I display the booking form? =
 
-Use the shortcode `[wp_booking_form]` on any page or post where you want the booking form to appear.
+Activation creates a "Book Now" page for you. To place the form elsewhere, use the shortcode `[wp_booking_form_luca]` or the "Booking Form" block on any page or post.
 
 = How do guests manage their bookings? =
 
-Guests receive an email with a unique link to manage or cancel their booking. You can also create a page with the shortcode `[wp_booking_manage]` - guests will access it via the token in the URL.
+Guests receive an email with a unique magic link to the auto-created "Manage Booking" page (which uses the `[wp_booking_manage_luca]` shortcode), where they can view or cancel their booking.
 
 = How do I set pricing? =
 
@@ -55,6 +55,14 @@ Go to Bookings > Settings in your WordPress admin and configure the price per ad
 Currently, email templates are built into the plugin. Future versions may include customizable templates.
 
 == Changelog ==
+
+= 1.1.0 =
+* 2026-06-11
+* Fixed activation fatal errors and a BOM issue that broke page headers
+* Magic-link booking management now works out of the box (auto-created pages)
+* Added a Booking Form block and admin Confirm/Cancel actions
+* Booking assets now load only where needed
+* Added automated tests and a build script
 
 = 1.0.0 =
 * 2025-11-28

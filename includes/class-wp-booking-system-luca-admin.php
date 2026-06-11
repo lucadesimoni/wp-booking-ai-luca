@@ -89,7 +89,9 @@ class WP_Booking_System_Luca_Admin {
 				'nonce'    => wp_create_nonce( 'wp-booking-system-luca-admin' ),
 				'currency' => get_option( 'wpbsl_currency', 'CHF' ),
 				'i18n'    => array(
-					'confirmDelete' => __( 'Are you sure you want to delete this booking?', 'wp-booking-system-luca' ),
+					'confirmDelete'  => __( 'Are you sure you want to delete this booking?', 'wp-booking-system-luca' ),
+					'confirmCancel'  => __( 'Cancel this booking and email the guest?', 'wp-booking-system-luca' ),
+					'genericError'   => __( 'An error occurred. Please try again.', 'wp-booking-system-luca' ),
 				),
 			)
 		);
@@ -170,6 +172,16 @@ class WP_Booking_System_Luca_Admin {
 									<a href="#" class="wpbs-view-booking" data-id="<?php echo esc_attr( $booking->id ); ?>">
 										<?php esc_html_e( 'View', 'wp-booking-system-luca' ); ?>
 									</a> |
+									<?php if ( 'confirmed' !== $booking->status && 'cancelled' !== $booking->status ) : ?>
+										<a href="#" class="wpbs-set-status" data-id="<?php echo esc_attr( $booking->id ); ?>" data-status="confirmed">
+											<?php esc_html_e( 'Confirm', 'wp-booking-system-luca' ); ?>
+										</a> |
+									<?php endif; ?>
+									<?php if ( 'cancelled' !== $booking->status ) : ?>
+										<a href="#" class="wpbs-set-status" data-id="<?php echo esc_attr( $booking->id ); ?>" data-status="cancelled">
+											<?php esc_html_e( 'Cancel', 'wp-booking-system-luca' ); ?>
+										</a> |
+									<?php endif; ?>
 									<a href="#" class="wpbs-delete-booking" data-id="<?php echo esc_attr( $booking->id ); ?>">
 										<?php esc_html_e( 'Delete', 'wp-booking-system-luca' ); ?>
 									</a>

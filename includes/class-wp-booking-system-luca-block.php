@@ -40,16 +40,31 @@ class WP_Booking_System_Luca_Block {
 			true
 		);
 
-		// Register block.
+		// Booking calendar block.
 		register_block_type(
 			'wp-booking-system/calendar',
 			array(
-				'editor_script' => 'wp-booking-system-luca-block',
-				'render_callback' => array( $this, 'render_block' ),
-				'attributes' => array(
+				'editor_script'   => 'wp-booking-system-luca-block',
+				'render_callback' => array( $this, 'render_calendar_block' ),
+				'attributes'      => array(
 					'title' => array(
-						'type' => 'string',
+						'type'    => 'string',
 						'default' => __( 'Booking Calendar', 'wp-booking-system-luca' ),
+					),
+				),
+			)
+		);
+
+		// Booking form block.
+		register_block_type(
+			'wp-booking-system/form',
+			array(
+				'editor_script'   => 'wp-booking-system-luca-block',
+				'render_callback' => array( $this, 'render_form_block' ),
+				'attributes'      => array(
+					'title' => array(
+						'type'    => 'string',
+						'default' => __( 'Book Your Stay', 'wp-booking-system-luca' ),
 					),
 				),
 			)
@@ -57,16 +72,26 @@ class WP_Booking_System_Luca_Block {
 	}
 
 	/**
-	 * Render the block on frontend.
+	 * Render the calendar block on the frontend.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string
 	 */
-	public function render_block( $attributes ) {
+	public function render_calendar_block( $attributes ) {
 		$title = isset( $attributes['title'] ) ? $attributes['title'] : __( 'Booking Calendar', 'wp-booking-system-luca' );
 
-		// Use the existing shortcode render method.
-		$frontend = wp_booking_system_luca()->frontend;
-		return $frontend->render_booking_calendar( array( 'title' => $title ) );
+		return wp_booking_system_luca()->frontend->render_booking_calendar( array( 'title' => $title ) );
+	}
+
+	/**
+	 * Render the booking form block on the frontend.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_form_block( $attributes ) {
+		$title = isset( $attributes['title'] ) ? $attributes['title'] : __( 'Book Your Stay', 'wp-booking-system-luca' );
+
+		return wp_booking_system_luca()->frontend->render_booking_form( array( 'title' => $title ) );
 	}
 }
