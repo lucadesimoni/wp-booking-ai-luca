@@ -209,11 +209,28 @@ class WP_Booking_System_Luca_Admin {
 			$admin_notification_email = isset( $_POST['wpbsl_admin_notification_email'] ) ? sanitize_email( wp_unslash( $_POST['wpbsl_admin_notification_email'] ) ) : '';
 			$chalet_capacity          = isset( $_POST['wpbsl_chalet_capacity'] ) ? absint( $_POST['wpbsl_chalet_capacity'] ) : 10;
 
+			// Booking entry options.
+			$min_nights       = isset( $_POST['wpbsl_min_nights'] ) ? max( 1, absint( $_POST['wpbsl_min_nights'] ) ) : 1;
+			$max_nights       = isset( $_POST['wpbsl_max_nights'] ) ? absint( $_POST['wpbsl_max_nights'] ) : 0;
+			$min_advance_days = isset( $_POST['wpbsl_min_advance_days'] ) ? absint( $_POST['wpbsl_min_advance_days'] ) : 0;
+			$max_advance_days = isset( $_POST['wpbsl_max_advance_days'] ) ? absint( $_POST['wpbsl_max_advance_days'] ) : 0;
+			$default_adults   = isset( $_POST['wpbsl_default_adults'] ) ? max( 1, absint( $_POST['wpbsl_default_adults'] ) ) : 2;
+			$default_kids     = isset( $_POST['wpbsl_default_kids'] ) ? absint( $_POST['wpbsl_default_kids'] ) : 0;
+			$require_phone    = isset( $_POST['wpbsl_require_phone'] ) ? 1 : 0;
+			$show_notes       = isset( $_POST['wpbsl_show_notes'] ) ? 1 : 0;
+			$auto_confirm     = isset( $_POST['wpbsl_auto_confirm'] ) ? 1 : 0;
+
 			// Validate emails.
 			if ( ! is_email( $email_from ) ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid email from address.', 'wp-booking-system-luca' ) . '</p></div>';
 			} elseif ( ! empty( $admin_notification_email ) && ! is_email( $admin_notification_email ) ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid admin notification email address.', 'wp-booking-system-luca' ) . '</p></div>';
+			} elseif ( $max_nights > 0 && $max_nights < $min_nights ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Maximum nights cannot be less than minimum nights.', 'wp-booking-system-luca' ) . '</p></div>';
+			} elseif ( $max_advance_days > 0 && $max_advance_days < $min_advance_days ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Maximum advance days cannot be less than minimum advance days.', 'wp-booking-system-luca' ) . '</p></div>';
+			} elseif ( $default_adults + $default_kids > $chalet_capacity ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Default guests cannot exceed the chalet capacity.', 'wp-booking-system-luca' ) . '</p></div>';
 			} else {
 				update_option( 'wpbsl_price_adult', $price_adult );
 				update_option( 'wpbsl_price_kid', $price_kid );
@@ -222,6 +239,15 @@ class WP_Booking_System_Luca_Admin {
 				update_option( 'wpbsl_email_from_name', $email_from_name );
 				update_option( 'wpbsl_admin_notification_email', $admin_notification_email );
 				update_option( 'wpbsl_chalet_capacity', $chalet_capacity );
+				update_option( 'wpbsl_min_nights', $min_nights );
+				update_option( 'wpbsl_max_nights', $max_nights );
+				update_option( 'wpbsl_min_advance_days', $min_advance_days );
+				update_option( 'wpbsl_max_advance_days', $max_advance_days );
+				update_option( 'wpbsl_default_adults', $default_adults );
+				update_option( 'wpbsl_default_kids', $default_kids );
+				update_option( 'wpbsl_require_phone', $require_phone );
+				update_option( 'wpbsl_show_notes', $show_notes );
+				update_option( 'wpbsl_auto_confirm', $auto_confirm );
 				echo '<div class="notice notice-success"><p>' . esc_html__( 'Settings saved.', 'wp-booking-system-luca' ) . '</p></div>';
 			}
 		}
@@ -293,6 +319,74 @@ class WP_Booking_System_Luca_Admin {
 					<td>
 						<input type="number" id="wpbsl_chalet_capacity" name="wpbsl_chalet_capacity" value="<?php echo esc_attr( get_option( 'wpbsl_chalet_capacity', 10 ) ); ?>" min="1" class="regular-text" />
 						<p class="description"><?php esc_html_e( 'Maximum number of guests (adults + kids) that can be accommodated.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Booking Rules', 'wp-booking-system-luca' ); ?></h2>
+			<table class="form-table">
+				<tr>
+					<th scope="row"><label for="wpbsl_min_nights"><?php esc_html_e( 'Minimum Stay (nights)', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="number" id="wpbsl_min_nights" name="wpbsl_min_nights" value="<?php echo esc_attr( get_option( 'wpbsl_min_nights', 1 ) ); ?>" min="1" class="small-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_max_nights"><?php esc_html_e( 'Maximum Stay (nights)', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="number" id="wpbsl_max_nights" name="wpbsl_max_nights" value="<?php echo esc_attr( get_option( 'wpbsl_max_nights', 0 ) ); ?>" min="0" class="small-text" />
+						<p class="description"><?php esc_html_e( 'Set to 0 for no maximum.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_min_advance_days"><?php esc_html_e( 'Minimum Advance Notice (days)', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="number" id="wpbsl_min_advance_days" name="wpbsl_min_advance_days" value="<?php echo esc_attr( get_option( 'wpbsl_min_advance_days', 0 ) ); ?>" min="0" class="small-text" />
+						<p class="description"><?php esc_html_e( 'Earliest a guest may check in, in days from today. 0 = today allowed.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_max_advance_days"><?php esc_html_e( 'Booking Window (days ahead)', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="number" id="wpbsl_max_advance_days" name="wpbsl_max_advance_days" value="<?php echo esc_attr( get_option( 'wpbsl_max_advance_days', 0 ) ); ?>" min="0" class="small-text" />
+						<p class="description"><?php esc_html_e( 'How far ahead guests may book, in days. 0 = no limit.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'New Bookings', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_auto_confirm" value="1" <?php checked( 1, (int) get_option( 'wpbsl_auto_confirm', 0 ) ); ?> />
+							<?php esc_html_e( 'Confirm new bookings automatically (skip the pending step).', 'wp-booking-system-luca' ); ?>
+						</label>
+					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Booking Form', 'wp-booking-system-luca' ); ?></h2>
+			<table class="form-table">
+				<tr>
+					<th scope="row"><label for="wpbsl_default_adults"><?php esc_html_e( 'Default Adults', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="number" id="wpbsl_default_adults" name="wpbsl_default_adults" value="<?php echo esc_attr( get_option( 'wpbsl_default_adults', 2 ) ); ?>" min="1" class="small-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_default_kids"><?php esc_html_e( 'Default Kids', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="number" id="wpbsl_default_kids" name="wpbsl_default_kids" value="<?php echo esc_attr( get_option( 'wpbsl_default_kids', 0 ) ); ?>" min="0" class="small-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Phone Field', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_require_phone" value="1" <?php checked( 1, (int) get_option( 'wpbsl_require_phone', 0 ) ); ?> />
+							<?php esc_html_e( 'Require the guest to provide a phone number.', 'wp-booking-system-luca' ); ?>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Notes Field', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_show_notes" value="1" <?php checked( 1, (int) get_option( 'wpbsl_show_notes', 1 ) ); ?> />
+							<?php esc_html_e( 'Show the optional notes field on the booking form.', 'wp-booking-system-luca' ); ?>
+						</label>
 					</td>
 				</tr>
 			</table>

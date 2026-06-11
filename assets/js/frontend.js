@@ -40,20 +40,45 @@
 		// Get unavailable dates from server
 		const unavailableDates = getUnavailableDates();
 
+		// Booking rules from the server (with safe fallbacks).
+		const cfg = (wpbslFrontend && wpbslFrontend.config) || {};
+		const minNights = parseInt(cfg.minNights, 10) || 1;
+		const maxNights = parseInt(cfg.maxNights, 10) || 0;
+		const minAdvanceDays = parseInt(cfg.minAdvanceDays, 10) || 0;
+		const maxAdvanceDays = parseInt(cfg.maxAdvanceDays, 10) || 0;
+
+		const addDays = (date, days) => {
+			const d = new Date(date);
+			d.setDate(d.getDate() + days);
+			return d;
+		};
+
+		const earliestCheckIn = addDays(new Date(), minAdvanceDays);
+		const latestCheckIn = maxAdvanceDays > 0 ? addDays(new Date(), maxAdvanceDays) : undefined;
+
 		const checkInPicker = flatpickr(checkInInput, {
-			minDate: 'today',
+			minDate: earliestCheckIn,
+			maxDate: latestCheckIn,
 			dateFormat: 'Y-m-d',
 			disable: unavailableDates,
-			onChange: function(selectedDates, dateStr) {
+			onChange: function(selectedDates) {
 				if (selectedDates.length) {
-					checkOutPicker.set('minDate', dateStr);
+					const checkIn = selectedDates[0];
+					// Check-out must be at least the minimum number of nights later.
+					checkOutPicker.set('minDate', addDays(checkIn, minNights));
+					if (maxNights > 0) {
+						checkOutPicker.set('maxDate', addDays(checkIn, maxNights));
+					} else if (latestCheckIn) {
+						checkOutPicker.set('maxDate', addDays(latestCheckIn, 1));
+					}
 					handleDateChange();
 				}
 			}
 		});
 
 		const checkOutPicker = flatpickr(checkOutInput, {
-			minDate: 'today',
+			minDate: addDays(earliestCheckIn, minNights),
+			maxDate: latestCheckIn ? addDays(latestCheckIn, 1) : undefined,
 			dateFormat: 'Y-m-d',
 			disable: unavailableDates,
 			onChange: function() {

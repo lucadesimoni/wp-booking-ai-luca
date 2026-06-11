@@ -98,6 +98,12 @@ class WP_Booking_System_Luca_Ajax {
 			);
 		}
 
+		// Enforce booking rules (stay length and booking window).
+		$rule_error = $this->validate_booking_rules( $check_in, $check_out );
+		if ( '' !== $rule_error ) {
+			wp_send_json_error( array( 'message' => $rule_error ) );
+		}
+
 		$price = $this->calculate_booking_price( $check_in, $check_out, $adults, $kids );
 		$currency = get_option( 'wpbsl_currency', 'CHF' );
 
@@ -163,6 +169,17 @@ class WP_Booking_System_Luca_Ajax {
 			);
 		}
 
+		// Require a phone number when configured to do so.
+		if ( (int) get_option( 'wpbsl_require_phone', 0 ) && empty( $data['phone'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Please provide a phone number.', 'wp-booking-system-luca' ) ) );
+		}
+
+		// Enforce booking rules (stay length and booking window).
+		$rule_error = $this->validate_booking_rules( $data['check_in'], $data['check_out'] );
+		if ( '' !== $rule_error ) {
+			wp_send_json_error( array( 'message' => $rule_error ) );
+		}
+
 		// Check availability.
 		if ( ! wp_booking_system_luca()->database->is_available( $data['check_in'], $data['check_out'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Selected dates are not available.', 'wp-booking-system-luca' ) ) );
@@ -170,6 +187,9 @@ class WP_Booking_System_Luca_Ajax {
 
 		// Calculate price.
 		$data['total_price'] = $this->calculate_booking_price( $data['check_in'], $data['check_out'], $data['adults'], $data['kids'] );
+
+		// Auto-confirm new bookings when enabled.
+		$data['status'] = (int) get_option( 'wpbsl_auto_confirm', 0 ) ? 'confirmed' : 'pending';
 
 		// Insert booking.
 		$booking_id = wp_booking_system_luca()->database->insert_booking( $data );
@@ -304,6 +324,56 @@ class WP_Booking_System_Luca_Ajax {
 		} else {
 			wp_send_json_error( array( 'message' => __( 'Failed to delete booking.', 'wp-booking-system-luca' ) ) );
 		}
+	}
+
+	/**
+	 * Validate a requested stay against the configured booking rules.
+	 *
+	 * @param string $check_in  Check-in date (Y-m-d).
+	 * @param string $check_out Check-out date (Y-m-d).
+	 * @return string Error message, or empty string when the stay is allowed.
+	 */
+	private function validate_booking_rules( $check_in, $check_out ) {
+		$min_nights       = max( 1, absint( get_option( 'wpbsl_min_nights', 1 ) ) );
+		$max_nights       = absint( get_option( 'wpbsl_max_nights', 0 ) );
+		$min_advance_days = absint( get_option( 'wpbsl_min_advance_days', 0 ) );
+		$max_advance_days = absint( get_option( 'wpbsl_max_advance_days', 0 ) );
+
+		$nights = WP_Booking_System_Luca_Helpers::calculate_nights( $check_in, $check_out );
+
+		if ( $nights < $min_nights ) {
+			return sprintf(
+				/* translators: %d: Minimum number of nights */
+				_n( 'A minimum stay of %d night is required.', 'A minimum stay of %d nights is required.', $min_nights, 'wp-booking-system-luca' ),
+				$min_nights
+			);
+		}
+
+		if ( $max_nights > 0 && $nights > $max_nights ) {
+			return sprintf(
+				/* translators: %d: Maximum number of nights */
+				_n( 'The maximum stay is %d night.', 'The maximum stay is %d nights.', $max_nights, 'wp-booking-system-luca' ),
+				$max_nights
+			);
+		}
+
+		if ( ! WP_Booking_System_Luca_Helpers::is_within_booking_window( $check_in, $min_advance_days, $max_advance_days ) ) {
+			if ( $min_advance_days > 0 && WP_Booking_System_Luca_Helpers::days_until( $check_in ) < $min_advance_days ) {
+				return sprintf(
+					/* translators: %d: Minimum advance days */
+					_n( 'Bookings must be made at least %d day in advance.', 'Bookings must be made at least %d days in advance.', $min_advance_days, 'wp-booking-system-luca' ),
+					$min_advance_days
+				);
+			}
+
+			return sprintf(
+				/* translators: %d: Maximum advance days */
+				__( 'Bookings can only be made up to %d days ahead.', 'wp-booking-system-luca' ),
+				$max_advance_days
+			);
+		}
+
+		return '';
 	}
 
 	/**

@@ -51,4 +51,26 @@ class Test_WPBSL_Helpers extends WP_UnitTestCase {
 		$this->assertTrue( WP_Booking_System_Luca_Helpers::is_valid_status( 'confirmed' ) );
 		$this->assertFalse( WP_Booking_System_Luca_Helpers::is_valid_status( 'deleted' ) );
 	}
+
+	public function test_days_until() {
+		$ref = strtotime( '2026-06-01' );
+		$this->assertSame( 9, WP_Booking_System_Luca_Helpers::days_until( '2026-06-10', $ref ) );
+		$this->assertSame( -1, WP_Booking_System_Luca_Helpers::days_until( '2026-05-31', $ref ) );
+		$this->assertNull( WP_Booking_System_Luca_Helpers::days_until( 'not-a-date', $ref ) );
+	}
+
+	public function test_meets_stay_length() {
+		$this->assertTrue( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-04', 2, 7 ) );
+		$this->assertFalse( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-02', 2, 7 ) );
+		$this->assertFalse( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-15', 2, 7 ) );
+		$this->assertTrue( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-30', 2, 0 ) );
+	}
+
+	public function test_is_within_booking_window() {
+		$ref = strtotime( '2026-06-01' );
+		$this->assertTrue( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-06-08', 7, 365, $ref ) );
+		$this->assertFalse( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-06-03', 7, 365, $ref ) );
+		$this->assertFalse( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2027-06-01', 0, 90, $ref ) );
+		$this->assertTrue( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-12-01', 0, 0, $ref ) );
+	}
 }

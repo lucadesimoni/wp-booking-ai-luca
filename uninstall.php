@@ -37,6 +37,15 @@ delete_option( 'wpbsl_admin_notification_email' );
 delete_option( 'wpbsl_chalet_capacity' );
 delete_option( 'wpbsl_booking_page_id' );
 delete_option( 'wpbsl_manage_page_id' );
+delete_option( 'wpbsl_min_nights' );
+delete_option( 'wpbsl_max_nights' );
+delete_option( 'wpbsl_min_advance_days' );
+delete_option( 'wpbsl_max_advance_days' );
+delete_option( 'wpbsl_default_adults' );
+delete_option( 'wpbsl_default_kids' );
+delete_option( 'wpbsl_require_phone' );
+delete_option( 'wpbsl_show_notes' );
+delete_option( 'wpbsl_auto_confirm' );
 
 // Clear any cached data.
 wp_cache_flush();

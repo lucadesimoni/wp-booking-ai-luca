@@ -159,6 +159,16 @@ class WP_Booking_System_Luca {
 			'wpbsl_email_from_name'          => get_bloginfo( 'name' ),
 			'wpbsl_admin_notification_email' => get_option( 'admin_email' ),
 			'wpbsl_chalet_capacity'          => 10,
+			// Booking entry options.
+			'wpbsl_min_nights'               => 1,
+			'wpbsl_max_nights'               => 0,
+			'wpbsl_min_advance_days'         => 0,
+			'wpbsl_max_advance_days'         => 0,
+			'wpbsl_default_adults'           => 2,
+			'wpbsl_default_kids'             => 0,
+			'wpbsl_require_phone'            => 0,
+			'wpbsl_show_notes'               => 1,
+			'wpbsl_auto_confirm'             => 0,
 		);
 
 		foreach ( $defaults as $key => $value ) {

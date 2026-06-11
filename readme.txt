@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,7 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Price calculation based on number of adults and kids
 * Email notifications for booking confirmations and cancellations
 * Unique links for guests to manage or cancel their bookings
+* Configurable booking rules: minimum/maximum stay, advance notice, booking window, default guests, required fields, and auto-confirm
 * Modern, responsive design that fits seamlessly into your website
 
 Perfect for vacation rentals, hotels, or any accommodation booking needs.
@@ -54,11 +55,20 @@ Guests receive an email with a unique magic link to the auto-created "Manage Boo
 
 Go to Bookings > Settings in your WordPress admin and configure the price per adult and price per kid. Prices are calculated per night.
 
+= Can I set booking rules like a minimum stay? =
+
+Yes. Under WP booking Luca > Settings you can configure the minimum and maximum stay (nights), the minimum advance notice and how far ahead guests may book, the default number of adults/kids on the form, whether the phone number is required, whether the notes field is shown, and whether new bookings are confirmed automatically. These rules are applied in the date picker and enforced again on the server.
+
 = Can I customize the email templates? =
 
 Currently, email templates are built into the plugin. Future versions may include customizable templates.
 
 == Changelog ==
+
+= 1.2.0 =
+* 2026-06-11
+* Configurable booking entry options: min/max stay, advance-notice and booking window, default guests, required phone, notes field toggle, and auto-confirm
+* Stay-length and booking-window rules enforced in the date picker and server-side
 
 = 1.1.1 =
 * 2026-06-11

@@ -111,6 +111,75 @@ class WP_Booking_System_Luca_Helpers {
 	}
 
 	/**
+	 * Number of whole days from a reference date until a given date.
+	 *
+	 * @param string   $date         Target date (Y-m-d).
+	 * @param int|null $reference_ts Reference timestamp (defaults to today). Useful for tests.
+	 * @return int|null Days ahead (negative if in the past), or null for an invalid date.
+	 */
+	public static function days_until( $date, $reference_ts = null ) {
+		if ( ! self::is_valid_date( $date ) ) {
+			return null;
+		}
+
+		$reference_ts  = is_null( $reference_ts ) ? time() : $reference_ts;
+		$ref_midnight  = strtotime( gmdate( 'Y-m-d', $reference_ts ) );
+		$date_midnight = strtotime( $date );
+
+		return (int) floor( ( $date_midnight - $ref_midnight ) / DAY_IN_SECONDS );
+	}
+
+	/**
+	 * Whether a check-in date falls inside the allowed booking window.
+	 *
+	 * @param string   $check_in         Check-in date (Y-m-d).
+	 * @param int      $min_advance_days Earliest allowed (days from today). 0 = today allowed.
+	 * @param int      $max_advance_days Latest allowed (days from today). 0 = no upper limit.
+	 * @param int|null $reference_ts     Reference timestamp (defaults to today). Useful for tests.
+	 * @return bool
+	 */
+	public static function is_within_booking_window( $check_in, $min_advance_days, $max_advance_days, $reference_ts = null ) {
+		$days = self::days_until( $check_in, $reference_ts );
+
+		if ( is_null( $days ) ) {
+			return false;
+		}
+
+		if ( $days < (int) $min_advance_days ) {
+			return false;
+		}
+
+		if ( (int) $max_advance_days > 0 && $days > (int) $max_advance_days ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether a stay's length satisfies the configured min/max nights.
+	 *
+	 * @param string $check_in   Check-in date (Y-m-d).
+	 * @param string $check_out  Check-out date (Y-m-d).
+	 * @param int    $min_nights Minimum nights (treated as at least 1).
+	 * @param int    $max_nights Maximum nights. 0 = no upper limit.
+	 * @return bool
+	 */
+	public static function meets_stay_length( $check_in, $check_out, $min_nights, $max_nights ) {
+		$nights = self::calculate_nights( $check_in, $check_out );
+
+		if ( $nights < max( 1, (int) $min_nights ) ) {
+			return false;
+		}
+
+		if ( (int) $max_nights > 0 && $nights > (int) $max_nights ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Allowed booking statuses.
 	 *
 	 * @return string[]

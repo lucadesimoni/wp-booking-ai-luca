@@ -161,6 +161,20 @@ check( ! WP_Booking_System_Luca_Helpers::exceeds_capacity( 6, 4, 10 ), 'exactly 
 check( WP_Booking_System_Luca_Helpers::is_valid_status( 'confirmed' ), 'confirmed is a valid status' );
 check( ! WP_Booking_System_Luca_Helpers::is_valid_status( 'deleted' ), 'unknown status rejected' );
 
+echo "\nHelpers: stay length & booking window (entry options)\n";
+// Use a fixed reference date so the window tests are deterministic.
+$ref = strtotime( '2026-06-01' );
+check_equals( 9, WP_Booking_System_Luca_Helpers::days_until( '2026-06-10', $ref ), 'days_until counts whole days ahead' );
+check_equals( -1, WP_Booking_System_Luca_Helpers::days_until( '2026-05-31', $ref ), 'days_until is negative for past dates' );
+check( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-04', 2, 7 ), '3 nights satisfies min 2 / max 7' );
+check( ! WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-02', 2, 7 ), '1 night fails a 2-night minimum' );
+check( ! WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-15', 2, 7 ), '14 nights fails a 7-night maximum' );
+check( WP_Booking_System_Luca_Helpers::meets_stay_length( '2026-06-01', '2026-06-30', 2, 0 ), 'max 0 means no upper limit on nights' );
+check( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-06-08', 7, 365, $ref ), '7 days out meets a 7-day minimum notice' );
+check( ! WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-06-03', 7, 365, $ref ), '2 days out fails a 7-day minimum notice' );
+check( ! WP_Booking_System_Luca_Helpers::is_within_booking_window( '2027-06-01', 0, 90, $ref ), 'a year out fails a 90-day booking window' );
+check( WP_Booking_System_Luca_Helpers::is_within_booking_window( '2026-12-01', 0, 0, $ref ), 'max 0 means no upper bound on the window' );
+
 /* --------------------------------------------------------------------------
  * 2. Boot smoke test — load the full plugin and assert registrations.
  * ------------------------------------------------------------------------ */

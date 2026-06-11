@@ -61,6 +61,12 @@ class WP_Booking_System_Luca_Frontend {
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'wp-booking-system-luca-frontend' ),
+				'config'  => array(
+					'minNights'      => max( 1, absint( get_option( 'wpbsl_min_nights', 1 ) ) ),
+					'maxNights'      => absint( get_option( 'wpbsl_max_nights', 0 ) ),
+					'minAdvanceDays' => absint( get_option( 'wpbsl_min_advance_days', 0 ) ),
+					'maxAdvanceDays' => absint( get_option( 'wpbsl_max_advance_days', 0 ) ),
+				),
 				'i18n'    => array(
 					'checking'      => __( 'Checking availability...', 'wp-booking-system-luca' ),
 					'available'     => __( 'Available', 'wp-booking-system-luca' ),
@@ -149,6 +155,11 @@ class WP_Booking_System_Luca_Frontend {
 			'wp_booking_form_luca'
 		);
 
+		$default_adults = max( 1, absint( get_option( 'wpbsl_default_adults', 2 ) ) );
+		$default_kids   = absint( get_option( 'wpbsl_default_kids', 0 ) );
+		$require_phone  = (int) get_option( 'wpbsl_require_phone', 0 );
+		$show_notes     = (int) get_option( 'wpbsl_show_notes', 1 );
+
 		ob_start();
 		?>
 		<div class="wpbs-booking-form-wrapper">
@@ -168,11 +179,11 @@ class WP_Booking_System_Luca_Frontend {
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group">
 						<label for="wpbs-adults"><?php esc_html_e( 'Adults', 'wp-booking-system-luca' ); ?></label>
-						<input type="number" id="wpbs-adults" name="adults" min="1" value="2" required />
+						<input type="number" id="wpbs-adults" name="adults" min="1" value="<?php echo esc_attr( $default_adults ); ?>" required />
 					</div>
 					<div class="wpbs-form-group">
 						<label for="wpbs-kids"><?php esc_html_e( 'Kids', 'wp-booking-system-luca' ); ?></label>
-						<input type="number" id="wpbs-kids" name="kids" min="0" value="0" required />
+						<input type="number" id="wpbs-kids" name="kids" min="0" value="<?php echo esc_attr( $default_kids ); ?>" required />
 					</div>
 				</div>
 
@@ -200,16 +211,18 @@ class WP_Booking_System_Luca_Frontend {
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
 						<label for="wpbs-phone"><?php esc_html_e( 'Phone', 'wp-booking-system-luca' ); ?></label>
-						<input type="tel" id="wpbs-phone" name="phone" />
+						<input type="tel" id="wpbs-phone" name="phone" <?php echo $require_phone ? 'required' : ''; ?> />
 					</div>
 				</div>
 
+				<?php if ( $show_notes ) : ?>
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group wpbs-form-group-full">
 						<label for="wpbs-notes"><?php esc_html_e( 'Notes', 'wp-booking-system-luca' ); ?></label>
 						<textarea id="wpbs-notes" name="notes" rows="4"></textarea>
 					</div>
 				</div>
+				<?php endif; ?>
 
 				<div class="wpbs-price-summary" id="wpbs-price-summary" style="display: none;">
 					<div class="wpbs-price-row">

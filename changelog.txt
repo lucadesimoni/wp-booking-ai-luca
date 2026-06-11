@@ -1,5 +1,9 @@
 *** WP booking Luca Changelog ***
 
+2026.06.11 - version 1.2.0
+ * New - Configurable booking entry options in Settings: minimum/maximum stay (nights), minimum advance notice and booking window (days ahead), default adults/kids on the form, require phone number, show/hide the notes field, and auto-confirm new bookings.
+ * New - Stay-length and booking-window rules are enforced both in the date picker and server-side; the date picker now limits selectable dates accordingly.
+
 2026.06.11 - version 1.1.1
  * New - The booking form and calendar can be embedded on ANY existing page (including page builders like Elementor/Divi/WPBakery); required CSS/JS now load automatically wherever the shortcode, block or widget renders.
 
