@@ -19,6 +19,14 @@ global $wpdb;
 $table_name = $wpdb->prefix . 'wpbsl_bookings';
 $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery
 
+// Remove the auto-created pages.
+foreach ( array( 'wpbsl_booking_page_id', 'wpbsl_manage_page_id' ) as $page_option ) {
+	$page_id = (int) get_option( $page_option, 0 );
+	if ( $page_id ) {
+		wp_delete_post( $page_id, true );
+	}
+}
+
 // Delete options.
 delete_option( 'wpbsl_price_adult' );
 delete_option( 'wpbsl_price_kid' );
@@ -27,6 +35,8 @@ delete_option( 'wpbsl_email_from' );
 delete_option( 'wpbsl_email_from_name' );
 delete_option( 'wpbsl_admin_notification_email' );
 delete_option( 'wpbsl_chalet_capacity' );
+delete_option( 'wpbsl_booking_page_id' );
+delete_option( 'wpbsl_manage_page_id' );
 
 // Clear any cached data.
 wp_cache_flush();

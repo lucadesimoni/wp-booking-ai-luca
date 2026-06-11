@@ -223,7 +223,7 @@
 	function handleCancelBooking(e) {
 		e.preventDefault();
 
-		if (!confirm('Are you sure you want to cancel this booking?')) {
+		if (!confirm(wpbslFrontend.i18n.confirmCancel || 'Are you sure you want to cancel this booking?')) {
 			return;
 		}
 
@@ -244,7 +244,7 @@
 				if (response.success) {
 					showMessage('success', response.data.message, '#wpbs-manage-messages');
 					button.closest('.wpbs-booking-actions').fadeOut();
-					$('.wpbs-status').removeClass('wpbs-status-confirmed wpbs-status-pending').addClass('wpbs-status-cancelled').text('Cancelled');
+					$('.wpbs-status').removeClass('wpbs-status-confirmed wpbs-status-pending').addClass('wpbs-status-cancelled').text(wpbslFrontend.i18n.cancelled || 'Cancelled');
 				} else {
 					showMessage('error', response.data.message || 'Failed to cancel booking.', '#wpbs-manage-messages');
 				}

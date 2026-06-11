@@ -33,6 +33,7 @@ class WP_Booking_System_Luca_Ajax {
 		add_action( 'wp_ajax_wpbsl_get_bookings', array( $this, 'get_bookings' ) );
 		add_action( 'wp_ajax_wpbsl_get_booking', array( $this, 'get_booking' ) );
 		add_action( 'wp_ajax_wpbsl_delete_booking', array( $this, 'delete_booking' ) );
+		add_action( 'wp_ajax_wpbsl_update_status', array( $this, 'update_status' ) );
 
 		// Calendar availability (frontend).
 		add_action( 'wp_ajax_wpbsl_get_calendar_availability', array( $this, 'get_calendar_availability' ) );
@@ -52,9 +53,9 @@ class WP_Booking_System_Luca_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Please select both dates.', 'wp-booking-system-luca' ) ) );
 		}
 
-		// Validate date format.
-		if ( ! $this->validate_date( $check_in ) || ! $this->validate_date( $check_out ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid date format.', 'wp-booking-system-luca' ) ) );
+		// Validate date format and range.
+		if ( ! WP_Booking_System_Luca_Helpers::is_valid_range( $check_in, $check_out ) ) {
+			wp_send_json_error( array( 'message' => __( 'Please select a valid date range (check-out after check-in).', 'wp-booking-system-luca' ) ) );
 		}
 
 		$available = wp_booking_system_luca()->database->is_available( $check_in, $check_out );
@@ -77,16 +78,15 @@ class WP_Booking_System_Luca_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Please select both dates.', 'wp-booking-system-luca' ) ) );
 		}
 
-		// Validate date format.
-		if ( ! $this->validate_date( $check_in ) || ! $this->validate_date( $check_out ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid date format.', 'wp-booking-system-luca' ) ) );
+		// Validate date format and range.
+		if ( ! WP_Booking_System_Luca_Helpers::is_valid_range( $check_in, $check_out ) ) {
+			wp_send_json_error( array( 'message' => __( 'Please select a valid date range (check-out after check-in).', 'wp-booking-system-luca' ) ) );
 		}
 
 		// Validate capacity.
-		$total_guests = $adults + $kids;
 		$max_capacity = absint( get_option( 'wpbsl_chalet_capacity', 10 ) );
 
-		if ( $total_guests > $max_capacity ) {
+		if ( WP_Booking_System_Luca_Helpers::exceeds_capacity( $adults, $kids, $max_capacity ) ) {
 			wp_send_json_error(
 				array(
 					'message' => sprintf(
@@ -138,13 +138,8 @@ class WP_Booking_System_Luca_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'wp-booking-system-luca' ) ) );
 		}
 
-		// Validate date format.
-		if ( ! $this->validate_date( $data['check_in'] ) || ! $this->validate_date( $data['check_out'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid date format.', 'wp-booking-system-luca' ) ) );
-		}
-
-		// Validate date range.
-		if ( strtotime( $data['check_out'] ) <= strtotime( $data['check_in'] ) ) {
+		// Validate date format and range.
+		if ( ! WP_Booking_System_Luca_Helpers::is_valid_range( $data['check_in'], $data['check_out'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Check-out date must be after check-in date.', 'wp-booking-system-luca' ) ) );
 		}
 
@@ -153,15 +148,10 @@ class WP_Booking_System_Luca_Ajax {
 			wp_send_json_error( array( 'message' => __( 'At least one adult is required.', 'wp-booking-system-luca' ) ) );
 		}
 
-		if ( $data['kids'] < 0 ) {
-			$data['kids'] = 0;
-		}
-
 		// Validate capacity.
-		$total_guests = $data['adults'] + $data['kids'];
 		$max_capacity = absint( get_option( 'wpbsl_chalet_capacity', 10 ) );
 
-		if ( $total_guests > $max_capacity ) {
+		if ( WP_Booking_System_Luca_Helpers::exceeds_capacity( $data['adults'], $data['kids'], $max_capacity ) ) {
 			wp_send_json_error(
 				array(
 					'message' => sprintf(
@@ -215,7 +205,7 @@ class WP_Booking_System_Luca_Ajax {
 		}
 
 		// Validate token format (64 character hex string).
-		if ( ! preg_match( '/^[a-f0-9]{64}$/i', $token ) ) {
+		if ( ! WP_Booking_System_Luca_Helpers::is_valid_token( $token ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid booking token format.', 'wp-booking-system-luca' ) ) );
 		}
 
@@ -317,7 +307,7 @@ class WP_Booking_System_Luca_Ajax {
 	}
 
 	/**
-	 * Calculate booking price.
+	 * Calculate booking price using the configured nightly rates.
 	 *
 	 * @param string $check_in Check-in date.
 	 * @param string $check_out Check-out date.
@@ -326,16 +316,56 @@ class WP_Booking_System_Luca_Ajax {
 	 * @return float
 	 */
 	private function calculate_booking_price( $check_in, $check_out, $adults, $kids ) {
-		$price_adult = floatval( get_option( 'wpbsl_price_adult', 50 ) );
-		$price_kid   = floatval( get_option( 'wpbsl_price_kid', 25 ) );
+		return WP_Booking_System_Luca_Helpers::calculate_price(
+			$check_in,
+			$check_out,
+			$adults,
+			$kids,
+			floatval( get_option( 'wpbsl_price_adult', 50 ) ),
+			floatval( get_option( 'wpbsl_price_kid', 25 ) )
+		);
+	}
 
-		$check_in_timestamp  = strtotime( $check_in );
-		$check_out_timestamp = strtotime( $check_out );
-		$nights              = max( 1, floor( ( $check_out_timestamp - $check_in_timestamp ) / DAY_IN_SECONDS ) );
+	/**
+	 * Update a booking status (admin).
+	 */
+	public function update_status() {
+		check_ajax_referer( 'wp-booking-system-luca-admin', 'nonce' );
 
-		$total = ( $adults * $price_adult + $kids * $price_kid ) * $nights;
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'wp-booking-system-luca' ) ) );
+		}
 
-		return $total;
+		$id     = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+		$status = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+
+		if ( ! $id || ! WP_Booking_System_Luca_Helpers::is_valid_status( $status ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid request.', 'wp-booking-system-luca' ) ) );
+		}
+
+		$booking = wp_booking_system_luca()->database->get_booking( $id );
+
+		if ( ! $booking ) {
+			wp_send_json_error( array( 'message' => __( 'Booking not found.', 'wp-booking-system-luca' ) ) );
+		}
+
+		$result = wp_booking_system_luca()->database->update_booking( $id, array( 'status' => $status ) );
+
+		if ( false === $result ) {
+			wp_send_json_error( array( 'message' => __( 'Failed to update booking status.', 'wp-booking-system-luca' ) ) );
+		}
+
+		// Notify the guest when their booking is cancelled by an admin.
+		if ( 'cancelled' === $status && 'cancelled' !== $booking->status ) {
+			wp_booking_system_luca()->email->send_booking_cancellation( $booking );
+		}
+
+		wp_send_json_success(
+			array(
+				'message' => __( 'Booking status updated.', 'wp-booking-system-luca' ),
+				'status'  => $status,
+			)
+		);
 	}
 
 	/**
@@ -367,17 +397,6 @@ class WP_Booking_System_Luca_Ajax {
 		}
 
 		wp_send_json_success( $events );
-	}
-
-	/**
-	 * Validate date format (Y-m-d).
-	 *
-	 * @param string $date Date string.
-	 * @return bool
-	 */
-	private function validate_date( $date ) {
-		$d = DateTime::createFromFormat( 'Y-m-d', $date );
-		return $d && $d->format( 'Y-m-d' ) === $date;
 	}
 
 	/**

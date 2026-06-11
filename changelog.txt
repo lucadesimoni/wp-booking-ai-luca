@@ -1,44 +1,21 @@
-*** WordPress Plugin Template Changelog ***
+*** WP booking Luca Changelog ***
 
-2014.08.05 - version 3.0.0
- * New - Library for registering post types
- * New - Library for registering taxonomies
- * New - Library for generic admin functions
- * New - Adding wrapper functions to main plugin class to employ new libraries
- * New - Adding tabs to settings page
- * Tweak - Updating build-plugin.sh to cater for new library files
- * Tweak - Bumping compatibility version
- * Tweak - Adding correct GPL reference
- * Tweak - Updating README.md with a few pointers on how to use the new libraries
- * Fix - Markup fix for settings fields
+2026.06.11 - version 1.1.0
+ * Fix - Plugin no longer fatally errors on activation (class files now match the loader; removed a duplicate class).
+ * Fix - Stripped UTF-8 BOM from all PHP/JS files that caused "headers already sent" errors.
+ * Fix - Frontend calendar/widget now read the correct localized data object, so availability loads.
+ * New - Activation auto-creates a "Book Now" page and a "Manage Booking" page so magic links and embedding work out of the box.
+ * New - Email magic link resolves to the real management page permalink instead of a hardcoded slug.
+ * New - Gutenberg "Booking Form" block (in addition to the calendar block).
+ * New - Admins can Confirm and Cancel bookings from the bookings list (with guest notification on cancel).
+ * Tweak - Booking assets load only on pages that use the form, calendar or widget (faster site).
+ * Tweak - Extracted pricing/validation into a testable helpers class.
+ * Tweak - Added a standalone test runner and a WordPress PHPUnit suite, plus a clean build script.
 
-2014.06.27 - version 2.1.0
- * New - Adding Grunt.js support (kudos kloon)
- * New - Including custom post type class by default
- * Tweak - Updating custom post type class to be compatible with the rest of the plugin
- * Tweak - Improving general syntax
- * Tweak - Making build-plugin.sh compatible with more devices (kudos Natrio42)
- * Fix - Markup fix (kudos mrsonord)
-
-2014.04.07 - version 2.0.0
- * New - Refactoring method for loading main class
- * New - Minifying JS
- * New - Adding default CSS & Less files
- * New - Adding script and style enqueue functions
- * New - Adding shell script to clone template to new folder
- * Tweak - Adding further DocBlock comments
- * Tweak - Modifying readme.txt to be more generic
- * Fix - Fixing image upload settings field to work with more than one field on the same page
- * Fix - Fixing column headers for custom post types (kudos ffabiosales)
-
-2014.02.26 - version 1.1.0
- * New - Completely refactoring the settings class
- * Tweak - Updating WordPress version compatibility
-
-2013.12.05 - version 1.0.1
- * Tweak - Adding DocBlock comments
- * Tweak - Slight refactor
- * Tweak - Updating WordPress version compatibility
-
-2012.12.13 - version 1.0.0
+2025.11.28 - version 1.0.0
  * Initial release
+ * Admin calendar interface
+ * Frontend booking form
+ * Price calculation based on adults and kids
+ * Email notifications
+ * Booking management and cancellation system

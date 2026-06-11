@@ -130,11 +130,83 @@ class WP_Booking_System_Luca {
 	}
 
 	/**
-	 * Create database tables on activation.
+	 * Run installation tasks on activation.
+	 *
+	 * Creates the database table, seeds default options and provisions the
+	 * front-end pages so the booking form and magic-link management work
+	 * with zero manual configuration.
 	 */
 	public static function activate() {
 		$database = new WP_Booking_System_Luca_Database();
 		$database->create_tables();
+
+		self::seed_default_options();
+		self::create_pages();
+
+		// Ensure pretty permalinks for the manage page are flushed.
+		flush_rewrite_rules();
+	}
+
+	/**
+	 * Seed default options if they have never been set.
+	 */
+	private static function seed_default_options() {
+		$defaults = array(
+			'wpbsl_price_adult'              => 50,
+			'wpbsl_price_kid'                => 25,
+			'wpbsl_currency'                 => 'CHF',
+			'wpbsl_email_from'               => get_option( 'admin_email' ),
+			'wpbsl_email_from_name'          => get_bloginfo( 'name' ),
+			'wpbsl_admin_notification_email' => get_option( 'admin_email' ),
+			'wpbsl_chalet_capacity'          => 10,
+		);
+
+		foreach ( $defaults as $key => $value ) {
+			if ( false === get_option( $key, false ) ) {
+				add_option( $key, $value );
+			}
+		}
+	}
+
+	/**
+	 * Create the booking and management pages if they do not yet exist.
+	 *
+	 * The page IDs are stored so emails and embeds always resolve to a real
+	 * URL, even if the site administrator renames or moves the pages.
+	 */
+	public static function create_pages() {
+		$pages = array(
+			'wpbsl_booking_page_id' => array(
+				'title'   => __( 'Book Now', 'wp-booking-system-luca' ),
+				'content' => '[wp_booking_calendar_luca]' . "\n\n" . '[wp_booking_form_luca]',
+			),
+			'wpbsl_manage_page_id'  => array(
+				'title'   => __( 'Manage Booking', 'wp-booking-system-luca' ),
+				'content' => '[wp_booking_manage_luca]',
+			),
+		);
+
+		foreach ( $pages as $option_key => $page ) {
+			$existing_id = (int) get_option( $option_key, 0 );
+
+			if ( $existing_id && 'page' === get_post_type( $existing_id ) && 'trash' !== get_post_status( $existing_id ) ) {
+				continue;
+			}
+
+			$page_id = wp_insert_post(
+				array(
+					'post_title'   => $page['title'],
+					'post_content' => $page['content'],
+					'post_status'  => 'publish',
+					'post_type'    => 'page',
+					'post_author'  => get_current_user_id(),
+				)
+			);
+
+			if ( $page_id && ! is_wp_error( $page_id ) ) {
+				update_option( $option_key, (int) $page_id );
+			}
+		}
 	}
 
 	/**

@@ -26,20 +26,31 @@ class WP_Booking_System_Luca_Frontend {
 	}
 
 	/**
-	 * Enqueue frontend scripts and styles.
+	 * Register assets, and enqueue them only on pages that need them.
+	 *
+	 * Registering up front means the inline calendar scripts always have the
+	 * localized data available, while conditional enqueuing keeps the rest of
+	 * the site lean and fast.
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_style(
+		// Third-party libraries (CDN).
+		wp_register_style( 'flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css', array(), '4.6.13' );
+		wp_register_script( 'flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js', array(), '4.6.13', true );
+		wp_register_style( 'fullcalendar', 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css', array(), '6.1.10' );
+		wp_register_script( 'fullcalendar', 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js', array(), '6.1.10', true );
+
+		// Plugin assets.
+		wp_register_style(
 			'wp-booking-system-luca-frontend',
 			WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/css/frontend.css',
-			array(),
+			array( 'flatpickr', 'fullcalendar' ),
 			WP_BOOKING_SYSTEM_LUCA_VERSION
 		);
 
-		wp_enqueue_script(
+		wp_register_script(
 			'wp-booking-system-luca-frontend',
 			WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/js/frontend.js',
-			array( 'jquery' ),
+			array( 'jquery', 'flatpickr', 'fullcalendar' ),
 			WP_BOOKING_SYSTEM_LUCA_VERSION,
 			true
 		);
@@ -57,41 +68,54 @@ class WP_Booking_System_Luca_Frontend {
 					'selectDates'   => __( 'Please select check-in and check-out dates', 'wp-booking-system-luca' ),
 					'invalidDates'  => __( 'Check-out date must be after check-in date', 'wp-booking-system-luca' ),
 					'calculating'   => __( 'Calculating price...', 'wp-booking-system-luca' ),
+					'submitting'    => __( 'Submitting...', 'wp-booking-system-luca' ),
+					'confirmCancel' => __( 'Are you sure you want to cancel this booking?', 'wp-booking-system-luca' ),
+					'cancelled'     => __( 'Cancelled', 'wp-booking-system-luca' ),
 				),
 			)
 		);
 
-		// Flatpickr for date picker.
-		wp_enqueue_style(
-			'flatpickr',
-			'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-			array(),
-			'4.6.13'
-		);
+		if ( $this->should_enqueue_assets() ) {
+			wp_enqueue_style( 'wp-booking-system-luca-frontend' );
+			wp_enqueue_script( 'wp-booking-system-luca-frontend' );
+		}
+	}
 
-		wp_enqueue_script(
-			'flatpickr',
-			'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js',
-			array(),
-			'4.6.13',
-			true
-		);
+	/**
+	 * Decide whether the current request needs the booking assets.
+	 *
+	 * @return bool
+	 */
+	private function should_enqueue_assets() {
+		// The booking calendar widget can appear in any sidebar.
+		if ( is_active_widget( false, false, 'wp_booking_system_luca_widget', true ) ) {
+			return true;
+		}
 
-		// FullCalendar for widget calendar.
-		wp_enqueue_style(
-			'fullcalendar',
-			'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css',
-			array(),
-			'6.1.10'
-		);
+		if ( is_singular() ) {
+			$post = get_post();
 
-		wp_enqueue_script(
-			'fullcalendar',
-			'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js',
-			array(),
-			'6.1.10',
-			true
-		);
+			if ( $post instanceof WP_Post ) {
+				$shortcodes = array( 'wp_booking_form_luca', 'wp_booking_manage_luca', 'wp_booking_calendar_luca' );
+				foreach ( $shortcodes as $shortcode ) {
+					if ( has_shortcode( $post->post_content, $shortcode ) ) {
+						return true;
+					}
+				}
+
+				if ( has_block( 'wp-booking-system/calendar', $post ) || has_block( 'wp-booking-system/form', $post ) ) {
+					return true;
+				}
+			}
+		}
+
+		/**
+		 * Allow themes/plugins to force-load the booking assets (e.g. when the
+		 * form is rendered outside of post content).
+		 *
+		 * @param bool $enqueue Whether to enqueue the assets.
+		 */
+		return (bool) apply_filters( 'wpbsl_enqueue_assets', false );
 	}
 
 	/**
@@ -196,10 +220,10 @@ class WP_Booking_System_Luca_Frontend {
 	 * @return string
 	 */
 	public function render_booking_manage( $atts = array() ) {
-		$token = isset( $_GET['token'] ) ? sanitize_text_field( $_GET['token'] ) : '';
+		$token = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
 
-		if ( empty( $token ) ) {
-			return '<p>' . esc_html__( 'Invalid booking token.', 'wp-booking-system-luca' ) . '</p>';
+		if ( empty( $token ) || ! WP_Booking_System_Luca_Helpers::is_valid_token( $token ) ) {
+			return '<div class="wpbs-booking-manage-wrapper"><p>' . esc_html__( 'Invalid or missing booking link.', 'wp-booking-system-luca' ) . '</p></div>';
 		}
 
 		$booking = wp_booking_system_luca()->database->get_booking_by_token( $token );

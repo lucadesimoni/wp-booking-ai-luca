@@ -23,6 +23,27 @@ class WP_Booking_System_Luca_Email {
 	}
 
 	/**
+	 * Build the magic-link URL a guest uses to manage their booking.
+	 *
+	 * Resolves to the page created on activation; falls back to a
+	 * conventional slug if that page is missing.
+	 *
+	 * @param string $token Booking token.
+	 * @return string
+	 */
+	private function get_manage_url( $token ) {
+		$manage_page_id = (int) get_option( 'wpbsl_manage_page_id', 0 );
+
+		if ( $manage_page_id && 'publish' === get_post_status( $manage_page_id ) ) {
+			$base = get_permalink( $manage_page_id );
+		} else {
+			$base = home_url( '/booking-manage/' );
+		}
+
+		return add_query_arg( 'token', rawurlencode( $token ), $base );
+	}
+
+	/**
 	 * Send booking confirmation email.
 	 *
 	 * @param object $booking Booking object.
@@ -162,10 +183,7 @@ class WP_Booking_System_Luca_Email {
 	 * @return string
 	 */
 	private function get_confirmation_email_template( $booking ) {
-		$manage_url = add_query_arg(
-			array( 'token' => $booking->booking_token ),
-			home_url( '/booking-manage/' )
-		);
+		$manage_url = $this->get_manage_url( $booking->booking_token );
 
 		$currency = get_option( 'wpbsl_currency', 'CHF' );
 
