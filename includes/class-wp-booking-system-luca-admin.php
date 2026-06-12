@@ -21,6 +21,44 @@ class WP_Booking_System_Luca_Admin {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		add_action( 'admin_notices', array( $this, 'maybe_show_smtp_notice' ) );
+	}
+
+	/**
+	 * Nudge the admin to set up reliable email delivery.
+	 *
+	 * Shown only on this plugin's own admin screens, and only while SMTP
+	 * delivery is disabled, so it never nags across the whole dashboard.
+	 */
+	public function maybe_show_smtp_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+		if ( ! $screen || false === strpos( (string) $screen->id, 'wp-booking-system' ) ) {
+			return;
+		}
+
+		// Don't show it on the Settings screen itself — the guidance is already there.
+		if ( false !== strpos( (string) $screen->id, 'wp-booking-system-settings' ) ) {
+			return;
+		}
+
+		if ( (int) get_option( 'wpbsl_smtp_enabled', 0 ) ) {
+			return;
+		}
+
+		$settings_url = admin_url( 'admin.php?page=wp-booking-system-settings' );
+		?>
+		<div class="notice notice-warning">
+			<p>
+				<?php esc_html_e( 'WP booking Luca is using your server\'s default mailer, which can fail to deliver booking emails. For reliable delivery (e.g. through Gmail), enable SMTP in', 'wp-booking-system-luca' ); ?>
+				<a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Settings', 'wp-booking-system-luca' ); ?></a>.
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -220,6 +258,18 @@ class WP_Booking_System_Luca_Admin {
 			$show_notes       = isset( $_POST['wpbsl_show_notes'] ) ? 1 : 0;
 			$auto_confirm     = isset( $_POST['wpbsl_auto_confirm'] ) ? 1 : 0;
 
+			// SMTP / email delivery options.
+			$smtp_enabled    = isset( $_POST['wpbsl_smtp_enabled'] ) ? 1 : 0;
+			$smtp_host       = isset( $_POST['wpbsl_smtp_host'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_smtp_host'] ) ) : '';
+			$smtp_port       = isset( $_POST['wpbsl_smtp_port'] ) ? absint( $_POST['wpbsl_smtp_port'] ) : 587;
+			$smtp_encryption = isset( $_POST['wpbsl_smtp_encryption'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_smtp_encryption'] ) ) : 'tls';
+			$smtp_encryption = in_array( $smtp_encryption, array( 'none', 'ssl', 'tls' ), true ) ? $smtp_encryption : 'tls';
+			$smtp_auth       = isset( $_POST['wpbsl_smtp_auth'] ) ? 1 : 0;
+			$smtp_username   = isset( $_POST['wpbsl_smtp_username'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_smtp_username'] ) ) : '';
+			// Password: keep the stored value when the field is left blank.
+			$smtp_password_input = isset( $_POST['wpbsl_smtp_password'] ) ? trim( (string) wp_unslash( $_POST['wpbsl_smtp_password'] ) ) : '';
+			$smtp_password       = '' === $smtp_password_input ? (string) get_option( 'wpbsl_smtp_password', '' ) : $smtp_password_input;
+
 			// Validate emails.
 			if ( ! is_email( $email_from ) ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid email from address.', 'wp-booking-system-luca' ) . '</p></div>';
@@ -231,6 +281,8 @@ class WP_Booking_System_Luca_Admin {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Maximum advance days cannot be less than minimum advance days.', 'wp-booking-system-luca' ) . '</p></div>';
 			} elseif ( $default_adults + $default_kids > $chalet_capacity ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Default guests cannot exceed the chalet capacity.', 'wp-booking-system-luca' ) . '</p></div>';
+			} elseif ( $smtp_enabled && '' === $smtp_host ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Please enter an SMTP host (e.g. smtp.gmail.com) to enable SMTP delivery.', 'wp-booking-system-luca' ) . '</p></div>';
 			} else {
 				update_option( 'wpbsl_price_adult', $price_adult );
 				update_option( 'wpbsl_price_kid', $price_kid );
@@ -248,6 +300,13 @@ class WP_Booking_System_Luca_Admin {
 				update_option( 'wpbsl_require_phone', $require_phone );
 				update_option( 'wpbsl_show_notes', $show_notes );
 				update_option( 'wpbsl_auto_confirm', $auto_confirm );
+				update_option( 'wpbsl_smtp_enabled', $smtp_enabled );
+				update_option( 'wpbsl_smtp_host', $smtp_host );
+				update_option( 'wpbsl_smtp_port', $smtp_port );
+				update_option( 'wpbsl_smtp_encryption', $smtp_encryption );
+				update_option( 'wpbsl_smtp_auth', $smtp_auth );
+				update_option( 'wpbsl_smtp_username', $smtp_username );
+				update_option( 'wpbsl_smtp_password', $smtp_password );
 				echo '<div class="notice notice-success"><p>' . esc_html__( 'Settings saved.', 'wp-booking-system-luca' ) . '</p></div>';
 			}
 		}
@@ -390,8 +449,105 @@ class WP_Booking_System_Luca_Admin {
 					</td>
 				</tr>
 			</table>
+
+			<h2 class="title"><?php esc_html_e( 'Email Delivery (SMTP)', 'wp-booking-system-luca' ); ?></h2>
+			<p class="description" style="max-width:640px;">
+				<?php esc_html_e( 'Booking confirmation and notification emails are sent automatically through WordPress. By default WordPress uses your server\'s mail, which is often unreliable. Enable SMTP below to send through a real mailbox such as Gmail / Google Workspace for dependable delivery.', 'wp-booking-system-luca' ); ?>
+			</p>
+			<table class="form-table">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'SMTP Delivery', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_smtp_enabled" value="1" <?php checked( 1, (int) get_option( 'wpbsl_smtp_enabled', 0 ) ); ?> />
+							<?php esc_html_e( 'Send emails through an external SMTP server.', 'wp-booking-system-luca' ); ?>
+						</label>
+						<p class="description"><?php esc_html_e( 'For Gmail: host smtp.gmail.com, port 587 (TLS), your full address as the username, and a Google "App Password" (not your normal password) as the password.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_smtp_host"><?php esc_html_e( 'SMTP Host', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_smtp_host" name="wpbsl_smtp_host" value="<?php echo esc_attr( get_option( 'wpbsl_smtp_host', '' ) ); ?>" class="regular-text" placeholder="smtp.gmail.com" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_smtp_port"><?php esc_html_e( 'SMTP Port', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="number" id="wpbsl_smtp_port" name="wpbsl_smtp_port" value="<?php echo esc_attr( get_option( 'wpbsl_smtp_port', 587 ) ); ?>" min="1" class="small-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_smtp_encryption"><?php esc_html_e( 'Encryption', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<?php $enc = get_option( 'wpbsl_smtp_encryption', 'tls' ); ?>
+						<select id="wpbsl_smtp_encryption" name="wpbsl_smtp_encryption">
+							<option value="tls" <?php selected( 'tls', $enc ); ?>><?php esc_html_e( 'TLS (recommended, port 587)', 'wp-booking-system-luca' ); ?></option>
+							<option value="ssl" <?php selected( 'ssl', $enc ); ?>><?php esc_html_e( 'SSL (port 465)', 'wp-booking-system-luca' ); ?></option>
+							<option value="none" <?php selected( 'none', $enc ); ?>><?php esc_html_e( 'None', 'wp-booking-system-luca' ); ?></option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Authentication', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_smtp_auth" value="1" <?php checked( 1, (int) get_option( 'wpbsl_smtp_auth', 1 ) ); ?> />
+							<?php esc_html_e( 'Use a username and password to authenticate (required for Gmail).', 'wp-booking-system-luca' ); ?>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_smtp_username"><?php esc_html_e( 'SMTP Username', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_smtp_username" name="wpbsl_smtp_username" value="<?php echo esc_attr( get_option( 'wpbsl_smtp_username', '' ) ); ?>" class="regular-text" placeholder="you@gmail.com" autocomplete="off" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_smtp_password"><?php esc_html_e( 'SMTP Password', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="password" id="wpbsl_smtp_password" name="wpbsl_smtp_password" value="" class="regular-text" autocomplete="new-password" placeholder="<?php echo get_option( 'wpbsl_smtp_password', '' ) ? esc_attr__( '•••••••• (saved — leave blank to keep)', 'wp-booking-system-luca' ) : ''; ?>" />
+						<p class="description"><?php esc_html_e( 'Stored in your database. Leave blank to keep the current password.', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+			</table>
 			<?php submit_button( __( 'Save Settings', 'wp-booking-system-luca' ), 'primary', 'wpbsl_save_settings' ); ?>
 		</form>
+
+		<h2 class="title"><?php esc_html_e( 'Send a Test Email', 'wp-booking-system-luca' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'Save your settings first, then send a test email to confirm delivery works.', 'wp-booking-system-luca' ); ?></p>
+		<table class="form-table">
+			<tr>
+				<th scope="row"><label for="wpbsl_test_email_to"><?php esc_html_e( 'Send test to', 'wp-booking-system-luca' ); ?></label></th>
+				<td>
+					<input type="email" id="wpbsl_test_email_to" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" class="regular-text" />
+					<button type="button" class="button button-secondary" id="wpbsl-send-test-email" data-nonce="<?php echo esc_attr( wp_create_nonce( 'wp-booking-system-luca-admin' ) ); ?>"><?php esc_html_e( 'Send Test Email', 'wp-booking-system-luca' ); ?></button>
+					<span id="wpbsl-test-email-result" style="margin-left:10px;font-weight:600;"></span>
+				</td>
+			</tr>
+		</table>
+		<script>
+		( function () {
+			var btn = document.getElementById( 'wpbsl-send-test-email' );
+			if ( ! btn ) { return; }
+			btn.addEventListener( 'click', function () {
+				var out = document.getElementById( 'wpbsl-test-email-result' );
+				var to = document.getElementById( 'wpbsl_test_email_to' ).value;
+				btn.disabled = true;
+				out.style.color = '#666';
+				out.textContent = <?php echo wp_json_encode( __( 'Sending…', 'wp-booking-system-luca' ) ); ?>;
+				var body = new URLSearchParams();
+				body.append( 'action', 'wpbsl_send_test_email' );
+				body.append( 'nonce', btn.getAttribute( 'data-nonce' ) );
+				body.append( 'email', to );
+				fetch( ajaxurl, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() } )
+					.then( function ( r ) { return r.json(); } )
+					.then( function ( res ) {
+						out.style.color = res.success ? '#0a7d28' : '#b32d2e';
+						out.textContent = ( res.data && res.data.message ) ? res.data.message : '';
+					} )
+					.catch( function () {
+						out.style.color = '#b32d2e';
+						out.textContent = <?php echo wp_json_encode( __( 'Request failed. Please try again.', 'wp-booking-system-luca' ) ); ?>;
+					} )
+					.finally( function () { btn.disabled = false; } );
+			} );
+		} )();
+		</script>
 	</div>
 	<?php
 	}

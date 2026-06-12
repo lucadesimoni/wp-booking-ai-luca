@@ -169,6 +169,14 @@ class WP_Booking_System_Luca {
 			'wpbsl_require_phone'            => 0,
 			'wpbsl_show_notes'               => 1,
 			'wpbsl_auto_confirm'             => 0,
+			// Email delivery (SMTP).
+			'wpbsl_smtp_enabled'             => 0,
+			'wpbsl_smtp_host'                => '',
+			'wpbsl_smtp_port'                => 587,
+			'wpbsl_smtp_encryption'          => 'tls',
+			'wpbsl_smtp_auth'                => 1,
+			'wpbsl_smtp_username'            => '',
+			'wpbsl_smtp_password'            => '',
 		);
 
 		foreach ( $defaults as $key => $value ) {

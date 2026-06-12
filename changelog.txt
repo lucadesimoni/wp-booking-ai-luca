@@ -1,5 +1,11 @@
 *** WP booking Luca Changelog ***
 
+2026.06.12 - version 1.3.0
+ * New - Built-in SMTP email delivery: send booking confirmations and notifications through an external mailbox such as Gmail / Google Workspace (host, port, encryption, authentication, username and app password) for reliable delivery.
+ * New - "Send Test Email" button in Settings to verify delivery, with success/error feedback (captures and shows SMTP errors).
+ * New - The configured "From" address and name are now applied to all site mail via wp_mail_from / wp_mail_from_name.
+ * New - Contextual admin reminder to enable SMTP, shown only on the plugin's own screens while SMTP is disabled.
+
 2026.06.11 - version 1.2.0
  * New - Configurable booking entry options in Settings: minimum/maximum stay (nights), minimum advance notice and booking window (days ahead), default adults/kids on the form, require phone number, show/hide the notes field, and auto-confirm new bookings.
  * New - Stay-length and booking-window rules are enforced both in the date picker and server-side; the date picker now limits selectable dates accordingly.

@@ -19,7 +19,132 @@ class WP_Booking_System_Luca_Email {
 	 * Constructor.
 	 */
 	public function __construct() {
-		// Email functionality is ready to use.
+		// Apply the configured "From" address/name to every email WordPress sends
+		// from this site (so even the test email and any fallback path use it).
+		add_filter( 'wp_mail_from', array( $this, 'filter_mail_from' ) );
+		add_filter( 'wp_mail_from_name', array( $this, 'filter_mail_from_name' ) );
+
+		// Route mail through an external SMTP server (e.g. Gmail) when configured.
+		add_action( 'phpmailer_init', array( $this, 'configure_phpmailer' ) );
+	}
+
+	/**
+	 * Filter the global "From" email address.
+	 *
+	 * @param string $from Default from address.
+	 * @return string
+	 */
+	public function filter_mail_from( $from ) {
+		$configured = get_option( 'wpbsl_email_from', '' );
+
+		return ( $configured && is_email( $configured ) ) ? $configured : $from;
+	}
+
+	/**
+	 * Filter the global "From" name.
+	 *
+	 * @param string $name Default from name.
+	 * @return string
+	 */
+	public function filter_mail_from_name( $name ) {
+		$configured = get_option( 'wpbsl_email_from_name', '' );
+
+		return $configured ? $configured : $name;
+	}
+
+	/**
+	 * Configure PHPMailer to send through an external SMTP server.
+	 *
+	 * Hooked to `phpmailer_init`. When SMTP delivery is enabled in Settings,
+	 * this reroutes WordPress mail (including this plugin's notifications)
+	 * through the configured server — e.g. Gmail / Google Workspace.
+	 *
+	 * @param object $phpmailer PHPMailer instance (passed by reference by WP).
+	 * @return void
+	 */
+	public function configure_phpmailer( $phpmailer ) {
+		if ( ! (int) get_option( 'wpbsl_smtp_enabled', 0 ) ) {
+			return;
+		}
+
+		$host = trim( (string) get_option( 'wpbsl_smtp_host', '' ) );
+
+		if ( '' === $host ) {
+			// Misconfigured: fall back to the default mail transport rather than failing.
+			return;
+		}
+
+		$encryption = get_option( 'wpbsl_smtp_encryption', 'tls' );
+
+		$phpmailer->isSMTP();
+		$phpmailer->Host        = $host;
+		$phpmailer->Port        = (int) get_option( 'wpbsl_smtp_port', 587 );
+		$phpmailer->SMTPAuth    = (bool) (int) get_option( 'wpbsl_smtp_auth', 1 );
+		$phpmailer->SMTPSecure  = in_array( $encryption, array( 'ssl', 'tls' ), true ) ? $encryption : '';
+		$phpmailer->SMTPAutoTLS = ( 'none' !== $encryption );
+
+		if ( $phpmailer->SMTPAuth ) {
+			$phpmailer->Username = (string) get_option( 'wpbsl_smtp_username', '' );
+			$phpmailer->Password = (string) get_option( 'wpbsl_smtp_password', '' );
+		}
+	}
+
+	/**
+	 * Send a test email to verify the current delivery configuration.
+	 *
+	 * @param string $to Recipient address.
+	 * @return array { @type bool $success, @type string $message }
+	 */
+	public function send_test_email( $to ) {
+		$to = sanitize_email( $to );
+
+		if ( ! is_email( $to ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Please enter a valid email address to send the test to.', 'wp-booking-system-luca' ),
+			);
+		}
+
+		// Capture any PHPMailer error so we can surface it to the admin.
+		$error_holder = new stdClass();
+		$error_holder->message = '';
+		$capture = function ( $wp_error ) use ( $error_holder ) {
+			$error_holder->message = $wp_error->get_error_message();
+		};
+		add_action( 'wp_mail_failed', $capture );
+
+		$subject = sprintf(
+			/* translators: %s: Site name */
+			__( '[%s] Test email from WP booking Luca', 'wp-booking-system-luca' ),
+			get_bloginfo( 'name' )
+		);
+
+		$smtp_on = (int) get_option( 'wpbsl_smtp_enabled', 0 );
+		$message = sprintf(
+			/* translators: %s: delivery method description */
+			__( 'This is a test email from WP booking Luca. If you received it, your booking notifications are being delivered correctly (%s).', 'wp-booking-system-luca' ),
+			$smtp_on ? sprintf( __( 'via SMTP host %s', 'wp-booking-system-luca' ), get_option( 'wpbsl_smtp_host', '' ) ) : __( 'via the default WordPress mailer', 'wp-booking-system-luca' )
+		);
+
+		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+		$sent    = wp_mail( $to, $subject, '<p>' . esc_html( $message ) . '</p>', $headers );
+
+		remove_action( 'wp_mail_failed', $capture );
+
+		if ( $sent ) {
+			return array(
+				'success' => true,
+				/* translators: %s: recipient email address */
+				'message' => sprintf( __( 'Test email sent to %s. Please check the inbox (and spam folder).', 'wp-booking-system-luca' ), $to ),
+			);
+		}
+
+		return array(
+			'success' => false,
+			'message' => $error_holder->message
+				? sprintf( __( 'Sending failed: %s', 'wp-booking-system-luca' ), $error_holder->message )
+				: __( 'Sending failed. Check your SMTP settings or install an SMTP plugin.', 'wp-booking-system-luca' ),
+		);
 	}
 
 	/**

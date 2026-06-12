@@ -46,6 +46,13 @@ delete_option( 'wpbsl_default_kids' );
 delete_option( 'wpbsl_require_phone' );
 delete_option( 'wpbsl_show_notes' );
 delete_option( 'wpbsl_auto_confirm' );
+delete_option( 'wpbsl_smtp_enabled' );
+delete_option( 'wpbsl_smtp_host' );
+delete_option( 'wpbsl_smtp_port' );
+delete_option( 'wpbsl_smtp_encryption' );
+delete_option( 'wpbsl_smtp_auth' );
+delete_option( 'wpbsl_smtp_username' );
+delete_option( 'wpbsl_smtp_password' );
 
 // Clear any cached data.
 wp_cache_flush();

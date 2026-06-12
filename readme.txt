@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,7 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Frontend booking form with date selection
 * Price calculation based on number of adults and kids
 * Email notifications for booking confirmations and cancellations
+* Built-in SMTP delivery (e.g. Gmail / Google Workspace) with a test-email button for reliable sending
 * Unique links for guests to manage or cancel their bookings
 * Configurable booking rules: minimum/maximum stay, advance notice, booking window, default guests, required fields, and auto-confirm
 * Modern, responsive design that fits seamlessly into your website
@@ -59,11 +60,21 @@ Go to Bookings > Settings in your WordPress admin and configure the price per ad
 
 Yes. Under WP booking Luca > Settings you can configure the minimum and maximum stay (nights), the minimum advance notice and how far ahead guests may book, the default number of adults/kids on the form, whether the phone number is required, whether the notes field is shown, and whether new bookings are confirmed automatically. These rules are applied in the date picker and enforced again on the server.
 
+= Do booking emails send automatically, and can I use Gmail? =
+
+Yes. Confirmation and admin-notification emails are sent automatically when a booking is made (and a cancellation email when a booking is cancelled). By default they go through WordPress's standard mailer, which uses your server's mail and can be unreliable. Under WP booking Luca > Settings you can enable SMTP and enter your mail server details to send through a real mailbox such as Gmail / Google Workspace. For Gmail use host smtp.gmail.com, port 587 (TLS), your full address as the username, and a Google "App Password" as the password. Use the "Send Test Email" button to confirm delivery.
+
 = Can I customize the email templates? =
 
 Currently, email templates are built into the plugin. Future versions may include customizable templates.
 
 == Changelog ==
+
+= 1.3.0 =
+* 2026-06-12
+* Built-in SMTP delivery so booking emails can be sent through Gmail / Google Workspace or any SMTP server
+* Added a "Send Test Email" button in Settings with success/error feedback
+* The configured From address/name now applies to all site mail; contextual reminder to enable SMTP
 
 = 1.2.0 =
 * 2026-06-11

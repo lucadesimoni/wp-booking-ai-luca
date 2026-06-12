@@ -34,6 +34,7 @@ class WP_Booking_System_Luca_Ajax {
 		add_action( 'wp_ajax_wpbsl_get_booking', array( $this, 'get_booking' ) );
 		add_action( 'wp_ajax_wpbsl_delete_booking', array( $this, 'delete_booking' ) );
 		add_action( 'wp_ajax_wpbsl_update_status', array( $this, 'update_status' ) );
+		add_action( 'wp_ajax_wpbsl_send_test_email', array( $this, 'send_test_email' ) );
 
 		// Calendar availability (frontend).
 		add_action( 'wp_ajax_wpbsl_get_calendar_availability', array( $this, 'get_calendar_availability' ) );
@@ -436,6 +437,27 @@ class WP_Booking_System_Luca_Ajax {
 				'status'  => $status,
 			)
 		);
+	}
+
+	/**
+	 * Send a test email so the admin can verify delivery (e.g. Gmail SMTP).
+	 */
+	public function send_test_email() {
+		check_ajax_referer( 'wp-booking-system-luca-admin', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'wp-booking-system-luca' ) ) );
+		}
+
+		$to = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : get_option( 'admin_email' );
+
+		$result = wp_booking_system_luca()->email->send_test_email( $to );
+
+		if ( ! empty( $result['success'] ) ) {
+			wp_send_json_success( array( 'message' => $result['message'] ) );
+		}
+
+		wp_send_json_error( array( 'message' => $result['message'] ) );
 	}
 
 	/**

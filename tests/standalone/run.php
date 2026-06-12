@@ -205,6 +205,79 @@ $blocks = $GLOBALS['_wpbsl_test']['blocks'];
 check( isset( $blocks['wp-booking-system/calendar'] ), 'calendar block registered' );
 check( isset( $blocks['wp-booking-system/form'] ), 'booking form block registered' );
 
+check( isset( $actions['phpmailer_init'] ), 'phpmailer_init hooked for SMTP support' );
+check( isset( $actions['wp_ajax_wpbsl_send_test_email'] ), 'test-email AJAX handler hooked' );
+
+/* --------------------------------------------------------------------------
+ * 3. SMTP configuration logic (PHPMailer wiring).
+ * ------------------------------------------------------------------------ */
+echo "\nEmail: SMTP / PHPMailer configuration\n";
+
+// Minimal PHPMailer test double exposing the bits configure_phpmailer touches.
+class WPBSL_FakePHPMailer {
+	public $Host = '';
+	public $Port = 25;
+	public $SMTPAuth = false;
+	public $SMTPSecure = '';
+	public $SMTPAutoTLS = true;
+	public $Username = '';
+	public $Password = '';
+	public $is_smtp = false;
+	public function isSMTP() { $this->is_smtp = true; }
+}
+
+$email = $instance->email;
+
+// Disabled: PHPMailer must be left untouched (default mail transport).
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_enabled'] = 0;
+$pm = new WPBSL_FakePHPMailer();
+$email->configure_phpmailer( $pm );
+check( false === $pm->is_smtp, 'SMTP disabled leaves PHPMailer on default transport' );
+
+// Enabled but no host: still must not switch to SMTP (avoids broken sends).
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_enabled'] = 1;
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_host'] = '';
+$pm = new WPBSL_FakePHPMailer();
+$email->configure_phpmailer( $pm );
+check( false === $pm->is_smtp, 'SMTP enabled without a host falls back safely' );
+
+// Enabled + Gmail TLS config: PHPMailer wired correctly.
+$GLOBALS['_wpbsl_test']['options'] = array_merge(
+	$GLOBALS['_wpbsl_test']['options'],
+	array(
+		'wpbsl_smtp_enabled'    => 1,
+		'wpbsl_smtp_host'       => 'smtp.gmail.com',
+		'wpbsl_smtp_port'       => 587,
+		'wpbsl_smtp_encryption' => 'tls',
+		'wpbsl_smtp_auth'       => 1,
+		'wpbsl_smtp_username'   => 'host@gmail.com',
+		'wpbsl_smtp_password'   => 'app-password',
+	)
+);
+$pm = new WPBSL_FakePHPMailer();
+$email->configure_phpmailer( $pm );
+check( true === $pm->is_smtp, 'Gmail config switches PHPMailer to SMTP' );
+check_equals( 'smtp.gmail.com', $pm->Host, 'SMTP host applied' );
+check_equals( 587, $pm->Port, 'SMTP port applied' );
+check_equals( 'tls', $pm->SMTPSecure, 'TLS encryption applied' );
+check( true === $pm->SMTPAuth, 'SMTP auth enabled' );
+check_equals( 'host@gmail.com', $pm->Username, 'SMTP username applied' );
+check_equals( 'app-password', $pm->Password, 'SMTP password applied' );
+
+// SSL on 465.
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_encryption'] = 'ssl';
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_port'] = 465;
+$pm = new WPBSL_FakePHPMailer();
+$email->configure_phpmailer( $pm );
+check_equals( 'ssl', $pm->SMTPSecure, 'SSL encryption applied' );
+
+// Encryption "none" disables auto-TLS and secure transport.
+$GLOBALS['_wpbsl_test']['options']['wpbsl_smtp_encryption'] = 'none';
+$pm = new WPBSL_FakePHPMailer();
+$email->configure_phpmailer( $pm );
+check_equals( '', $pm->SMTPSecure, 'encryption "none" clears SMTPSecure' );
+check( false === $pm->SMTPAutoTLS, 'encryption "none" disables SMTPAutoTLS' );
+
 /* --------------------------------------------------------------------------
  * Summary.
  * ------------------------------------------------------------------------ */
