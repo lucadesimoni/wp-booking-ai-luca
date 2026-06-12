@@ -176,16 +176,11 @@ class WP_Booking_System_Luca_Email {
 	 */
 	public function send_booking_confirmation( $booking ) {
 		$to      = $booking->email;
-		$subject = sprintf( __( 'Booking Confirmation - %s', 'wp-booking-system-luca' ), get_bloginfo( 'name' ) );
+		$subject = $this->render_subject( 'wpbsl_email_confirmation_subject', $this->default_confirmation_subject(), $booking );
+		$body    = $this->get_template_body( 'wpbsl_email_confirmation_body', $this->default_confirmation_body(), $booking );
+		$message = $this->wrap_email( __( 'Booking Confirmation', 'wp-booking-system-luca' ), $body );
 
-		$message = $this->get_confirmation_email_template( $booking );
-
-		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: ' . get_option( 'wpbsl_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbsl_email_from', get_option( 'admin_email' ) ) . '>',
-		);
-
-		$result = wp_mail( $to, $subject, $message, $headers );
+		$result = wp_mail( $to, $subject, $message, $this->mail_headers() );
 
 		// Send admin notification.
 		$this->send_admin_notification( $booking );
@@ -207,28 +202,155 @@ class WP_Booking_System_Luca_Email {
 		}
 
 		$to      = $admin_email;
-		$subject = sprintf( __( 'New Booking Received - %s', 'wp-booking-system-luca' ), get_bloginfo( 'name' ) );
+		$subject = $this->render_subject( 'wpbsl_email_admin_subject', $this->default_admin_subject(), $booking );
+		$body    = $this->get_template_body( 'wpbsl_email_admin_body', $this->default_admin_body(), $booking );
+		$message = $this->wrap_email( __( 'New Booking Received', 'wp-booking-system-luca' ), $body );
 
-		$message = $this->get_admin_notification_template( $booking );
-
-		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: ' . get_option( 'wpbsl_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbsl_email_from', get_option( 'admin_email' ) ) . '>',
-		);
-
-		return wp_mail( $to, $subject, $message, $headers );
+		return wp_mail( $to, $subject, $message, $this->mail_headers() );
 	}
 
 	/**
-	 * Get admin notification email template.
+	 * Standard headers for every email this plugin sends.
+	 *
+	 * @return string[]
+	 */
+	private function mail_headers() {
+		return array(
+			'Content-Type: text/html; charset=UTF-8',
+			'From: ' . get_option( 'wpbsl_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbsl_email_from', get_option( 'admin_email' ) ) . '>',
+		);
+	}
+
+	/**
+	 * Read a saved template, falling back to the built-in default when blank.
+	 *
+	 * An empty saved value therefore acts as "reset to default".
+	 *
+	 * @param string $option_key Option name.
+	 * @param string $default    Built-in default.
+	 * @return string
+	 */
+	private function get_template_part( $option_key, $default ) {
+		$value = (string) get_option( $option_key, '' );
+
+		return '' !== trim( $value ) ? $value : $default;
+	}
+
+	/**
+	 * Replace {merge_tags} in a string. Pure and side-effect free.
+	 *
+	 * @param string $text Template text.
+	 * @param array  $vars Map of tag => replacement.
+	 * @return string
+	 */
+	public static function replace_merge_tags( $text, array $vars ) {
+		return str_replace( array_keys( $vars ), array_values( $vars ), (string) $text );
+	}
+
+	/**
+	 * Build the merge-tag map for a booking. Text values are escaped so
+	 * guest-supplied data cannot inject markup into the email.
+	 *
+	 * @param object $booking Booking object.
+	 * @return array
+	 */
+	private function get_merge_vars( $booking ) {
+		$currency   = get_option( 'wpbsl_currency', 'CHF' );
+		$date_fmt   = get_option( 'date_format' );
+		$manage_url = $this->get_manage_url( $booking->booking_token );
+		$admin_url  = admin_url( 'admin.php?page=wp-booking-system-list' );
+
+		$guests = sprintf(
+			/* translators: 1: number of adults, 2: number of kids */
+			__( '%1$d adults, %2$d kids', 'wp-booking-system-luca' ),
+			(int) $booking->adults,
+			(int) $booking->kids
+		);
+
+		return array(
+			'{site_name}'       => esc_html( get_bloginfo( 'name' ) ),
+			'{first_name}'      => esc_html( $booking->first_name ),
+			'{last_name}'       => esc_html( $booking->last_name ),
+			'{guest_name}'      => esc_html( trim( $booking->first_name . ' ' . $booking->last_name ) ),
+			'{guest_email}'     => esc_html( $booking->email ),
+			'{guest_phone}'     => esc_html( $booking->phone ? $booking->phone : __( 'N/A', 'wp-booking-system-luca' ) ),
+			'{check_in}'        => esc_html( date_i18n( $date_fmt, strtotime( $booking->check_in ) ) ),
+			'{check_out}'       => esc_html( date_i18n( $date_fmt, strtotime( $booking->check_out ) ) ),
+			'{adults}'          => (int) $booking->adults,
+			'{kids}'            => (int) $booking->kids,
+			'{guests}'          => esc_html( $guests ),
+			'{total_price}'     => esc_html( number_format( (float) $booking->total_price, 2 ) . ' ' . $currency ),
+			'{status}'          => esc_html( ucfirst( (string) $booking->status ) ),
+			'{notes}'           => esc_html( (string) $booking->notes ),
+			'{manage_url}'      => esc_url( $manage_url ),
+			'{manage_link}'     => '<a href="' . esc_url( $manage_url ) . '" class="button">' . esc_html__( 'Manage Booking', 'wp-booking-system-luca' ) . '</a>',
+			'{admin_link}'      => '<a href="' . esc_url( $admin_url ) . '" class="button">' . esc_html__( 'View Booking', 'wp-booking-system-luca' ) . '</a>',
+			'{booking_details}' => $this->render_booking_details( $booking ),
+		);
+	}
+
+	/**
+	 * Styled "booking details" box used by the {booking_details} tag.
 	 *
 	 * @param object $booking Booking object.
 	 * @return string
 	 */
-	private function get_admin_notification_template( $booking ) {
+	private function render_booking_details( $booking ) {
 		$currency = get_option( 'wpbsl_currency', 'CHF' );
-		$admin_url = admin_url( 'admin.php?page=wp-booking-system-list' );
+		$date_fmt = get_option( 'date_format' );
 
+		ob_start();
+		?>
+		<div class="booking-details">
+			<h3><?php esc_html_e( 'Booking Details', 'wp-booking-system-luca' ); ?></h3>
+			<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( $date_fmt, strtotime( $booking->check_in ) ) ); ?></p>
+			<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( $date_fmt, strtotime( $booking->check_out ) ) ); ?></p>
+			<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system-luca' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system-luca' ) ); ?></p>
+			<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( (float) $booking->total_price, 2 ) . ' ' . $currency ); ?></p>
+			<?php if ( ! empty( $booking->notes ) ) : ?>
+				<p><strong><?php esc_html_e( 'Notes:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->notes ); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Resolve a subject line: merge tags applied, HTML stripped.
+	 *
+	 * @param string $option_key Option name.
+	 * @param string $default    Default subject.
+	 * @param object $booking    Booking object.
+	 * @return string
+	 */
+	private function render_subject( $option_key, $default, $booking ) {
+		$raw = $this->get_template_part( $option_key, $default );
+
+		return wp_strip_all_tags( self::replace_merge_tags( $raw, $this->get_merge_vars( $booking ) ) );
+	}
+
+	/**
+	 * Resolve a body: merge tags applied, then paragraph formatting.
+	 *
+	 * @param string $option_key Option name.
+	 * @param string $default    Default body.
+	 * @param object $booking    Booking object.
+	 * @return string
+	 */
+	private function get_template_body( $option_key, $default, $booking ) {
+		$raw = $this->get_template_part( $option_key, $default );
+
+		return wpautop( self::replace_merge_tags( $raw, $this->get_merge_vars( $booking ) ) );
+	}
+
+	/**
+	 * Wrap a body in the branded HTML email shell.
+	 *
+	 * @param string $heading Header-bar heading.
+	 * @param string $body    Body HTML.
+	 * @return string
+	 */
+	private function wrap_email( $heading, $body ) {
 		ob_start();
 		?>
 		<!DOCTYPE html>
@@ -249,27 +371,10 @@ class WP_Booking_System_Luca_Email {
 		<body>
 			<div class="container">
 				<div class="header">
-					<h1><?php esc_html_e( 'New Booking Received', 'wp-booking-system-luca' ); ?></h1>
+					<h1><?php echo esc_html( $heading ); ?></h1>
 				</div>
 				<div class="content">
-					<p><?php esc_html_e( 'A new booking has been submitted:', 'wp-booking-system-luca' ); ?></p>
-
-					<div class="booking-details">
-						<h3><?php esc_html_e( 'Booking Details', 'wp-booking-system-luca' ); ?></h3>
-						<p><strong><?php esc_html_e( 'Guest:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->first_name . ' ' . $booking->last_name ); ?></p>
-						<p><strong><?php esc_html_e( 'Email:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->email ); ?></p>
-						<p><strong><?php esc_html_e( 'Phone:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->phone ? $booking->phone : __( 'N/A', 'wp-booking-system-luca' ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_in ) ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_out ) ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system-luca' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system-luca' ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . $currency ); ?></p>
-						<p><strong><?php esc_html_e( 'Status:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( ucfirst( $booking->status ) ); ?></p>
-						<?php if ( ! empty( $booking->notes ) ) : ?>
-							<p><strong><?php esc_html_e( 'Notes:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->notes ); ?></p>
-						<?php endif; ?>
-					</div>
-
-					<a href="<?php echo esc_url( $admin_url ); ?>" class="button"><?php esc_html_e( 'View Booking', 'wp-booking-system-luca' ); ?></a>
+					<?php echo wp_kses_post( $body ); ?>
 				</div>
 				<div class="footer">
 					<p><?php echo esc_html( get_bloginfo( 'name' ) ); ?> | <?php echo esc_url( home_url() ); ?></p>
@@ -279,6 +384,69 @@ class WP_Booking_System_Luca_Email {
 		</html>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Default guest-confirmation subject.
+	 *
+	 * @return string
+	 */
+	public function default_confirmation_subject() {
+		return __( 'Booking Confirmation - {site_name}', 'wp-booking-system-luca' );
+	}
+
+	/**
+	 * Default guest-confirmation body.
+	 *
+	 * @return string
+	 */
+	public function default_confirmation_body() {
+		return __(
+			"Dear {guest_name},\n\nThank you for your booking! We are pleased to confirm your reservation.\n\n{booking_details}\n\nYou can manage or cancel your booking using the link below:\n\n{manage_link}\n\nWe look forward to welcoming you!\n\nBest regards,\n{site_name}",
+			'wp-booking-system-luca'
+		);
+	}
+
+	/**
+	 * Default guest-cancellation subject.
+	 *
+	 * @return string
+	 */
+	public function default_cancellation_subject() {
+		return __( 'Booking Cancelled - {site_name}', 'wp-booking-system-luca' );
+	}
+
+	/**
+	 * Default guest-cancellation body.
+	 *
+	 * @return string
+	 */
+	public function default_cancellation_body() {
+		return __(
+			"Dear {guest_name},\n\nYour booking has been cancelled as requested.\n\nWe hope to welcome you in the future!\n\nBest regards,\n{site_name}",
+			'wp-booking-system-luca'
+		);
+	}
+
+	/**
+	 * Default admin-notification subject.
+	 *
+	 * @return string
+	 */
+	public function default_admin_subject() {
+		return __( 'New Booking Received - {site_name}', 'wp-booking-system-luca' );
+	}
+
+	/**
+	 * Default admin-notification body.
+	 *
+	 * @return string
+	 */
+	public function default_admin_body() {
+		return __(
+			"A new booking has been submitted.\n\nGuest: {guest_name}\nEmail: {guest_email}\nPhone: {guest_phone}\nStatus: {status}\n\n{booking_details}\n\n{admin_link}",
+			'wp-booking-system-luca'
+		);
 	}
 
 	/**
@@ -289,122 +457,12 @@ class WP_Booking_System_Luca_Email {
 	 */
 	public function send_booking_cancellation( $booking ) {
 		$to      = $booking->email;
-		$subject = sprintf( __( 'Booking Cancelled - %s', 'wp-booking-system-luca' ), get_bloginfo( 'name' ) );
+		$subject = $this->render_subject( 'wpbsl_email_cancellation_subject', $this->default_cancellation_subject(), $booking );
+		$body    = $this->get_template_body( 'wpbsl_email_cancellation_body', $this->default_cancellation_body(), $booking );
+		$message = $this->wrap_email( __( 'Booking Cancelled', 'wp-booking-system-luca' ), $body );
 
-		$message = $this->get_cancellation_email_template( $booking );
-
-		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: ' . get_option( 'wpbsl_email_from_name', get_bloginfo( 'name' ) ) . ' <' . get_option( 'wpbsl_email_from', get_option( 'admin_email' ) ) . '>',
-		);
-
-		return wp_mail( $to, $subject, $message, $headers );
+		return wp_mail( $to, $subject, $message, $this->mail_headers() );
 	}
 
-	/**
-	 * Get confirmation email template.
-	 *
-	 * @param object $booking Booking object.
-	 * @return string
-	 */
-	private function get_confirmation_email_template( $booking ) {
-		$manage_url = $this->get_manage_url( $booking->booking_token );
-
-		$currency = get_option( 'wpbsl_currency', 'CHF' );
-
-		ob_start();
-		?>
-		<!DOCTYPE html>
-		<html>
-		<head>
-			<meta charset="UTF-8">
-			<style>
-				body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-				.container { max-width: 600px; margin: 0 auto; padding: 20px; }
-				.header { background-color: #8B0000; color: white; padding: 20px; text-align: center; }
-				.content { background-color: #f9f9f9; padding: 20px; }
-				.booking-details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #8B0000; }
-				.booking-details p { margin: 8px 0; }
-				.button { display: inline-block; padding: 12px 24px; background-color: #8B0000; color: white; text-decoration: none; border-radius: 4px; margin-top: 15px; }
-				.footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-			</style>
-		</head>
-		<body>
-			<div class="container">
-				<div class="header">
-					<h1><?php esc_html_e( 'Booking Confirmation', 'wp-booking-system-luca' ); ?></h1>
-				</div>
-				<div class="content">
-					<p><?php echo sprintf( esc_html__( 'Dear %s %s,', 'wp-booking-system-luca' ), esc_html( $booking->first_name ), esc_html( $booking->last_name ) ); ?></p>
-					<p><?php esc_html_e( 'Thank you for your booking! We are pleased to confirm your reservation.', 'wp-booking-system-luca' ); ?></p>
-
-					<div class="booking-details">
-						<h3><?php esc_html_e( 'Booking Details', 'wp-booking-system-luca' ); ?></h3>
-						<p><strong><?php esc_html_e( 'Check-in:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_in ) ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Check-out:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $booking->check_out ) ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Guests:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->adults . ' ' . __( 'adults', 'wp-booking-system-luca' ) . ', ' . $booking->kids . ' ' . __( 'kids', 'wp-booking-system-luca' ) ); ?></p>
-						<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . $currency ); ?></p>
-						<?php if ( ! empty( $booking->notes ) ) : ?>
-							<p><strong><?php esc_html_e( 'Notes:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->notes ); ?></p>
-						<?php endif; ?>
-					</div>
-
-					<p><?php esc_html_e( 'You can manage or cancel your booking using the link below:', 'wp-booking-system-luca' ); ?></p>
-					<a href="<?php echo esc_url( $manage_url ); ?>" class="button"><?php esc_html_e( 'Manage Booking', 'wp-booking-system-luca' ); ?></a>
-
-					<p><?php esc_html_e( 'We look forward to welcoming you!', 'wp-booking-system-luca' ); ?></p>
-					<p><?php esc_html_e( 'Best regards,', 'wp-booking-system-luca' ); ?><br><?php echo esc_html( get_bloginfo( 'name' ) ); ?></p>
-				</div>
-				<div class="footer">
-					<p><?php echo esc_html( get_bloginfo( 'name' ) ); ?> | <?php echo esc_url( home_url() ); ?></p>
-				</div>
-			</div>
-		</body>
-		</html>
-		<?php
-		return ob_get_clean();
-	}
-
-	/**
-	 * Get cancellation email template.
-	 *
-	 * @param object $booking Booking object.
-	 * @return string
-	 */
-	private function get_cancellation_email_template( $booking ) {
-		ob_start();
-		?>
-		<!DOCTYPE html>
-		<html>
-		<head>
-			<meta charset="UTF-8">
-			<style>
-				body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-				.container { max-width: 600px; margin: 0 auto; padding: 20px; }
-				.header { background-color: #8B0000; color: white; padding: 20px; text-align: center; }
-				.content { background-color: #f9f9f9; padding: 20px; }
-				.footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-			</style>
-		</head>
-		<body>
-			<div class="container">
-				<div class="header">
-					<h1><?php esc_html_e( 'Booking Cancelled', 'wp-booking-system-luca' ); ?></h1>
-				</div>
-				<div class="content">
-					<p><?php echo sprintf( esc_html__( 'Dear %s %s,', 'wp-booking-system-luca' ), esc_html( $booking->first_name ), esc_html( $booking->last_name ) ); ?></p>
-					<p><?php esc_html_e( 'Your booking has been cancelled as requested.', 'wp-booking-system-luca' ); ?></p>
-					<p><?php esc_html_e( 'We hope to welcome you in the future!', 'wp-booking-system-luca' ); ?></p>
-					<p><?php esc_html_e( 'Best regards,', 'wp-booking-system-luca' ); ?><br><?php echo esc_html( get_bloginfo( 'name' ) ); ?></p>
-				</div>
-				<div class="footer">
-					<p><?php echo esc_html( get_bloginfo( 'name' ) ); ?> | <?php echo esc_url( home_url() ); ?></p>
-				</div>
-			</div>
-		</body>
-		</html>
-		<?php
-		return ob_get_clean();
-	}
 }
 

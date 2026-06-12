@@ -270,6 +270,26 @@ class WP_Booking_System_Luca_Admin {
 			$smtp_password_input = isset( $_POST['wpbsl_smtp_password'] ) ? trim( (string) wp_unslash( $_POST['wpbsl_smtp_password'] ) ) : '';
 			$smtp_password       = '' === $smtp_password_input ? (string) get_option( 'wpbsl_smtp_password', '' ) : $smtp_password_input;
 
+			// Email template options. Subjects are plain text; bodies allow safe HTML.
+			// Saving a blank value resets that template to its built-in default.
+			$template_fields = array(
+				'wpbsl_email_confirmation_subject' => 'subject',
+				'wpbsl_email_confirmation_body'    => 'body',
+				'wpbsl_email_cancellation_subject' => 'subject',
+				'wpbsl_email_cancellation_body'    => 'body',
+				'wpbsl_email_admin_subject'        => 'subject',
+				'wpbsl_email_admin_body'           => 'body',
+			);
+			$template_values = array();
+			foreach ( $template_fields as $field_key => $field_type ) {
+				if ( ! isset( $_POST[ $field_key ] ) ) {
+					$template_values[ $field_key ] = '';
+					continue;
+				}
+				$raw = wp_unslash( $_POST[ $field_key ] );
+				$template_values[ $field_key ] = ( 'body' === $field_type ) ? wp_kses_post( $raw ) : sanitize_text_field( $raw );
+			}
+
 			// Validate emails.
 			if ( ! is_email( $email_from ) ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Invalid email from address.', 'wp-booking-system-luca' ) . '</p></div>';
@@ -307,6 +327,9 @@ class WP_Booking_System_Luca_Admin {
 				update_option( 'wpbsl_smtp_auth', $smtp_auth );
 				update_option( 'wpbsl_smtp_username', $smtp_username );
 				update_option( 'wpbsl_smtp_password', $smtp_password );
+				foreach ( $template_values as $field_key => $field_value ) {
+					update_option( $field_key, $field_value );
+				}
 				echo '<div class="notice notice-success"><p>' . esc_html__( 'Settings saved.', 'wp-booking-system-luca' ) . '</p></div>';
 			}
 		}
@@ -503,6 +526,59 @@ class WP_Booking_System_Luca_Admin {
 						<input type="password" id="wpbsl_smtp_password" name="wpbsl_smtp_password" value="" class="regular-text" autocomplete="new-password" placeholder="<?php echo get_option( 'wpbsl_smtp_password', '' ) ? esc_attr__( '•••••••• (saved — leave blank to keep)', 'wp-booking-system-luca' ) : ''; ?>" />
 						<p class="description"><?php esc_html_e( 'Stored in your database. Leave blank to keep the current password.', 'wp-booking-system-luca' ); ?></p>
 					</td>
+				</tr>
+			</table>
+
+			<?php
+			$email = wp_booking_system_luca()->email;
+			// Effective value: saved text, or the built-in default when blank.
+			$eff = function ( $key, $default ) {
+				$v = (string) get_option( $key, '' );
+				return '' !== trim( $v ) ? $v : $default;
+			};
+			?>
+			<h2 class="title"><?php esc_html_e( 'Email Templates', 'wp-booking-system-luca' ); ?></h2>
+			<p class="description" style="max-width:640px;">
+				<?php esc_html_e( 'Customise the wording of the automatic emails. Clear a field and save to restore its default. You can use these merge tags, which are replaced with each booking\'s details:', 'wp-booking-system-luca' ); ?>
+			</p>
+			<p class="description" style="max-width:760px;">
+				<code>{site_name}</code> <code>{guest_name}</code> <code>{first_name}</code> <code>{last_name}</code> <code>{guest_email}</code> <code>{guest_phone}</code> <code>{check_in}</code> <code>{check_out}</code> <code>{adults}</code> <code>{kids}</code> <code>{guests}</code> <code>{total_price}</code> <code>{status}</code> <code>{notes}</code> <code>{booking_details}</code> <code>{manage_link}</code> <code>{manage_url}</code> <code>{admin_link}</code>
+			</p>
+			<table class="form-table">
+				<tr>
+					<th scope="row" colspan="2" style="padding-bottom:0;"><h3 style="margin:0;"><?php esc_html_e( 'Guest Confirmation', 'wp-booking-system-luca' ); ?></h3></th>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_confirmation_subject"><?php esc_html_e( 'Subject', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_email_confirmation_subject" name="wpbsl_email_confirmation_subject" value="<?php echo esc_attr( $eff( 'wpbsl_email_confirmation_subject', $email->default_confirmation_subject() ) ); ?>" class="large-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_confirmation_body"><?php esc_html_e( 'Body', 'wp-booking-system-luca' ); ?></label></th>
+					<td><textarea id="wpbsl_email_confirmation_body" name="wpbsl_email_confirmation_body" rows="9" class="large-text code"><?php echo esc_textarea( $eff( 'wpbsl_email_confirmation_body', $email->default_confirmation_body() ) ); ?></textarea></td>
+				</tr>
+
+				<tr>
+					<th scope="row" colspan="2" style="padding-bottom:0;"><h3 style="margin:0;"><?php esc_html_e( 'Guest Cancellation', 'wp-booking-system-luca' ); ?></h3></th>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_cancellation_subject"><?php esc_html_e( 'Subject', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_email_cancellation_subject" name="wpbsl_email_cancellation_subject" value="<?php echo esc_attr( $eff( 'wpbsl_email_cancellation_subject', $email->default_cancellation_subject() ) ); ?>" class="large-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_cancellation_body"><?php esc_html_e( 'Body', 'wp-booking-system-luca' ); ?></label></th>
+					<td><textarea id="wpbsl_email_cancellation_body" name="wpbsl_email_cancellation_body" rows="7" class="large-text code"><?php echo esc_textarea( $eff( 'wpbsl_email_cancellation_body', $email->default_cancellation_body() ) ); ?></textarea></td>
+				</tr>
+
+				<tr>
+					<th scope="row" colspan="2" style="padding-bottom:0;"><h3 style="margin:0;"><?php esc_html_e( 'Admin Notification', 'wp-booking-system-luca' ); ?></h3></th>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_admin_subject"><?php esc_html_e( 'Subject', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_email_admin_subject" name="wpbsl_email_admin_subject" value="<?php echo esc_attr( $eff( 'wpbsl_email_admin_subject', $email->default_admin_subject() ) ); ?>" class="large-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_email_admin_body"><?php esc_html_e( 'Body', 'wp-booking-system-luca' ); ?></label></th>
+					<td><textarea id="wpbsl_email_admin_body" name="wpbsl_email_admin_body" rows="9" class="large-text code"><?php echo esc_textarea( $eff( 'wpbsl_email_admin_body', $email->default_admin_body() ) ); ?></textarea></td>
 				</tr>
 			</table>
 			<?php submit_button( __( 'Save Settings', 'wp-booking-system-luca' ), 'primary', 'wpbsl_save_settings' ); ?>

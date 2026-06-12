@@ -1,5 +1,10 @@
 *** WP booking Luca Changelog ***
 
+2026.06.12 - version 1.4.0
+ * New - Customizable email templates: edit the subject and body of the guest confirmation, guest cancellation and admin notification emails from Settings > Email Templates.
+ * New - Merge tags ({guest_name}, {check_in}, {check_out}, {guests}, {total_price}, {booking_details}, {manage_link}, {admin_link}, and more) are replaced with each booking's details; clearing a field restores the built-in default.
+ * Tweak - The branded HTML email layout is preserved around custom content, and guest-supplied values are escaped to prevent markup injection.
+
 2026.06.12 - version 1.3.0
  * New - Built-in SMTP email delivery: send booking confirmations and notifications through an external mailbox such as Gmail / Google Workspace (host, port, encryption, authentication, username and app password) for reliable delivery.
  * New - "Send Test Email" button in Settings to verify delivery, with success/error feedback (captures and shows SMTP errors).

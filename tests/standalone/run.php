@@ -278,6 +278,29 @@ $email->configure_phpmailer( $pm );
 check_equals( '', $pm->SMTPSecure, 'encryption "none" clears SMTPSecure' );
 check( false === $pm->SMTPAutoTLS, 'encryption "none" disables SMTPAutoTLS' );
 
+echo "\nEmail: merge-tag replacement (customizable templates)\n";
+$vars = array(
+	'{guest_name}'  => 'Anna Rossi',
+	'{check_in}'    => '01 Jul 2026',
+	'{total_price}' => '375.00 CHF',
+	'{site_name}'   => 'Chalet De Simoni',
+);
+$tpl = "Dear {guest_name}, your stay from {check_in} costs {total_price}. — {site_name}";
+$out = WP_Booking_System_Luca_Email::replace_merge_tags( $tpl, $vars );
+check_equals( 'Dear Anna Rossi, your stay from 01 Jul 2026 costs 375.00 CHF. — Chalet De Simoni', $out, 'all merge tags substituted' );
+check( false === strpos( $out, '{' ), 'no unreplaced tags remain' );
+check_equals( '', WP_Booking_System_Luca_Email::replace_merge_tags( '', $vars ), 'empty template yields empty string' );
+check_equals( 'No tags here', WP_Booking_System_Luca_Email::replace_merge_tags( 'No tags here', $vars ), 'plain text passes through unchanged' );
+// Unknown tags are left intact (so typos are visible rather than silently dropped).
+check_equals( 'Hi {unknown}', WP_Booking_System_Luca_Email::replace_merge_tags( 'Hi {unknown}', $vars ), 'unknown tags are left untouched' );
+
+// Defaults are non-empty and reference the key tags they rely on.
+$email_obj = $instance->email;
+check( false !== strpos( $email_obj->default_confirmation_body(), '{manage_link}' ), 'confirmation default references {manage_link}' );
+check( false !== strpos( $email_obj->default_confirmation_body(), '{booking_details}' ), 'confirmation default references {booking_details}' );
+check( false !== strpos( $email_obj->default_admin_body(), '{admin_link}' ), 'admin default references {admin_link}' );
+check( false !== strpos( $email_obj->default_confirmation_subject(), '{site_name}' ), 'confirmation subject default references {site_name}' );
+
 /* --------------------------------------------------------------------------
  * Summary.
  * ------------------------------------------------------------------------ */

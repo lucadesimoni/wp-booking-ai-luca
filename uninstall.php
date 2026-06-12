@@ -53,6 +53,12 @@ delete_option( 'wpbsl_smtp_encryption' );
 delete_option( 'wpbsl_smtp_auth' );
 delete_option( 'wpbsl_smtp_username' );
 delete_option( 'wpbsl_smtp_password' );
+delete_option( 'wpbsl_email_confirmation_subject' );
+delete_option( 'wpbsl_email_confirmation_body' );
+delete_option( 'wpbsl_email_cancellation_subject' );
+delete_option( 'wpbsl_email_cancellation_body' );
+delete_option( 'wpbsl_email_admin_subject' );
+delete_option( 'wpbsl_email_admin_body' );
 
 // Clear any cached data.
 wp_cache_flush();

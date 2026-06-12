@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,6 +18,7 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Price calculation based on number of adults and kids
 * Email notifications for booking confirmations and cancellations
 * Built-in SMTP delivery (e.g. Gmail / Google Workspace) with a test-email button for reliable sending
+* Customizable email templates (subject and body) with merge tags
 * Unique links for guests to manage or cancel their bookings
 * Configurable booking rules: minimum/maximum stay, advance notice, booking window, default guests, required fields, and auto-confirm
 * Modern, responsive design that fits seamlessly into your website
@@ -66,9 +67,14 @@ Yes. Confirmation and admin-notification emails are sent automatically when a bo
 
 = Can I customize the email templates? =
 
-Currently, email templates are built into the plugin. Future versions may include customizable templates.
+Yes. Under WP booking Luca > Settings > Email Templates you can edit the subject and body of the guest confirmation, guest cancellation, and admin notification emails. Use merge tags such as {guest_name}, {check_in}, {check_out}, {guests}, {total_price}, {booking_details} and {manage_link}, which are replaced with each booking's details. Clear a field and save to restore its default wording.
 
 == Changelog ==
+
+= 1.4.0 =
+* 2026-06-12
+* Customizable email templates: edit the subject and body of the confirmation, cancellation, and admin emails using merge tags
+* Clear a template field and save to restore its default; guest-supplied values are escaped in emails
 
 = 1.3.0 =
 * 2026-06-12
