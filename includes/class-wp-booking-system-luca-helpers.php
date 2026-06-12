@@ -110,6 +110,51 @@ class WP_Booking_System_Luca_Helpers {
 	}
 
 	/**
+	 * Outstanding balance for a booking (total price minus amount paid),
+	 * never negative.
+	 *
+	 * @param object|array $booking Booking.
+	 * @return float
+	 */
+	public static function amount_due( $booking ) {
+		$booking = (object) $booking;
+		$total   = isset( $booking->total_price ) ? (float) $booking->total_price : 0.0;
+		$paid    = isset( $booking->amount_paid ) ? (float) $booking->amount_paid : 0.0;
+
+		return max( 0.0, round( $total - $paid, 2 ) );
+	}
+
+	/**
+	 * Filter a list of bookings to those whose check-in date falls within an
+	 * inclusive [from, to] range. Empty bounds are ignored. Dates are
+	 * compared as Y-m-d strings (lexicographic order matches chronological).
+	 *
+	 * @param array  $bookings Bookings.
+	 * @param string $from     Lower bound (Y-m-d) or ''.
+	 * @param string $to       Upper bound (Y-m-d) or ''.
+	 * @return array
+	 */
+	public static function filter_by_date_range( $bookings, $from, $to ) {
+		if ( '' === (string) $from && '' === (string) $to ) {
+			return $bookings;
+		}
+
+		$out = array();
+		foreach ( $bookings as $b ) {
+			$ci = is_object( $b ) ? $b->check_in : $b['check_in'];
+			if ( '' !== (string) $from && $ci < $from ) {
+				continue;
+			}
+			if ( '' !== (string) $to && $ci > $to ) {
+				continue;
+			}
+			$out[] = $b;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Number of nights between two dates (minimum 1).
 	 *
 	 * @param string $check_in  Check-in date (Y-m-d).

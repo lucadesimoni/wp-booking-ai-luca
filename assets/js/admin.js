@@ -27,6 +27,7 @@
 		});
 		$('#wpbs-recalc-price').on('click', recalcPrice);
 		$('#wpbs-edit-form').on('submit', saveBooking);
+		$('#wpbs-send-reminder').on('click', sendReminder);
 	});
 
 	/**
@@ -229,6 +230,27 @@
 		}
 		const price = (adults * (wpbslAdmin.priceAdult || 0) + kids * (wpbslAdmin.priceKid || 0)) * nights;
 		$('#wpbs-f-total_price').val(price.toFixed(2));
+	}
+
+	function sendReminder() {
+		const id = $('#wpbs-f-id').val();
+		if (!id) { return; }
+		const $msg = $('#wpbs-edit-msg');
+		const $btn = $('#wpbs-send-reminder');
+		$btn.prop('disabled', true);
+		$msg.css('color', '#666').text(wpbslAdmin.i18n.sending);
+		$.ajax({
+			url: wpbslAdmin.ajaxUrl,
+			type: 'POST',
+			data: { action: 'wpbsl_send_payment_reminder', nonce: wpbslAdmin.nonce, id: id },
+			success: function(response) {
+				const ok = response.success;
+				$msg.css('color', ok ? '#00a32a' : '#d63638')
+					.text((response.data && response.data.message) || wpbslAdmin.i18n.genericError);
+			},
+			error: function() { $msg.css('color', '#d63638').text(wpbslAdmin.i18n.genericError); },
+			complete: function() { $btn.prop('disabled', false); }
+		});
 	}
 
 	function saveBooking(e) {

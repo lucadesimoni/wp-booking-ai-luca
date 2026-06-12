@@ -283,6 +283,9 @@
 .wpbs-h-to { color:#1e7e34; font-weight:600; }
 
 /* Dashboard */
+.wpbs-dash-filter { display:flex; align-items:flex-end; gap:12px; margin:12px 0 4px; flex-wrap:wrap; }
+.wpbs-dash-filter label { display:flex; flex-direction:column; font-weight:600; font-size:12px; }
+.wpbs-dash-filter input { margin-top:4px; font-weight:400; }
 .wpbs-dash-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px; margin-top:18px; }
 .wpbs-dash-panel { background:#fff; border:1px solid #dcdcde; border-radius:6px; padding:16px 18px; overflow-x:auto; }
 .wpbs-dash-panel table { width:100%; }

@@ -35,6 +35,7 @@ class WP_Booking_System_Luca_Ajax {
 		add_action( 'wp_ajax_wpbsl_delete_booking', array( $this, 'delete_booking' ) );
 		add_action( 'wp_ajax_wpbsl_update_status', array( $this, 'update_status' ) );
 		add_action( 'wp_ajax_wpbsl_update_booking', array( $this, 'update_booking' ) );
+		add_action( 'wp_ajax_wpbsl_send_payment_reminder', array( $this, 'send_payment_reminder' ) );
 		add_action( 'wp_ajax_wpbsl_send_test_email', array( $this, 'send_test_email' ) );
 
 		// Calendar availability (frontend).
@@ -413,6 +414,36 @@ class WP_Booking_System_Luca_Ajax {
 				'history' => $this->format_history( wp_booking_system_luca()->database->get_history( $id ) ),
 			)
 		);
+	}
+
+	/**
+	 * Send a payment-reminder email to the guest (admin).
+	 */
+	public function send_payment_reminder() {
+		check_ajax_referer( 'wp-booking-system-luca-admin', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'wp-booking-system-luca' ) ) );
+		}
+
+		$id      = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+		$booking = $id ? wp_booking_system_luca()->database->get_booking( $id ) : null;
+
+		if ( ! $booking ) {
+			wp_send_json_error( array( 'message' => __( 'Booking not found.', 'wp-booking-system-luca' ) ) );
+		}
+
+		if ( ! is_email( $booking->email ) ) {
+			wp_send_json_error( array( 'message' => __( 'This booking has no valid email address.', 'wp-booking-system-luca' ) ) );
+		}
+
+		$sent = wp_booking_system_luca()->email->send_payment_reminder( $booking );
+
+		if ( $sent ) {
+			wp_send_json_success( array( 'message' => __( 'Payment reminder sent.', 'wp-booking-system-luca' ) ) );
+		}
+
+		wp_send_json_error( array( 'message' => __( 'The reminder could not be sent. Check your email settings.', 'wp-booking-system-luca' ) ) );
 	}
 
 	/**

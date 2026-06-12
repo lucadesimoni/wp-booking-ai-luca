@@ -390,6 +390,23 @@ check_equals( array( 'from' => 'Alberto', 'to' => 'Luca' ), $diff['owner'], 'own
 check( ! isset( $diff['total_price'] ), 'numeric 500.0 vs 500.00 is not a change' );
 check( ! isset( $diff['first_name'] ), 'unchanged fields are excluded' );
 
+echo "\nHelpers: outstanding balance\n";
+check_equals( 200.0, WP_Booking_System_Luca_Helpers::amount_due( (object) array( 'total_price' => 500, 'amount_paid' => 300 ) ), 'due = total - paid' );
+check_equals( 0.0, WP_Booking_System_Luca_Helpers::amount_due( (object) array( 'total_price' => 500, 'amount_paid' => 500 ) ), 'fully paid is zero due' );
+check_equals( 0.0, WP_Booking_System_Luca_Helpers::amount_due( (object) array( 'total_price' => 100, 'amount_paid' => 150 ) ), 'overpaid clamps to zero' );
+check_equals( 80.0, WP_Booking_System_Luca_Helpers::amount_due( array( 'total_price' => 80 ) ), 'missing amount_paid treats as unpaid (array input)' );
+
+echo "\nHelpers: date-range filter\n";
+$range_set = array(
+	(object) array( 'check_in' => '2026-07-15' ),
+	(object) array( 'check_in' => '2026-08-01' ),
+	(object) array( 'check_in' => '2026-09-30' ),
+);
+check_equals( 3, count( WP_Booking_System_Luca_Helpers::filter_by_date_range( $range_set, '', '' ) ), 'empty bounds return everything' );
+check_equals( 1, count( WP_Booking_System_Luca_Helpers::filter_by_date_range( $range_set, '2026-08-01', '2026-08-31' ) ), 'August window keeps only the August check-in' );
+check_equals( 2, count( WP_Booking_System_Luca_Helpers::filter_by_date_range( $range_set, '2026-08-01', '' ) ), 'open-ended from-bound is inclusive' );
+check_equals( 2, count( WP_Booking_System_Luca_Helpers::filter_by_date_range( $range_set, '', '2026-08-01' ) ), 'open-ended to-bound is inclusive' );
+
 echo "\nStats: dashboard aggregation\n";
 $sample = array(
 	(object) array( 'first_name' => 'Anna', 'last_name' => 'Rossi', 'email' => 'a@x.com', 'check_in' => '2026-08-03', 'check_out' => '2026-08-08', 'adults' => 2, 'kids' => 1, 'owner' => 'Alberto', 'visitors_welcome' => 1, 'total_price' => 600.0, 'amount_paid' => 600.0, 'payment_method' => 'bank', 'status' => 'confirmed' ),

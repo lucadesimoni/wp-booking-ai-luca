@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,8 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Insights dashboard: bookings per guest, owner usage, nights, revenue and payment breakdowns
 * Per-booking payment tracking (status, method: Bank/TWINT/Cash, amount paid) with a full booking editor
 * Change history: every later edit to a booking is recorded with who changed what, and when
+* CSV export of all bookings and payments (respects the dashboard's date range)
+* Date-range filter on the dashboard, and a payment-reminder email with an outstanding-balance merge tag
 * Frontend booking form with date selection
 * No external CDN — date picker and calendar libraries are bundled with the plugin
 * Price calculation based on number of adults and kids
@@ -90,9 +92,20 @@ Yes. On WP booking Luca > All Bookings, click "View / Edit" on any booking to op
 
 = Where can I see statistics about my bookings? =
 
-Open WP booking Luca > Dashboard for insights across all non-cancelled bookings: totals (bookings, nights, guests, revenue, collected and outstanding amounts), bookings per guest, owner usage, payments by method and bookings by month.
+Open WP booking Luca > Dashboard for insights across all non-cancelled bookings: totals (bookings, nights, guests, revenue, collected and outstanding amounts), bookings per guest, owner usage, payments by method and bookings by month. Use the From/To filter to restrict everything to a check-in date range.
+
+= Can I export my bookings, or send a payment reminder? =
+
+Yes. The All Bookings and Dashboard screens have an "Export CSV" button that downloads every booking with its payment details (amount paid, outstanding balance, status and method); on the Dashboard the export respects the active date range. To chase an unpaid balance, open a booking via "View / Edit" and click "Send payment reminder" — it emails the guest using the Payment Reminder template (editable under Settings > Email Templates), which supports an {amount_due} merge tag for the outstanding balance.
 
 == Changelog ==
+
+= 1.9.0 =
+* 2026-06-12
+* CSV export of all bookings and payments (ID, guest, dates, nights, guests, owner, status, total, amount paid, outstanding, payment status/method) from the All Bookings and Dashboard screens
+* Dashboard date-range filter (by check-in); the CSV export respects the active range
+* Payment-reminder email you can send to a guest from the booking editor, with a customisable template under Settings > Email Templates
+* New {amount_due} merge tag for the outstanding balance, plus {payment_status}, {payment_method} and {amount_paid} added to the email merge-tag palette
 
 = 1.8.0 =
 * 2026-06-12

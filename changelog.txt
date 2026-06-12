@@ -1,5 +1,11 @@
 *** WP booking Luca Changelog ***
 
+2026.06.12 - version 1.9.0
+ * New - CSV export: download all bookings with full payment details (amount paid, outstanding balance, status, method) from the All Bookings and Dashboard screens.
+ * New - Dashboard date-range filter (by check-in date); KPIs, breakdowns and the CSV export all respect the active range.
+ * New - Payment-reminder email: send a reminder to the guest from the booking editor. The template (subject, body and visual blocks) is editable under Settings > Email Templates.
+ * New - {amount_due} merge tag for the outstanding balance. The {payment_status}, {payment_method}, {amount_paid} and {amount_due} tags are now listed in the email builder's tag palette.
+
 2026.06.12 - version 1.8.0
  * New - Per-booking payment tracking: payment status (Unpaid / Partially paid / Paid), payment method (Bank, TWINT, Cash) and the amount effectively paid. A Payment column on the bookings list shows status and paid/total at a glance.
  * New - Full booking editor in a modal: edit any field (guest details, dates, number of guests, owner, price, status, payment, notes). Availability is re-checked to prevent overlaps and a "Recalc" button recomputes the price from the dates and guests.

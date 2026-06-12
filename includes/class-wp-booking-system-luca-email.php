@@ -313,7 +313,8 @@ class WP_Booking_System_Luca_Email {
 			'{visitors_welcome}' => esc_html( ( isset( $booking->visitors_welcome ) && (int) $booking->visitors_welcome ) ? __( 'Yes', 'wp-booking-system-luca' ) : __( 'No', 'wp-booking-system-luca' ) ),
 			'{payment_status}'  => esc_html( $this->payment_status_label( isset( $booking->payment_status ) ? $booking->payment_status : 'unpaid' ) ),
 			'{payment_method}'  => esc_html( $this->payment_method_label( isset( $booking->payment_method ) ? $booking->payment_method : '' ) ),
-			'{amount_paid}'     => esc_html( number_format( isset( $booking->amount_paid ) ? (float) $booking->amount_paid : 0, 2 ) . ' ' . get_option( 'wpbsl_currency', 'CHF' ) ),
+			'{amount_paid}'     => esc_html( number_format( isset( $booking->amount_paid ) ? (float) $booking->amount_paid : 0, 2 ) . ' ' . $currency ),
+			'{amount_due}'      => esc_html( number_format( WP_Booking_System_Luca_Helpers::amount_due( $booking ), 2 ) . ' ' . $currency ),
 			'{notes}'           => esc_html( (string) $booking->notes ),
 			'{manage_url}'      => esc_url( $manage_url ),
 			'{manage_link}'     => '<a href="' . esc_url( $manage_url ) . '" class="button" style="display:inline-block; padding:12px 24px; background-color:#8B0000; color:#ffffff; text-decoration:none; border-radius:4px; margin-top:15px;">' . esc_html__( 'Manage Booking', 'wp-booking-system-luca' ) . '</a>',
@@ -542,6 +543,27 @@ class WP_Booking_System_Luca_Email {
 	}
 
 	/**
+	 * Default payment-reminder subject.
+	 *
+	 * @return string
+	 */
+	public function default_reminder_subject() {
+		return __( 'Payment reminder - {site_name}', 'wp-booking-system-luca' );
+	}
+
+	/**
+	 * Default payment-reminder body.
+	 *
+	 * @return string
+	 */
+	public function default_reminder_body() {
+		return __(
+			"Dear {guest_name},\n\nThis is a friendly reminder about the balance for your booking.\n\n{booking_details}\n\nAmount paid: {amount_paid}\nOutstanding balance: {amount_due}\n\nYou can review your booking using the link below:\n\n{manage_link}\n\nThank you,\n{site_name}",
+			'wp-booking-system-luca'
+		);
+	}
+
+	/**
 	 * Default admin-notification subject.
 	 *
 	 * @return string
@@ -673,6 +695,21 @@ class WP_Booking_System_Luca_Email {
 		$subject = $this->render_subject( 'wpbsl_email_cancellation_subject', $this->default_cancellation_subject(), $booking );
 		$body    = $this->compose_body( 'cancellation', $this->default_cancellation_body(), $booking );
 		$message = $this->wrap_email( __( 'Booking Cancelled', 'wp-booking-system-luca' ), $body );
+
+		return wp_mail( $to, $subject, $message, $this->mail_headers() );
+	}
+
+	/**
+	 * Send a payment-reminder email to the guest.
+	 *
+	 * @param object $booking Booking object.
+	 * @return bool
+	 */
+	public function send_payment_reminder( $booking ) {
+		$to      = $booking->email;
+		$subject = $this->render_subject( 'wpbsl_email_reminder_subject', $this->default_reminder_subject(), $booking );
+		$body    = $this->compose_body( 'reminder', $this->default_reminder_body(), $booking );
+		$message = $this->wrap_email( __( 'Payment Reminder', 'wp-booking-system-luca' ), $body );
 
 		return wp_mail( $to, $subject, $message, $this->mail_headers() );
 	}
