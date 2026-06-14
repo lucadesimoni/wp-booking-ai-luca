@@ -887,11 +887,32 @@ class WP_Booking_System_Luca_Admin {
 		$currency        = get_option( 'wpbsl_currency', 'CHF' );
 		$email_from      = get_option( 'wpbsl_email_from', get_option( 'admin_email' ) );
 		$email_from_name = get_option( 'wpbsl_email_from_name', get_bloginfo( 'name' ) );
+
+		// Which settings tab to show. Posted back on save so the same tab stays open.
+		$tabs       = array(
+			'general'   => __( 'General', 'wp-booking-system-luca' ),
+			'rules'     => __( 'Booking Rules', 'wp-booking-system-luca' ),
+			'form'      => __( 'Booking Form', 'wp-booking-system-luca' ),
+			'email'     => __( 'Email Delivery', 'wp-booking-system-luca' ),
+			'templates' => __( 'Email Templates', 'wp-booking-system-luca' ),
+		);
+		$active_tab = isset( $_POST['wpbsl_active_tab'] ) ? sanitize_key( wp_unslash( $_POST['wpbsl_active_tab'] ) ) : 'general';
+		$active     = isset( $tabs[ $active_tab ] ) ? $active_tab : 'general';
 		?>
-		<div class="wrap wpbs-admin-wrap">
+		<div class="wrap wpbs-admin-wrap wpbs-settings">
 			<h1><?php esc_html_e( 'Booking Settings', 'wp-booking-system-luca' ); ?></h1>
 			<form method="post" action="">
 				<?php wp_nonce_field( 'wpbsl_settings' ); ?>
+				<input type="hidden" name="wpbsl_active_tab" id="wpbsl_active_tab" value="<?php echo esc_attr( $active ); ?>" />
+
+				<nav class="nav-tab-wrapper wpbs-settings-tabs">
+					<?php foreach ( $tabs as $slug => $label ) : ?>
+						<a href="#<?php echo esc_attr( $slug ); ?>" class="nav-tab<?php echo $active === $slug ? ' nav-tab-active' : ''; ?>" data-tab="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+
+				<div class="wpbs-tab-panel<?php echo 'general' === $active ? ' is-active' : ''; ?>" data-tab="general">
+				<h2 class="title"><?php esc_html_e( 'Pricing & Notifications', 'wp-booking-system-luca' ); ?></h2>
 				<table class="form-table">
 					<tr>
 						<th scope="row">
@@ -953,7 +974,9 @@ class WP_Booking_System_Luca_Admin {
 				</tr>
 			</table>
 
-			<h2 class="title"><?php esc_html_e( 'Booking Rules', 'wp-booking-system-luca' ); ?></h2>
+			</div><!-- /general -->
+
+			<div class="wpbs-tab-panel<?php echo 'rules' === $active ? ' is-active' : ''; ?>" data-tab="rules">
 			<table class="form-table">
 				<tr>
 					<th scope="row"><label for="wpbsl_min_nights"><?php esc_html_e( 'Minimum Stay (nights)', 'wp-booking-system-luca' ); ?></label></th>
@@ -991,7 +1014,9 @@ class WP_Booking_System_Luca_Admin {
 				</tr>
 			</table>
 
-			<h2 class="title"><?php esc_html_e( 'Booking Form', 'wp-booking-system-luca' ); ?></h2>
+			</div><!-- /rules -->
+
+			<div class="wpbs-tab-panel<?php echo 'form' === $active ? ' is-active' : ''; ?>" data-tab="form">
 			<table class="form-table">
 				<tr>
 					<th scope="row"><label for="wpbsl_default_adults"><?php esc_html_e( 'Default Adults', 'wp-booking-system-luca' ); ?></label></th>
@@ -1045,6 +1070,9 @@ class WP_Booking_System_Luca_Admin {
 				</tr>
 			</table>
 
+			</div><!-- /form -->
+
+			<div class="wpbs-tab-panel<?php echo 'email' === $active ? ' is-active' : ''; ?>" data-tab="email">
 			<h2 class="title"><?php esc_html_e( 'Email Delivery (SMTP)', 'wp-booking-system-luca' ); ?></h2>
 			<p class="description" style="max-width:640px;">
 				<?php esc_html_e( 'Booking confirmation and notification emails are sent automatically through WordPress. By default WordPress uses your server\'s mail, which is often unreliable. Enable SMTP below to send through a real mailbox such as Gmail / Google Workspace for dependable delivery.', 'wp-booking-system-luca' ); ?>
@@ -1101,6 +1129,20 @@ class WP_Booking_System_Luca_Admin {
 				</tr>
 			</table>
 
+			<h2 class="title"><?php esc_html_e( 'Send a Test Email', 'wp-booking-system-luca' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Save your settings first, then send a test email to confirm delivery works.', 'wp-booking-system-luca' ); ?></p>
+			<table class="form-table">
+				<tr>
+					<th scope="row"><label for="wpbsl_test_email_to"><?php esc_html_e( 'Send test to', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="email" id="wpbsl_test_email_to" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" class="regular-text" />
+						<button type="button" class="button button-secondary" id="wpbsl-send-test-email" data-nonce="<?php echo esc_attr( wp_create_nonce( 'wp-booking-system-luca-admin' ) ); ?>"><?php esc_html_e( 'Send Test Email', 'wp-booking-system-luca' ); ?></button>
+						<span id="wpbsl-test-email-result" style="margin-left:10px;font-weight:600;"></span>
+					</td>
+				</tr>
+			</table>
+			</div><!-- /email -->
+
 			<?php
 			$email = wp_booking_system_luca()->email;
 			// Effective value: saved text, or the built-in default when blank.
@@ -1109,7 +1151,7 @@ class WP_Booking_System_Luca_Admin {
 				return '' !== trim( $v ) ? $v : $default;
 			};
 			?>
-			<h2 class="title"><?php esc_html_e( 'Email Templates', 'wp-booking-system-luca' ); ?></h2>
+			<div class="wpbs-tab-panel<?php echo 'templates' === $active ? ' is-active' : ''; ?>" data-tab="templates">
 			<p class="description" style="max-width:640px;">
 				<?php esc_html_e( 'Customise the wording of the automatic emails. Clear a field and save to restore its default. You can use these merge tags, which are replaced with each booking\'s details:', 'wp-booking-system-luca' ); ?>
 			</p>
@@ -1205,21 +1247,11 @@ class WP_Booking_System_Luca_Admin {
 					</td>
 				</tr>
 			</table>
+			</div><!-- /templates -->
+
 			<?php submit_button( __( 'Save Settings', 'wp-booking-system-luca' ), 'primary', 'wpbsl_save_settings' ); ?>
 		</form>
 
-		<h2 class="title"><?php esc_html_e( 'Send a Test Email', 'wp-booking-system-luca' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'Save your settings first, then send a test email to confirm delivery works.', 'wp-booking-system-luca' ); ?></p>
-		<table class="form-table">
-			<tr>
-				<th scope="row"><label for="wpbsl_test_email_to"><?php esc_html_e( 'Send test to', 'wp-booking-system-luca' ); ?></label></th>
-				<td>
-					<input type="email" id="wpbsl_test_email_to" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" class="regular-text" />
-					<button type="button" class="button button-secondary" id="wpbsl-send-test-email" data-nonce="<?php echo esc_attr( wp_create_nonce( 'wp-booking-system-luca-admin' ) ); ?>"><?php esc_html_e( 'Send Test Email', 'wp-booking-system-luca' ); ?></button>
-					<span id="wpbsl-test-email-result" style="margin-left:10px;font-weight:600;"></span>
-				</td>
-			</tr>
-		</table>
 		<script>
 		( function () {
 			var btn = document.getElementById( 'wpbsl-send-test-email' );

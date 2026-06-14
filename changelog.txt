@@ -1,5 +1,10 @@
 *** WP booking Luca Changelog ***
 
+2026.06.14 - version 1.11.0
+ * Tweak - Restructured the Settings screen into clear tabbed sections (General, Booking Rules, Booking Form, Email Delivery, Email Templates) for much easier navigation. It remains a single form with one Save button, and the tab you saved on stays open afterwards.
+ * Tweak - The "Send a Test Email" tool now lives under the Email Delivery tab, alongside the SMTP settings.
+ * i18n - Translated the new settings strings (General, Email Delivery, Pricing & Notifications) into German.
+
 2026.06.14 - version 1.10.0
  * New - Full German translation (de_DE and de_CH) for the admin, booking form and emails. Set the site language to German to use it; the .po/.mo and a .pot template ship under /lang, with a tools/i18n/po2mo.php compiler for editing translations.
  * Tweak - Responsive admin: the bookings table now scrolls horizontally on small screens instead of overflowing the page; the booking editor and dashboard collapse to a single column, and the stat cards, payment fields and dashboard filter wrap cleanly on phones.

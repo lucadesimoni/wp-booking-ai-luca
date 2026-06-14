@@ -127,6 +127,20 @@
 }
 
 /* Settings Page */
+.wpbs-settings-tabs { margin: 12px 0 0; }
+.wpbs-settings .wpbs-tab-panel { display: none; }
+.wpbs-settings .wpbs-tab-panel.is-active { display: block; }
+.wpbs-settings .wpbs-tab-panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	padding: 4px 20px 16px;
+	margin-bottom: 16px;
+}
+.wpbs-settings .wpbs-tab-panel > h2.title:first-of-type { margin-top: 16px; }
+/* The Save button sits outside the panels so it shows on every tab. */
+.wpbs-settings .submit { margin-top: 0; }
+
 .wpbs-admin-wrap .form-table th {
 	font-weight: 600;
 	padding: 20px 10px 20px 0;

@@ -832,3 +832,12 @@ msgstr "über den Standard-WordPress-Mailer"
 msgid "•••••••• (saved — leave blank to keep)"
 msgstr "•••••••• (gespeichert – leer lassen, um es beizubehalten)"
 
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Email Delivery"
+msgstr "E-Mail-Versand"
+
+msgid "Pricing & Notifications"
+msgstr "Preise & Benachrichtigungen"

@@ -828,3 +828,12 @@ msgstr ""
 msgid "•••••••• (saved — leave blank to keep)"
 msgstr ""
 
+
+msgid "General"
+msgstr ""
+
+msgid "Email Delivery"
+msgstr ""
+
+msgid "Pricing & Notifications"
+msgstr ""

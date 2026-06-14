@@ -28,7 +28,49 @@
 		$('#wpbs-recalc-price').on('click', recalcPrice);
 		$('#wpbs-edit-form').on('submit', saveBooking);
 		$('#wpbs-send-reminder').on('click', sendReminder);
+
+		// Settings page tabs
+		if ($('.wpbs-settings-tabs').length) {
+			initSettingsTabs();
+		}
 	});
+
+	/**
+	 * Tabbed navigation on the settings screen. Keeps everything in one form
+	 * (so a single Save persists all tabs) while showing one section at a time.
+	 */
+	function initSettingsTabs() {
+		const tabs = $('.wpbs-settings-tabs .nav-tab');
+
+		function activate(slug) {
+			if (!slug || !$('.wpbs-tab-panel[data-tab="' + slug + '"]').length) {
+				slug = tabs.first().data('tab');
+			}
+			tabs.removeClass('nav-tab-active')
+				.filter('[data-tab="' + slug + '"]').addClass('nav-tab-active');
+			$('.wpbs-tab-panel').removeClass('is-active')
+				.filter('[data-tab="' + slug + '"]').addClass('is-active');
+			$('#wpbsl_active_tab').val(slug);
+		}
+
+		tabs.on('click', function(e) {
+			e.preventDefault();
+			const slug = $(this).data('tab');
+			if (history.replaceState) {
+				history.replaceState(null, '', '#' + slug);
+			} else {
+				window.location.hash = slug;
+			}
+			activate(slug);
+		});
+
+		// Restore from the URL hash (e.g. after following an anchored link),
+		// otherwise keep whatever the server marked active (survives Save).
+		const fromHash = window.location.hash.replace('#', '');
+		if (fromHash) {
+			activate(fromHash);
+		}
+	}
 
 	/**
 	 * Handle confirm/cancel status changes from the bookings list
