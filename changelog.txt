@@ -1,5 +1,9 @@
 *** WP booking Luca Changelog ***
 
+2026.06.14 - version 1.10.0
+ * New - Full German translation (de_DE and de_CH) for the admin, booking form and emails. Set the site language to German to use it; the .po/.mo and a .pot template ship under /lang, with a tools/i18n/po2mo.php compiler for editing translations.
+ * Tweak - Responsive admin: the bookings table now scrolls horizontally on small screens instead of overflowing the page; the booking editor and dashboard collapse to a single column, and the stat cards, payment fields and dashboard filter wrap cleanly on phones.
+
 2026.06.12 - version 1.9.0
  * New - CSV export: download all bookings with full payment details (amount paid, outstanding balance, status, method) from the All Bookings and Dashboard screens.
  * New - Dashboard date-range filter (by check-in date); KPIs, breakdowns and the CSV export all respect the active range.

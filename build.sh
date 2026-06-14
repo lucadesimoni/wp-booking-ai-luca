@@ -25,6 +25,7 @@ INCLUDE=(
 	"LICENSE"
 	"includes"
 	"assets"
+	"lang"
 )
 
 echo "Cleaning previous build..."

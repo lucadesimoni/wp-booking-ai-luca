@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.9.0
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,7 +30,8 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Calendar (.ics) invite attached to confirmation emails so guests can add the stay to their calendar
 * Unique links for guests to manage or cancel their bookings
 * Configurable booking rules: minimum/maximum stay, advance notice, booking window, default guests, required fields, and auto-confirm
-* Modern, responsive design that fits seamlessly into your website
+* German translation included (de_DE and de_CH)
+* Modern, responsive design — including a mobile-friendly admin — that fits seamlessly into your website
 
 Perfect for vacation rentals, hotels, or any accommodation booking needs.
 
@@ -98,7 +99,16 @@ Open WP booking Luca > Dashboard for insights across all non-cancelled bookings:
 
 Yes. The All Bookings and Dashboard screens have an "Export CSV" button that downloads every booking with its payment details (amount paid, outstanding balance, status and method); on the Dashboard the export respects the active date range. To chase an unpaid balance, open a booking via "View / Edit" and click "Send payment reminder" — it emails the guest using the Payment Reminder template (editable under Settings > Email Templates), which supports an {amount_due} merge tag for the outstanding balance.
 
+= Is the plugin available in German? =
+
+Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
+
 == Changelog ==
+
+= 1.10.0 =
+* 2026-06-14
+* Full German translation (de_DE and de_CH); set Settings > General > Site Language to German to use it. The .po/.mo and a .pot template ship in /lang
+* Responsive admin: the bookings table scrolls on small screens instead of overflowing, the booking editor and dashboard stack to a single column, and stat cards/filters wrap on mobile
 
 = 1.9.0 =
 * 2026-06-12

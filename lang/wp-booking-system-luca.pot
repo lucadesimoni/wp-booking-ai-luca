@@ -1,0 +1,830 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP booking Luca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%1$d adults, %2$d kids"
+msgstr ""
+
+msgid "%1$d nights · %2$d bookings"
+msgstr ""
+
+msgid "%1$s - Booking #%2$d"
+msgstr ""
+
+msgid "A horizontal divider."
+msgstr ""
+
+msgid "A minimum stay of %d night is required."
+msgid_plural "A minimum stay of %d nights is required."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "A new booking has been submitted.\n\nGuest: {guest_name}\nEmail: {guest_email}\nPhone: {guest_phone}\nOwner: {owner}\nVisitors welcome: {visitors_welcome}\nStatus: {status}\n\n{booking_details}\n\n{admin_link}"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Add block"
+msgstr ""
+
+msgid "Admin Notification"
+msgstr ""
+
+msgid "Admin Notification Email"
+msgstr ""
+
+msgid "Adults"
+msgstr ""
+
+msgid "Adults: %d"
+msgstr ""
+
+msgid "All Bookings"
+msgstr ""
+
+msgid "Alt text"
+msgstr ""
+
+msgid "Amount paid"
+msgstr ""
+
+msgid "Amount paid (%s)"
+msgstr ""
+
+msgid "An error occurred. Please try again."
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "Are you sure you want to cancel this booking?"
+msgstr ""
+
+msgid "Are you sure you want to delete this booking?"
+msgstr ""
+
+msgid "At least one adult is required."
+msgstr ""
+
+msgid "Authentication"
+msgstr ""
+
+msgid "Available"
+msgstr ""
+
+msgid "Available in emails as {visitors_welcome}."
+msgstr ""
+
+msgid "Bank"
+msgstr ""
+
+msgid "Body (fallback)"
+msgstr ""
+
+msgid "Book Now"
+msgstr ""
+
+msgid "Book Your Stay"
+msgstr ""
+
+msgid "Booked"
+msgstr ""
+
+msgid "Booking"
+msgstr ""
+
+msgid "Booking Calendar"
+msgstr ""
+
+msgid "Booking Cancelled"
+msgstr ""
+
+msgid "Booking Cancelled - {site_name}"
+msgstr ""
+
+msgid "Booking Confirmation"
+msgstr ""
+
+msgid "Booking Confirmation - {site_name}"
+msgstr ""
+
+msgid "Booking Dashboard"
+msgstr ""
+
+msgid "Booking Details"
+msgstr ""
+
+msgid "Booking Form"
+msgstr ""
+
+msgid "Booking Rules"
+msgstr ""
+
+msgid "Booking Settings"
+msgstr ""
+
+msgid "Booking Window (days ahead)"
+msgstr ""
+
+msgid "Booking cancelled successfully."
+msgstr ""
+
+msgid "Booking confirmation and notification emails are sent automatically through WordPress. By default WordPress uses your server's mail, which is often unreliable. Enable SMTP below to send through a real mailbox such as Gmail / Google Workspace for dependable delivery."
+msgstr ""
+
+msgid "Booking deleted successfully."
+msgstr ""
+
+msgid "Booking details"
+msgstr ""
+
+msgid "Booking for %1$s (%2$d guests)."
+msgstr ""
+
+msgid "Booking not found."
+msgstr ""
+
+msgid "Booking status updated."
+msgstr ""
+
+msgid "Booking submitted successfully! Check your email for confirmation."
+msgstr ""
+
+msgid "Booking updated."
+msgstr ""
+
+msgid "Bookings"
+msgstr ""
+
+msgid "Bookings by month (check-in)"
+msgstr ""
+
+msgid "Bookings can only be made up to %d days ahead."
+msgstr ""
+
+msgid "Bookings must be made at least %d day in advance."
+msgid_plural "Bookings must be made at least %d days in advance."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Bookings per guest"
+msgstr ""
+
+msgid "Bookings welcoming visitors: %d"
+msgstr ""
+
+msgid "Button"
+msgstr ""
+
+msgid "Button URL (e.g. {manage_url})"
+msgstr ""
+
+msgid "Button label"
+msgstr ""
+
+msgid "Calculating price..."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel Booking"
+msgstr ""
+
+msgid "Cancel this booking and email the guest?"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Cancelled bookings: %d"
+msgstr ""
+
+msgid "Cash (Bar)"
+msgstr ""
+
+msgid "Chalet Maximum Capacity"
+msgstr ""
+
+msgid "Change history"
+msgstr ""
+
+msgid "Check-in"
+msgstr ""
+
+msgid "Check-in:"
+msgstr ""
+
+msgid "Check-out"
+msgstr ""
+
+msgid "Check-out date must be after check-in date"
+msgstr ""
+
+msgid "Check-out date must be after check-in date."
+msgstr ""
+
+msgid "Check-out must be after check-in."
+msgstr ""
+
+msgid "Check-out:"
+msgstr ""
+
+msgid "Checking availability..."
+msgstr ""
+
+msgid "Click an entry for details."
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Collected"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Confirm new bookings automatically (skip the pending step)."
+msgstr ""
+
+msgid "Confirmed"
+msgstr ""
+
+msgid "Content"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
+msgid "Customise the wording of the automatic emails. Clear a field and save to restore its default. You can use these merge tags, which are replaced with each booking's details:"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Dear {guest_name},\n\nThank you for your booking! We are pleased to confirm your reservation.\n\n{booking_details}\n\nYou can manage or cancel your booking using the link below:\n\n{manage_link}\n\nWe look forward to welcoming you!\n\nBest regards,\n{site_name}"
+msgstr ""
+
+msgid "Dear {guest_name},\n\nThis is a friendly reminder about the balance for your booking.\n\n{booking_details}\n\nAmount paid: {amount_paid}\nOutstanding balance: {amount_due}\n\nYou can review your booking using the link below:\n\n{manage_link}\n\nThank you,\n{site_name}"
+msgstr ""
+
+msgid "Dear {guest_name},\n\nYour booking has been cancelled as requested.\n\nWe hope to welcome you in the future!\n\nBest regards,\n{site_name}"
+msgstr ""
+
+msgid "Default Adults"
+msgstr ""
+
+msgid "Default Kids"
+msgstr ""
+
+msgid "Default guests cannot exceed the chalet capacity."
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Display a monthly calendar showing booking availability and allowing date selection."
+msgstr ""
+
+msgid "Divider"
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Earliest a guest may check in, in days from today. 0 = today allowed."
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Email Delivery (SMTP)"
+msgstr ""
+
+msgid "Email From Address"
+msgstr ""
+
+msgid "Email From Name"
+msgstr ""
+
+msgid "Email Templates"
+msgstr ""
+
+msgid "Email address to receive notifications when new bookings are made."
+msgstr ""
+
+msgid "Encryption"
+msgstr ""
+
+msgid "Export CSV"
+msgstr ""
+
+msgid "Failed to cancel booking."
+msgstr ""
+
+msgid "Failed to create booking. Please try again."
+msgstr ""
+
+msgid "Failed to delete booking."
+msgstr ""
+
+msgid "Failed to update booking status."
+msgstr ""
+
+msgid "First Name"
+msgstr ""
+
+msgid "First name"
+msgstr ""
+
+msgid "For Gmail: host smtp.gmail.com, port 587 (TLS), your full address as the username, and a Google \"App Password\" (not your normal password) as the password."
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Guest"
+msgstr ""
+
+msgid "Guest Cancellation"
+msgstr ""
+
+msgid "Guest Confirmation"
+msgstr ""
+
+msgid "Guest:"
+msgstr ""
+
+msgid "Guests"
+msgstr ""
+
+msgid "Guests:"
+msgstr ""
+
+msgid "Heading"
+msgstr ""
+
+msgid "How far ahead guests may book, in days. 0 = no limit."
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Image URL"
+msgstr ""
+
+msgid "Insert tag"
+msgstr ""
+
+msgid "Insights across all non-cancelled bookings. Filter by check-in date below; the export respects the same range."
+msgstr ""
+
+msgid "Invalid admin notification email address."
+msgstr ""
+
+msgid "Invalid booking ID."
+msgstr ""
+
+msgid "Invalid booking token format."
+msgstr ""
+
+msgid "Invalid booking token."
+msgstr ""
+
+msgid "Invalid date range."
+msgstr ""
+
+msgid "Invalid email from address."
+msgstr ""
+
+msgid "Invalid or missing booking link."
+msgstr ""
+
+msgid "Invalid request."
+msgstr ""
+
+msgid "Kids"
+msgstr ""
+
+msgid "Kids: %d"
+msgstr ""
+
+msgid "Last Name"
+msgstr ""
+
+msgid "Last name"
+msgstr ""
+
+msgid "Manage Booking"
+msgstr ""
+
+msgid "Manage Your Booking"
+msgstr ""
+
+msgid "Maximum Stay (nights)"
+msgstr ""
+
+msgid "Maximum advance days cannot be less than minimum advance days."
+msgstr ""
+
+msgid "Maximum nights cannot be less than minimum nights."
+msgstr ""
+
+msgid "Maximum number of guests (adults + kids) that can be accommodated."
+msgstr ""
+
+msgid "Minimum Advance Notice (days)"
+msgstr ""
+
+msgid "Minimum Stay (nights)"
+msgstr ""
+
+msgid "N/A"
+msgstr ""
+
+msgid "New Booking Received"
+msgstr ""
+
+msgid "New Booking Received - {site_name}"
+msgstr ""
+
+msgid "New Bookings"
+msgstr ""
+
+msgid "Next check-in: %s"
+msgstr ""
+
+msgid "Nights"
+msgstr ""
+
+msgid "Nights booked"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "No blocks yet — add one to start building this email."
+msgstr ""
+
+msgid "No bookings found."
+msgstr ""
+
+msgid "No changes recorded yet."
+msgstr ""
+
+msgid "No changes to save."
+msgstr ""
+
+msgid "No data yet."
+msgstr ""
+
+msgid "No payments recorded yet."
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Notes"
+msgstr ""
+
+msgid "Notes Field"
+msgstr ""
+
+msgid "Notes:"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Outstanding"
+msgstr ""
+
+msgid "Owner"
+msgstr ""
+
+msgid "Owner Field"
+msgstr ""
+
+msgid "Owner names (one per line):"
+msgstr ""
+
+msgid "Owner usage"
+msgstr ""
+
+msgid "Paid"
+msgstr ""
+
+msgid "Partially paid"
+msgstr ""
+
+msgid "Payment"
+msgstr ""
+
+msgid "Payment Reminder"
+msgstr ""
+
+msgid "Payment method"
+msgstr ""
+
+msgid "Payment reminder - {site_name}"
+msgstr ""
+
+msgid "Payment reminder sent."
+msgstr ""
+
+msgid "Payment status"
+msgstr ""
+
+msgid "Payments by method"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Phone Field"
+msgstr ""
+
+msgid "Please enter a valid email address to send the test to."
+msgstr ""
+
+msgid "Please enter a valid email address."
+msgstr ""
+
+msgid "Please enter an SMTP host (e.g. smtp.gmail.com) to enable SMTP delivery."
+msgstr ""
+
+msgid "Please fill in all required fields."
+msgstr ""
+
+msgid "Please provide a phone number."
+msgstr ""
+
+msgid "Please select a valid date range (check-out after check-in)."
+msgstr ""
+
+msgid "Please select both dates."
+msgstr ""
+
+msgid "Please select check-in and check-out dates"
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Price per Adult (per night)"
+msgstr ""
+
+msgid "Price per Kid (per night)"
+msgstr ""
+
+msgid "Recalc"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Request failed. Please try again."
+msgstr ""
+
+msgid "Require the guest to provide a phone number."
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Revenue"
+msgstr ""
+
+msgid "SMTP Delivery"
+msgstr ""
+
+msgid "SMTP Host"
+msgstr ""
+
+msgid "SMTP Password"
+msgstr ""
+
+msgid "SMTP Port"
+msgstr ""
+
+msgid "SMTP Username"
+msgstr ""
+
+msgid "SSL (port 465)"
+msgstr ""
+
+msgid "Save Settings"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Save your settings first, then send a test email to confirm delivery works."
+msgstr ""
+
+msgid "Saving…"
+msgstr ""
+
+msgid "Selected dates are not available."
+msgstr ""
+
+msgid "Send Test Email"
+msgstr ""
+
+msgid "Send a Test Email"
+msgstr ""
+
+msgid "Send emails through an external SMTP server."
+msgstr ""
+
+msgid "Send payment reminder"
+msgstr ""
+
+msgid "Send test to"
+msgstr ""
+
+msgid "Sending failed. Check your SMTP settings or install an SMTP plugin."
+msgstr ""
+
+msgid "Sending failed: %s"
+msgstr ""
+
+msgid "Sending…"
+msgstr ""
+
+msgid "Set to 0 for no maximum."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "Show a \"Visitors welcome?\" yes/no field on the booking form."
+msgstr ""
+
+msgid "Show an \"Owner\" dropdown on the booking form."
+msgstr ""
+
+msgid "Show the optional notes field on the booking form."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Status:"
+msgstr ""
+
+msgid "Stored in your database. Leave blank to keep the current password."
+msgstr ""
+
+msgid "Subject"
+msgstr ""
+
+msgid "Submitting..."
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "TLS (recommended, port 587)"
+msgstr ""
+
+msgid "TWINT"
+msgstr ""
+
+msgid "Test email sent to %s. Please check the inbox (and spam folder)."
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "The chalet can accommodate a maximum of %d guests. Please reduce the number of guests."
+msgstr ""
+
+msgid "The dropdown only appears when at least one name is listed. Available in emails as {owner}."
+msgstr ""
+
+msgid "The maximum stay is %d night."
+msgid_plural "The maximum stay is %d nights."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "The reminder could not be sent. Check your email settings."
+msgstr ""
+
+msgid "The styled booking-details box is inserted here."
+msgstr ""
+
+msgid "This booking has no valid email address."
+msgstr ""
+
+msgid "This is a test email from WP booking Luca. If you received it, your booking notifications are being delivered correctly (%s)."
+msgstr ""
+
+msgid "Those dates overlap another booking."
+msgstr ""
+
+msgid "Title:"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Total Price:"
+msgstr ""
+
+msgid "Total bookings"
+msgstr ""
+
+msgid "Total price"
+msgstr ""
+
+msgid "Total price (%s)"
+msgstr ""
+
+msgid "Unassigned"
+msgstr ""
+
+msgid "Unauthorized."
+msgstr ""
+
+msgid "Unavailable"
+msgstr ""
+
+msgid "Unpaid"
+msgstr ""
+
+msgid "Unspecified"
+msgstr ""
+
+msgid "Upcoming stays"
+msgstr ""
+
+msgid "Use a username and password to authenticate (required for Gmail)."
+msgstr ""
+
+msgid "Used only when no content blocks are added above."
+msgstr ""
+
+msgid "Used only when no content blocks are added above. Send reminders from any booking via \"View / Edit\"."
+msgstr ""
+
+msgid "View / Edit"
+msgstr ""
+
+msgid "View Booking"
+msgstr ""
+
+msgid "Visitors Field"
+msgstr ""
+
+msgid "Visitors welcome"
+msgstr ""
+
+msgid "Visitors welcome?"
+msgstr ""
+
+msgid "WP booking Luca"
+msgstr ""
+
+msgid "WP booking Luca is using your server's default mailer, which can fail to deliver booking emails. For reliable delivery (e.g. through Gmail), enable SMTP in"
+msgstr ""
+
+msgid "Width (px, optional)"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "[%s] Test email from WP booking Luca"
+msgstr ""
+
+msgid "adults"
+msgstr ""
+
+msgid "kids"
+msgstr ""
+
+msgid "via SMTP host %s"
+msgstr ""
+
+msgid "via the default WordPress mailer"
+msgstr ""
+
+msgid "•••••••• (saved — leave blank to keep)"
+msgstr ""
+

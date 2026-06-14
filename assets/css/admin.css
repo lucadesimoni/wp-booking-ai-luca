@@ -298,4 +298,30 @@
 .wpbs-bar-value { width:140px; flex-shrink:0; text-align:right; color:#646970; }
 .wpbs-dash-list { margin:0; }
 .wpbs-dash-list li { margin:4px 0; }
-@media (max-width:600px){ .wpbs-edit-grid { grid-template-columns:1fr; } }
+/* Bookings table: scroll horizontally instead of overflowing on small screens. */
+.wpbs-table-responsive { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+/* ---- Responsive admin ---- */
+@media (max-width:782px){
+	.wpbs-admin-wrap .wp-list-table.fixed { table-layout:auto; }
+	.wpbs-table-responsive table.wp-list-table { min-width:820px; }
+	.wpbs-stat-card { flex:1 1 140px; }
+	.wpbs-stat-number { font-size:22px; }
+	.wpbs-dash-grid { grid-template-columns:1fr; }
+	.wpbs-dash-filter { gap:8px; }
+	.wpbs-dash-filter label { flex:1 1 130px; }
+	.wpbs-modal-dialog { margin:10px auto; width:calc(100% - 20px); max-height:calc(100vh - 20px); }
+	.wpbs-modal-actions { flex-wrap:wrap; }
+	.wpbs-bar-label { width:72px; }
+	.wpbs-bar-value { width:auto; flex:1; }
+}
+
+@media (max-width:600px){
+	.wpbs-edit-grid { grid-template-columns:1fr; }
+	.wpbs-pay-fieldset .wpbs-edit-grid { grid-template-columns:1fr; }
+	.wpbs-stat-card { flex:1 1 100%; }
+	.wpbs-modal-head h2 { font-size:16px; }
+	.wpbs-price-row { flex-direction:column; align-items:stretch; }
+	.wpbs-price-row .button { width:100%; }
+	.wpbs-modal-actions .button { width:100%; text-align:center; }
+}

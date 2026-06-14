@@ -353,6 +353,7 @@ class WP_Booking_System_Luca_Admin {
 			?>
 			<a href="<?php echo esc_url( $export_url ); ?>" class="page-title-action"><?php esc_html_e( 'Export CSV', 'wp-booking-system-luca' ); ?></a>
 			<hr class="wp-header-end" />
+			<div class="wpbs-table-responsive">
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
@@ -422,6 +423,7 @@ class WP_Booking_System_Luca_Admin {
 					<?php endif; ?>
 				</tbody>
 			</table>
+			</div>
 		</div>
 		<?php
 		$this->render_booking_modal();
