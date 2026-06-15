@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.13.2
+Stable tag: 1.14.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,7 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Unique links for guests to manage or cancel their bookings
 * Configurable booking rules: minimum/maximum stay, advance notice, booking window, default guests, required fields, and auto-confirm
 * German translation included (de_DE and de_CH)
+* Built to coexist with opinionated themes (Astra / Astra Pro and others): the booking UI keeps its styling and the calendar stays selectable
 * Modern, responsive design — including a mobile-friendly admin — that fits seamlessly into your website
 
 Perfect for vacation rentals, hotels, or any accommodation booking needs.
@@ -83,6 +84,10 @@ Yes. The booking confirmation (and the admin notification) include an .ics calen
 
 Yes. Under WP booking Luca > Settings > Email Templates you can either edit the plain-text subject and body, or use the drag-and-drop builder to arrange content blocks (Text, Heading, Booking details, Button, Image, Divider). Drag a block by its handle to reorder it. Use merge tags such as {guest_name}, {check_in}, {check_out}, {guests}, {total_price}, {owner}, {visitors_welcome}, {booking_details} and {manage_link}, which are replaced with each booking's details. When a template has blocks, they are used; otherwise the plain-text body applies (clear it to restore the default).
 
+= Does it work with the Astra theme (and Astra Pro)? =
+
+Yes. The booking form, buttons, dropdowns and the availability calendar are styled with wrapper-scoped CSS that keeps the plugin's look even when Astra (or Astra Pro) applies its own container-scoped button/input resets, and the calendar links are kept free of theme underlines. The calendar's interactive date selection (click check-in, then check-out) continues to work. The same hardening helps with other opinionated themes too.
+
 = Can I add an Owner or other custom fields to the booking form? =
 
 Yes. Under WP booking Luca > Settings > Booking Form you can show an "Owner" dropdown (populated from a list of names you enter) and a "Visitors welcome?" yes/no field. Both are saved with the booking and available in emails as {owner} and {visitors_welcome}.
@@ -104,6 +109,11 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.14.0 =
+* 2026-06-15
+* Theme compatibility hardening for Astra / Astra Pro (and other opinionated themes): the booking form, buttons, dropdowns and the availability calendar keep their intended look and behaviour even when the theme applies its own container-scoped button/input resets or forces link underlines
+* The calendar's script is loaded as a proper asset (not inline), so it is unaffected by theme/page content filters
 
 = 1.13.2 =
 * 2026-06-15

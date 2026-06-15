@@ -548,3 +548,98 @@
 	.wpbs-calendar-shortcode .fc-button { padding: 4px 9px; font-size: 0.8rem; }
 }
 
+
+/* =========================================================================
+   Theme compatibility (Astra / Astra Pro and other opinionated themes).
+   Re-assert the booking UI with wrapper-scoped specificity so theme globals
+   such as `.ast-container button`, `.entry-content input/select` resets, or
+   forced link underlines cannot override or break the components. These rules
+   are visually identical to the defaults above — only the specificity is
+   raised so the plugin always wins the cascade.
+   ========================================================================= */
+
+/* Primary submit button */
+.wpbs-booking-form-wrapper .wpbs-submit-button,
+.wpbs-booking-form .wpbs-submit-button {
+	display: block;
+	width: 100%;
+	background: #8B0000;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	padding: 16px 32px;
+	font-size: 1rem;
+	line-height: 1.4;
+	text-transform: uppercase;
+	text-decoration: none;
+	box-shadow: none;
+}
+.wpbs-booking-form-wrapper .wpbs-submit-button:hover,
+.wpbs-booking-form .wpbs-submit-button:hover {
+	background: #6B0000;
+	color: #ffffff;
+}
+.wpbs-booking-form-wrapper .wpbs-submit-button:disabled {
+	background: #cccccc;
+	color: #ffffff;
+}
+
+/* Cancel button on the manage page */
+.wpbs-booking-manage-wrapper .wpbs-cancel-booking {
+	width: auto;
+	background: #dc3545;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	padding: 12px 24px;
+	text-decoration: none;
+	box-shadow: none;
+}
+.wpbs-booking-manage-wrapper .wpbs-cancel-booking:hover {
+	background: #c82333;
+	color: #ffffff;
+}
+
+/* "Book another stay" on the confirmation panel */
+.wpbs-booking-confirmation .wpbs-book-another {
+	background: #8B0000;
+	color: #ffffff;
+	border: none;
+	border-radius: 4px;
+	padding: 10px 22px;
+	text-decoration: none;
+}
+.wpbs-booking-confirmation .wpbs-book-another:hover {
+	background: #6f0000;
+	color: #ffffff;
+}
+
+/* Form controls keep a consistent box even under theme input/select resets */
+.wpbs-booking-form-wrapper .wpbs-booking-form input[type="text"],
+.wpbs-booking-form-wrapper .wpbs-booking-form input[type="email"],
+.wpbs-booking-form-wrapper .wpbs-booking-form input[type="tel"],
+.wpbs-booking-form-wrapper .wpbs-booking-form input[type="number"],
+.wpbs-booking-form-wrapper .wpbs-booking-form select {
+	height: 48px;
+	min-height: 48px;
+	background: #ffffff;
+	border: 1px solid #dddddd;
+	border-radius: 4px;
+	color: inherit;
+	font-size: 1rem;
+	box-sizing: border-box;
+}
+.wpbs-booking-form-wrapper .wpbs-booking-form textarea {
+	height: auto;
+	min-height: 96px;
+	background: #ffffff;
+	border: 1px solid #dddddd;
+	box-sizing: border-box;
+}
+
+/* Calendar links never inherit theme underlines/colors */
+.wpbs-calendar-shortcode-wrapper a,
+.wpbs-calendar-shortcode a {
+	text-decoration: none !important;
+	box-shadow: none !important;
+}
