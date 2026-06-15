@@ -8,7 +8,10 @@
 	$(document).ready(function() {
 		// Initialize date picker
 		initDatePicker();
-		
+
+		// Initialize the interactive availability calendar (if present)
+		initAvailabilityCalendar();
+
 		// Handle form submission
 		$('#wpbs-booking-form').on('submit', handleFormSubmit);
 		
@@ -88,11 +91,115 @@
 	}
 
 	/**
-	 * Get unavailable dates (simplified - in production, fetch from server)
+	 * Booked dates (Y-m-d) provided by the server, disabled in the picker.
 	 */
 	function getUnavailableDates() {
-		// This would be populated from server-side data
-		return [];
+		return (wpbslFrontend && wpbslFrontend.unavailableDates) || [];
+	}
+
+	/**
+	 * Turn the availability calendar into an interactive date selector:
+	 * click a check-in day, then a check-out day, and the stay is highlighted
+	 * and pushed into the booking form (booked/past days can't be selected).
+	 */
+	function initAvailabilityCalendar() {
+		const calendarEl = document.getElementById('wpbs-calendar-shortcode');
+		if (!calendarEl || typeof FullCalendar === 'undefined') {
+			return;
+		}
+
+		const unavailableDates = getUnavailableDates();
+		const cfg = (wpbslFrontend && wpbslFrontend.config) || {};
+		const minNights = parseInt(cfg.minNights, 10) || 1;
+		const todayStr = new Date().toISOString().split('T')[0];
+
+		const ymd = function(d) {
+			return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+		};
+		const addDays = function(str, n) {
+			const d = new Date(str + 'T00:00:00');
+			d.setDate(d.getDate() + n);
+			return ymd(d);
+		};
+		// True when a booked night lies in [from, to) — blocks selecting across a booking.
+		const rangeHasBooked = function(from, to) {
+			for (let d = from; d < to; d = addDays(d, 1)) {
+				if (unavailableDates.indexOf(d) !== -1) { return true; }
+			}
+			return false;
+		};
+		// Push a date into the form's flatpickr-backed field (triggers price/availability).
+		const setFormDate = function(id, dateStr) {
+			const el = document.getElementById(id);
+			if (!el) { return; }
+			if (el._flatpickr) { el._flatpickr.setDate(dateStr || '', true); }
+			else { el.value = dateStr || ''; $(el).trigger('change'); }
+		};
+		// Highlight the chosen stay (check-in … check-out) on the calendar.
+		const paintRange = function() {
+			const ci = (document.getElementById('wpbs-check-in') || {}).value || '';
+			const co = (document.getElementById('wpbs-check-out') || {}).value || '';
+			calendarEl.querySelectorAll('.fc-daygrid-day').forEach(function(cell) {
+				const d = cell.getAttribute('data-date');
+				cell.classList.toggle('wpbs-selected-range', !!(ci && co && d >= ci && d <= co));
+				cell.classList.toggle('wpbs-selected-edge', !!(d === ci || (co && d === co)));
+			});
+		};
+
+		const calendar = new FullCalendar.Calendar(calendarEl, {
+			initialView: 'dayGridMonth',
+			headerToolbar: { left: 'prev,next', center: 'title', right: '' },
+			height: 'auto',
+			events: function(fetchInfo, successCallback, failureCallback) {
+				$.ajax({
+					url: wpbslFrontend.ajaxUrl,
+					type: 'GET',
+					data: {
+						action: 'wpbsl_get_calendar_availability',
+						nonce: wpbslFrontend.nonce,
+						start: fetchInfo.startStr,
+						end: fetchInfo.endStr
+					},
+					success: function(response) {
+						if (response.success) { successCallback(response.data); }
+						else { failureCallback(); }
+					},
+					error: function() { failureCallback(); }
+				});
+			},
+			dayCellClassNames: function(arg) {
+				const dateStr = ymd(arg.date);
+				const classes = [];
+				if (unavailableDates.indexOf(dateStr) !== -1) { classes.push('wpbs-unavailable-date'); }
+				if (dateStr < todayStr) { classes.push('wpbs-past-date'); }
+				return classes;
+			},
+			dateClick: function(info) {
+				const dateStr = info.dateStr;
+				if (dateStr < todayStr || unavailableDates.indexOf(dateStr) !== -1) { return; }
+
+				const ci = (document.getElementById('wpbs-check-in') || {}).value || '';
+				const co = (document.getElementById('wpbs-check-out') || {}).value || '';
+
+				if (!ci || (ci && co) || dateStr <= ci) {
+					// Begin a new selection.
+					setFormDate('wpbs-check-in', dateStr);
+					setFormDate('wpbs-check-out', '');
+				} else if (rangeHasBooked(ci, dateStr) || dateStr < addDays(ci, minNights)) {
+					// Can't complete here (booking in the way, or too short) — restart.
+					setFormDate('wpbs-check-in', dateStr);
+					setFormDate('wpbs-check-out', '');
+				} else {
+					setFormDate('wpbs-check-out', dateStr);
+				}
+				paintRange();
+			},
+			datesSet: function() { paintRange(); },
+			eventDisplay: 'background',
+			eventBackgroundColor: '#8B0000',
+			eventBorderColor: '#8B0000'
+		});
+		calendar.render();
 	}
 
 	/**

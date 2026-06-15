@@ -1,5 +1,10 @@
 *** WP booking Luca Changelog ***
 
+2026.06.15 - version 1.13.0
+ * New - Select your stay directly on the availability calendar: click check-in, then check-out, and the range is highlighted and pushed into the booking form with the price recalculated. Past/booked days are unselectable and you cannot span an existing booking.
+ * Tweak - Booked dates are disabled in the date picker (previously only rejected on submit). The calendar's selection logic moved into the static frontend script, fixing a bug where WordPress's content filter corrupted the inline script so calendar clicks never reached the form.
+ * Tweak - Form-control consistency: the Owner and "Visitors welcome?" dropdowns now match the inputs' height, with unified borders/padding and theme-inherited fonts.
+
 2026.06.14 - version 1.12.0
  * Tweak - Polished the booking confirmation: on success the form is now replaced by a clear confirmation panel (checkmark, the success message, a reassuring "check your email / spam folder" note, and a "Book another stay" button) instead of leaving an empty form on screen. New strings are translated into German.
 

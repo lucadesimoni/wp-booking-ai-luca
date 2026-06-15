@@ -67,6 +67,7 @@ class WP_Booking_System_Luca_Frontend {
 					'minAdvanceDays' => absint( get_option( 'wpbsl_min_advance_days', 0 ) ),
 					'maxAdvanceDays' => absint( get_option( 'wpbsl_max_advance_days', 0 ) ),
 				),
+				'unavailableDates' => $this->get_unavailable_dates(),
 				'i18n'    => array(
 					'checking'      => __( 'Checking availability...', 'wp-booking-system-luca' ),
 					'available'     => __( 'Available', 'wp-booking-system-luca' ),
@@ -173,11 +174,11 @@ class WP_Booking_System_Luca_Frontend {
 				<div class="wpbs-form-row">
 					<div class="wpbs-form-group">
 						<label for="wpbs-check-in"><?php esc_html_e( 'Check-in', 'wp-booking-system-luca' ); ?></label>
-						<input type="text" id="wpbs-check-in" name="check_in" class="wpbs-date-input" required readonly />
+						<input type="text" id="wpbs-check-in" name="check_in" class="wpbs-date-input" placeholder="<?php esc_attr_e( 'Select a date', 'wp-booking-system-luca' ); ?>" required readonly />
 					</div>
 					<div class="wpbs-form-group">
 						<label for="wpbs-check-out"><?php esc_html_e( 'Check-out', 'wp-booking-system-luca' ); ?></label>
-						<input type="text" id="wpbs-check-out" name="check_out" class="wpbs-date-input" required readonly />
+						<input type="text" id="wpbs-check-out" name="check_out" class="wpbs-date-input" placeholder="<?php esc_attr_e( 'Select a date', 'wp-booking-system-luca' ); ?>" required readonly />
 					</div>
 				</div>
 
@@ -322,6 +323,32 @@ class WP_Booking_System_Luca_Frontend {
 	}
 
 	/**
+	 * Dates (Y-m-d) that are already taken by a non-cancelled booking, with
+	 * each booked night marked unavailable (check-out day stays selectable as
+	 * a new check-in). Used to disable dates in the picker and calendar.
+	 *
+	 * @return array
+	 */
+	private function get_unavailable_dates() {
+		$bookings = wp_booking_system_luca()->database->get_bookings( array( 'status' => '' ) );
+
+		$dates = array();
+		foreach ( $bookings as $booking ) {
+			if ( 'cancelled' === $booking->status ) {
+				continue;
+			}
+			$current = new DateTime( $booking->check_in );
+			$end     = new DateTime( $booking->check_out );
+			while ( $current < $end ) {
+				$dates[] = $current->format( 'Y-m-d' );
+				$current->modify( '+1 day' );
+			}
+		}
+
+		return array_values( array_unique( $dates ) );
+	}
+
+	/**
 	 * Render booking calendar shortcode.
 	 *
 	 * @param array $atts Shortcode attributes.
@@ -339,28 +366,7 @@ class WP_Booking_System_Luca_Frontend {
 		);
 
 		// Get unavailable dates.
-		$bookings = wp_booking_system_luca()->database->get_bookings(
-			array(
-				'status' => '',
-			)
-		);
-
-		$unavailable_dates = array();
-		foreach ( $bookings as $booking ) {
-			if ( 'cancelled' === $booking->status ) {
-				continue;
-			}
-
-			$check_in  = new DateTime( $booking->check_in );
-			$check_out = new DateTime( $booking->check_out );
-
-			$current = clone $check_in;
-			while ( $current < $check_out ) {
-				$unavailable_dates[] = $current->format( 'Y-m-d' );
-				$current->modify( '+1 day' );
-			}
-		}
-		$unavailable_dates = array_unique( $unavailable_dates );
+		$unavailable_dates = $this->get_unavailable_dates();
 
 		ob_start();
 		?>
@@ -380,83 +386,6 @@ class WP_Booking_System_Luca_Frontend {
 				</span>
 			</div>
 		</div>
-		<script type="text/javascript">
-		jQuery(document).ready(function($) {
-			if (typeof FullCalendar !== 'undefined') {
-				const calendarEl = document.getElementById('wpbs-calendar-shortcode');
-				if (calendarEl) {
-					const calendar = new FullCalendar.Calendar(calendarEl, {
-						initialView: 'dayGridMonth',
-						headerToolbar: {
-							left: 'prev,next',
-							center: 'title',
-							right: ''
-						},
-						height: 'auto',
-						events: function(fetchInfo, successCallback, failureCallback) {
-							$.ajax({
-								url: wpbslFrontend.ajaxUrl,
-								type: 'GET',
-								data: {
-									action: 'wpbsl_get_calendar_availability',
-									nonce: wpbslFrontend.nonce,
-									start: fetchInfo.startStr,
-									end: fetchInfo.endStr
-								},
-								success: function(response) {
-									if (response.success) {
-										successCallback(response.data);
-									} else {
-										failureCallback();
-									}
-								},
-								error: function() {
-									failureCallback();
-								}
-							});
-						},
-						dayCellClassNames: function(arg) {
-							const dateStr = arg.date.toISOString().split('T')[0];
-							const unavailableDates = <?php echo wp_json_encode( $unavailable_dates ); ?>;
-							if (unavailableDates.includes(dateStr)) {
-								return ['wpbs-unavailable-date'];
-							}
-							return [];
-						},
-						dateClick: function(info) {
-							// Set the date in the booking form if it exists.
-							const checkInInput = document.getElementById('wpbs-check-in');
-							const checkOutInput = document.getElementById('wpbs-check-out');
-							
-							if (checkInInput && !checkInInput.value) {
-								checkInInput.value = info.dateStr;
-								if (typeof flatpickr !== 'undefined') {
-									const fp = flatpickr(checkInInput);
-									if (fp) fp.setDate(info.dateStr);
-								}
-							} else if (checkOutInput && !checkOutInput.value && checkInInput && checkInInput.value) {
-								const checkInDate = new Date(checkInInput.value);
-								const clickedDate = new Date(info.dateStr);
-								if (clickedDate > checkInDate) {
-									checkOutInput.value = info.dateStr;
-									if (typeof flatpickr !== 'undefined') {
-										const fp = flatpickr(checkOutInput);
-										if (fp) fp.setDate(info.dateStr);
-									}
-									// Trigger change event to calculate price.
-									$(checkOutInput).trigger('change');
-								}
-							}
-						},
-						eventDisplay: 'background',
-						eventBackgroundColor: '#8B0000',
-						eventBorderColor: '#8B0000'
-					});
-					calendar.render();
-				}
-			}
-		});
-		</script>
 		<?php
 		return ob_get_clean();
 	}

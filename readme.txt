@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.12.0
+Stable tag: 1.13.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,13 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.13.0 =
+* 2026-06-15
+* Pick your dates straight on the availability calendar: click a check-in day, then a check-out day, and the stay is highlighted and filled into the form (price updates automatically). Booked and past days can't be selected, and you can't book across an existing reservation
+* Booked dates are now greyed out in the date picker too, not just rejected on submit
+* Dropdowns (Owner, Visitors welcome) now match the height of the other fields; tidied form-control styling for a consistent look that inherits your theme's fonts
+* Fixed a long-standing issue where WordPress mangled the calendar's inline script, so calendar clicks now reliably drive the form
 
 = 1.12.0 =
 * 2026-06-14

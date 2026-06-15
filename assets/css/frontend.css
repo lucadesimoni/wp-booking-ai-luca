@@ -55,17 +55,46 @@
 .wpbs-booking-form input[type="email"],
 .wpbs-booking-form input[type="tel"],
 .wpbs-booking-form input[type="number"],
+.wpbs-booking-form select,
 .wpbs-booking-form textarea {
+	width: 100%;
+	box-sizing: border-box;
+	min-height: 48px;
 	padding: 12px 16px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 1rem;
+	line-height: 1.4;
 	font-family: inherit;
+	color: inherit;
 	transition: border-color 0.3s ease;
 	background: #fff;
+	vertical-align: middle;
+}
+
+/* Fixed height keeps inputs and dropdowns visually identical. */
+.wpbs-booking-form input[type="text"],
+.wpbs-booking-form input[type="email"],
+.wpbs-booking-form input[type="tel"],
+.wpbs-booking-form input[type="number"],
+.wpbs-booking-form select {
+	height: 48px;
+	min-height: 48px;
+}
+
+.wpbs-booking-form select {
+	-webkit-appearance: menulist;
+	appearance: menulist;
+	cursor: pointer;
+}
+
+.wpbs-booking-form textarea {
+	height: auto;
+	min-height: 96px;
 }
 
 .wpbs-booking-form input:focus,
+.wpbs-booking-form select:focus,
 .wpbs-booking-form textarea:focus {
 	outline: none;
 	border-color: #8B0000;
@@ -386,6 +415,25 @@
 
 .wpbs-unavailable-date:hover {
 	background-color: rgba(139, 0, 0, 0.2) !important;
+}
+
+/* Interactive date selection on the availability calendar */
+.wpbs-calendar-shortcode .fc-daygrid-day:not(.wpbs-unavailable-date):not(.wpbs-past-date) {
+	cursor: pointer;
+}
+.wpbs-calendar-shortcode .wpbs-past-date {
+	color: #bbb;
+	cursor: default;
+}
+.wpbs-calendar-shortcode .wpbs-selected-range {
+	background-color: rgba(139, 0, 0, 0.12) !important;
+}
+.wpbs-calendar-shortcode .wpbs-selected-edge {
+	background-color: #8B0000 !important;
+}
+.wpbs-calendar-shortcode .wpbs-selected-edge .fc-daygrid-day-number {
+	color: #fff !important;
+	font-weight: 700;
 }
 
 /* FullCalendar Widget Customization */
