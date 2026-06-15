@@ -1,5 +1,8 @@
 *** WP booking Luca Changelog ***
 
+2026.06.15 - version 1.13.2
+ * Tweak - The frontend availability calendar, the calendar widget and the date picker now start the week on Monday (the admin calendar already did).
+
 2026.06.15 - version 1.13.1
  * Tweak - Refreshed the availability calendar styling: no more underlined day numbers / weekday headers, lighter grid lines, clearer selected-range highlight, and compact cells that fit on both desktop and mobile. (Fixed selectors that never applied because FullCalendar shares the `.fc` class with the calendar container.)
 

@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.13.1
+Stable tag: 1.13.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,6 +104,10 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.13.2 =
+* 2026-06-15
+* The booking calendar and date picker now start the week on Monday
 
 = 1.13.1 =
 * 2026-06-15

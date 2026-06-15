@@ -71,6 +71,7 @@ class WP_Booking_System_Luca_Widget extends WP_Widget {
 				if (calendarEl) {
 					const calendar = new FullCalendar.Calendar(calendarEl, {
 						initialView: 'dayGridMonth',
+						firstDay: 1,
 						headerToolbar: {
 							left: 'prev,next',
 							center: 'title',

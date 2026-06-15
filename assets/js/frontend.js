@@ -33,6 +33,9 @@
 			return;
 		}
 
+		// Weeks start on Monday.
+		flatpickr.l10ns.default.firstDayOfWeek = 1;
+
 		const checkInInput = document.getElementById('wpbs-check-in');
 		const checkOutInput = document.getElementById('wpbs-check-out');
 
@@ -148,6 +151,7 @@
 
 		const calendar = new FullCalendar.Calendar(calendarEl, {
 			initialView: 'dayGridMonth',
+			firstDay: 1,
 			headerToolbar: { left: 'prev,next', center: 'title', right: '' },
 			height: 'auto',
 			events: function(fetchInfo, successCallback, failureCallback) {
