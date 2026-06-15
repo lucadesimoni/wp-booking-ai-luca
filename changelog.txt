@@ -1,5 +1,8 @@
 *** WP booking Luca Changelog ***
 
+2026.06.15 - version 1.13.1
+ * Tweak - Refreshed the availability calendar styling: no more underlined day numbers / weekday headers, lighter grid lines, clearer selected-range highlight, and compact cells that fit on both desktop and mobile. (Fixed selectors that never applied because FullCalendar shares the `.fc` class with the calendar container.)
+
 2026.06.15 - version 1.13.0
  * New - Select your stay directly on the availability calendar: click check-in, then check-out, and the range is highlighted and pushed into the booking form with the price recalculated. Past/booked days are unselectable and you cannot span an existing booking.
  * Tweak - Booked dates are disabled in the date picker (previously only rejected on submit). The calendar's selection logic moved into the static frontend script, fixing a bug where WordPress's content filter corrupted the inline script so calendar clicks never reached the form.

@@ -436,10 +436,73 @@
 	font-weight: 700;
 }
 
-/* FullCalendar Widget Customization */
-.wpbs-widget-calendar .fc,
-.wpbs-calendar-shortcode .fc {
-	font-family: inherit;
+/* Availability calendar — clean, fresh, responsive.
+   Note: FullCalendar adds the `.fc` class onto the same element as
+   `.wpbs-calendar-shortcode`, so selectors must NOT nest a `.fc` between
+   the root and the inner pieces. */
+.wpbs-widget-calendar,
+.wpbs-calendar-shortcode {
+	font-size: 0.95rem;
+}
+
+/* Strip theme link underlines from day numbers and weekday headers (<a>). */
+.wpbs-widget-calendar a,
+.wpbs-calendar-shortcode a,
+.wpbs-calendar-shortcode .fc-col-header-cell-cushion,
+.wpbs-calendar-shortcode .fc-daygrid-day-number {
+	text-decoration: none !important;
+	box-shadow: none !important;
+	color: #333;
+}
+
+/* Lighter grid lines */
+.wpbs-calendar-shortcode .fc-scrollgrid,
+.wpbs-calendar-shortcode td,
+.wpbs-calendar-shortcode th {
+	border-color: #ececec;
+}
+.wpbs-calendar-shortcode .fc-scrollgrid {
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+/* Weekday header row */
+.wpbs-calendar-shortcode .fc-col-header-cell {
+	background: #faf6f6;
+}
+.wpbs-calendar-shortcode .fc-col-header-cell-cushion {
+	padding: 8px 0;
+	font-weight: 600;
+	font-size: 0.72rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #8B0000 !important;
+}
+
+/* Compact, even day cells */
+.wpbs-calendar-shortcode .fc-daygrid-day-frame {
+	min-height: 44px;
+	padding: 2px;
+}
+.wpbs-calendar-shortcode .fc-daygrid-day-number {
+	padding: 6px 8px;
+	font-size: 0.85rem;
+}
+.wpbs-calendar-shortcode .fc-daygrid-day:not(.wpbs-unavailable-date):not(.wpbs-past-date):not(.wpbs-selected-edge):hover {
+	background: rgba(139, 0, 0, 0.06);
+}
+.wpbs-calendar-shortcode .wpbs-past-date .fc-daygrid-day-number {
+	color: #c4c4c4 !important;
+}
+
+/* Toolbar */
+.wpbs-calendar-shortcode .fc-toolbar.fc-header-toolbar {
+	margin-bottom: 12px;
+}
+.wpbs-calendar-shortcode .fc-toolbar-title {
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: #333;
 }
 
 .wpbs-widget-calendar .fc-button,
@@ -447,13 +510,15 @@
 	background: #8B0000;
 	border-color: #8B0000;
 	color: #fff;
-	padding: 6px 12px;
-	border-radius: 4px;
-	font-size: 0.9rem;
+	padding: 5px 12px;
+	border-radius: 6px;
+	font-size: 0.85rem;
+	box-shadow: none !important;
 }
-
 .wpbs-widget-calendar .fc-button:hover,
-.wpbs-calendar-shortcode .fc-button:hover {
+.wpbs-widget-calendar .fc-button:focus,
+.wpbs-calendar-shortcode .fc-button:hover,
+.wpbs-calendar-shortcode .fc-button:focus {
 	background: #6B0000;
 	border-color: #6B0000;
 }
@@ -462,10 +527,24 @@
 .wpbs-calendar-shortcode .fc-day-today {
 	background: rgba(139, 0, 0, 0.05) !important;
 }
+.wpbs-calendar-shortcode .fc-day-today .fc-daygrid-day-number {
+	font-weight: 700;
+	color: #8B0000 !important;
+}
 
 .wpbs-widget-calendar .fc-event,
 .wpbs-calendar-shortcode .fc-event {
 	border-radius: 3px;
 	cursor: default;
+}
+
+@media (max-width: 600px) {
+	.wpbs-widget-calendar,
+	.wpbs-calendar-shortcode { padding: 10px; font-size: 0.85rem; }
+	.wpbs-calendar-shortcode .fc-daygrid-day-frame { min-height: 36px; }
+	.wpbs-calendar-shortcode .fc-daygrid-day-number { padding: 4px 5px; font-size: 0.8rem; }
+	.wpbs-calendar-shortcode .fc-col-header-cell-cushion { font-size: 0.62rem; padding: 6px 0; }
+	.wpbs-calendar-shortcode .fc-toolbar-title { font-size: 1rem; }
+	.wpbs-calendar-shortcode .fc-button { padding: 4px 9px; font-size: 0.8rem; }
 }
 
