@@ -1,5 +1,8 @@
 *** WP booking Luca Changelog ***
 
+2026.06.16 - version 1.15.1
+ * New - The Elementor "Booking Form" and "Booking Calendar" widgets gained a Style tab: pick the accent colour and button colours (form), or the accent and booked colours (calendar), directly from Elementor's design panel. The colours are applied with per-widget scoped CSS so each instance can differ.
+
 2026.06.16 - version 1.15.0
  * New - Native Elementor widgets: "Booking Form" and "Booking Calendar" now appear in the Elementor editor under a dedicated "WP booking Luca" category, each with a Title control. They render the same form/calendar as the shortcodes.
  * New - The Gutenberg blocks now live in their own discoverable "WP booking Luca" category (instead of the generic Widgets group) and carry full server-side metadata. This also makes them easy to find in Spectra, which uses the standard block inserter.

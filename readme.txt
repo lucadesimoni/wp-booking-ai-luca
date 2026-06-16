@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.15.0
+Stable tag: 1.15.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,7 +63,7 @@ Yes. You have three options: (1) drag the native "Booking Form" / "Booking Calen
 
 = Does it work with Elementor, Gutenberg and Spectra? =
 
-Yes. The plugin registers native Elementor widgets ("Booking Form" and "Booking Calendar") and Gutenberg blocks of the same names, both grouped under a "WP booking Luca" category so they are easy to find. Spectra (Ultimate Addons for Gutenberg) uses the standard block inserter, so the blocks appear there too. Each widget/block has a "Title" option; everything else is configured under WP booking Luca → Settings.
+Yes. The plugin registers native Elementor widgets ("Booking Form" and "Booking Calendar") and Gutenberg blocks of the same names, both grouped under a "WP booking Luca" category so they are easy to find. Spectra (Ultimate Addons for Gutenberg) uses the standard block inserter, so the blocks appear there too. Each widget/block has a "Title" option. The Elementor widgets also include a Style tab — set the accent colour and the button colours (form) or the accent and booked colours (calendar) right from Elementor. Everything else is configured under WP booking Luca → Settings.
 
 = How do guests manage their bookings? =
 

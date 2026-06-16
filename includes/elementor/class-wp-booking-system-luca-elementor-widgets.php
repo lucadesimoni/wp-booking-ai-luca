@@ -101,6 +101,65 @@ class WP_Booking_System_Luca_Elementor_Form_Widget extends \Elementor\Widget_Bas
 		);
 
 		$this->end_controls_section();
+
+		// Style.
+		$this->start_controls_section(
+			'wpbsl_style',
+			array(
+				'label' => __( 'Style', 'wp-booking-system-luca' ),
+				'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_accent',
+			array(
+				'label'     => __( 'Accent color', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-price-value'                  => 'color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-price-summary'               => 'border-left-color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-booking-form input:focus'    => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-booking-form select:focus'   => 'border-color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-booking-form textarea:focus' => 'border-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_button_bg',
+			array(
+				'label'     => __( 'Button background', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-booking-form .wpbs-submit-button' => 'background-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_button_color',
+			array(
+				'label'     => __( 'Button text color', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-booking-form .wpbs-submit-button' => 'color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_button_hover_bg',
+			array(
+				'label'     => __( 'Button hover background', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-booking-form .wpbs-submit-button:hover' => 'background-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
@@ -187,6 +246,44 @@ class WP_Booking_System_Luca_Elementor_Calendar_Widget extends \Elementor\Widget
 				'label'   => __( 'Title', 'wp-booking-system-luca' ),
 				'type'    => \Elementor\Controls_Manager::TEXT,
 				'default' => __( 'Booking Calendar', 'wp-booking-system-luca' ),
+			)
+		);
+
+		$this->end_controls_section();
+
+		// Style.
+		$this->start_controls_section(
+			'wpbsl_style',
+			array(
+				'label' => __( 'Style', 'wp-booking-system-luca' ),
+				'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_accent',
+			array(
+				'label'     => __( 'Accent color', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-calendar-shortcode .fc-button'                            => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-calendar-shortcode .fc-button:hover'                      => 'background-color: {{VALUE}}; border-color: {{VALUE}};',
+					'{{WRAPPER}} .wpbs-calendar-shortcode .fc-col-header-cell-cushion'           => 'color: {{VALUE}} !important;',
+					'{{WRAPPER}} .wpbs-calendar-shortcode .fc-day-today .fc-daygrid-day-number'  => 'color: {{VALUE}} !important;',
+					'{{WRAPPER}} .wpbs-calendar-shortcode .wpbs-selected-edge'                   => 'background-color: {{VALUE}} !important;',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_booked_color',
+			array(
+				'label'     => __( 'Booked color', 'wp-booking-system-luca' ),
+				'type'      => \Elementor\Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .wpbs-calendar-shortcode .wpbs-unavailable-date' => 'background-color: {{VALUE}} !important;',
+					'{{WRAPPER}} .wpbs-legend-booked'                             => 'background-color: {{VALUE}};',
+				),
 			)
 		);
 
