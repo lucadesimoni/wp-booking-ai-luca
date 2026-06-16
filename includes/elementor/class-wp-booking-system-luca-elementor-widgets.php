@@ -159,6 +159,36 @@ class WP_Booking_System_Luca_Elementor_Form_Widget extends \Elementor\Widget_Bas
 			)
 		);
 
+		$this->add_control(
+			'wpbsl_button_font_size',
+			array(
+				'label'      => __( 'Button font size', 'wp-booking-system-luca' ),
+				'type'       => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => array( 'px', 'em', 'rem' ),
+				'range'      => array(
+					'px' => array( 'min' => 10, 'max' => 40 ),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wpbs-booking-form .wpbs-submit-button' => 'font-size: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_button_radius',
+			array(
+				'label'      => __( 'Button corner radius', 'wp-booking-system-luca' ),
+				'type'       => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array(
+					'px' => array( 'min' => 0, 'max' => 40 ),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wpbs-booking-form .wpbs-submit-button' => 'border-radius: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
 		$this->end_controls_section();
 	}
 
@@ -283,6 +313,21 @@ class WP_Booking_System_Luca_Elementor_Calendar_Widget extends \Elementor\Widget
 				'selectors' => array(
 					'{{WRAPPER}} .wpbs-calendar-shortcode .wpbs-unavailable-date' => 'background-color: {{VALUE}} !important;',
 					'{{WRAPPER}} .wpbs-legend-booked'                             => 'background-color: {{VALUE}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'wpbsl_cell_height',
+			array(
+				'label'      => __( 'Day cell height', 'wp-booking-system-luca' ),
+				'type'       => \Elementor\Controls_Manager::SLIDER,
+				'size_units' => array( 'px' ),
+				'range'      => array(
+					'px' => array( 'min' => 32, 'max' => 120 ),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .wpbs-calendar-shortcode .fc-daygrid-day-frame' => 'min-height: {{SIZE}}{{UNIT}};',
 				),
 			)
 		);

@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.15.1
+Stable tag: 1.16.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,7 +63,7 @@ Yes. You have three options: (1) drag the native "Booking Form" / "Booking Calen
 
 = Does it work with Elementor, Gutenberg and Spectra? =
 
-Yes. The plugin registers native Elementor widgets ("Booking Form" and "Booking Calendar") and Gutenberg blocks of the same names, both grouped under a "WP booking Luca" category so they are easy to find. Spectra (Ultimate Addons for Gutenberg) uses the standard block inserter, so the blocks appear there too. Each widget/block has a "Title" option. The Elementor widgets also include a Style tab — set the accent colour and the button colours (form) or the accent and booked colours (calendar) right from Elementor. Everything else is configured under WP booking Luca → Settings.
+Yes. The plugin registers native Elementor widgets ("Booking Form" and "Booking Calendar") and Gutenberg blocks of the same names, both grouped under a "WP booking Luca" category so they are easy to find. Spectra (Ultimate Addons for Gutenberg) uses the standard block inserter, so the blocks appear there too. Each widget/block has a "Title" option. Both the Elementor widgets (Style tab) and the Gutenberg blocks (Colors panel) let you set the accent and button colours (form) or the accent and booked colours (calendar); the Elementor widgets also expose sizing controls (button font size/radius, calendar day-cell height). Everything else is configured under WP booking Luca → Settings.
 
 = How do guests manage their bookings? =
 
@@ -114,6 +114,11 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.16.0 =
+* 2026-06-16
+* The Gutenberg "Booking Form" and "Booking Calendar" blocks now have a Colors panel (accent + button colours for the form; accent + booked colour for the calendar), applied per block instance — so you get the same styling options as Elementor without a page builder
+* The Elementor widgets gained sizing controls too: button font size and corner radius (form), and day-cell height (calendar)
 
 = 1.14.0 =
 * 2026-06-15

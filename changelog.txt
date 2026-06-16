@@ -1,5 +1,9 @@
 *** WP booking Luca Changelog ***
 
+2026.06.16 - version 1.16.0
+ * New - Colour controls for the Gutenberg blocks: a Colors panel on the "Booking Form" (accent, button background/text/hover) and "Booking Calendar" (accent, booked) blocks, applied per block instance via uniquely-scoped CSS (with strict colour validation). Non-Elementor users now get the same styling options.
+ * New - Sizing controls on the Elementor widgets: button font size and corner radius (form) and day-cell height (calendar).
+
 2026.06.16 - version 1.15.1
  * New - The Elementor "Booking Form" and "Booking Calendar" widgets gained a Style tab: pick the accent colour and button colours (form), or the accent and booked colours (calendar), directly from Elementor's design panel. The colours are applied with per-widget scoped CSS so each instance can differ.
 

@@ -2,8 +2,10 @@
 	var el = element.createElement;
 	var registerBlockType = blocks.registerBlockType;
 	var InspectorControls = blockEditor.InspectorControls;
+	var ColorPalette = blockEditor.ColorPalette || components.ColorPalette;
 	var PanelBody = components.PanelBody;
 	var TextControl = components.TextControl;
+	var BaseControl = components.BaseControl;
 	var __ = i18n.__;
 
 	/**
@@ -36,29 +38,53 @@
 	 * @param {string} panelTitle   Inspector panel title.
 	 * @param {string} previewText  Helper text in the preview.
 	 */
-	function makeEdit(icon, panelTitle, previewText) {
+	function makeEdit(icon, panelTitle, previewText, colors) {
 		return function (props) {
 			var attributes = props.attributes;
 			var setAttributes = props.setAttributes;
 
+			var panels = [
+				el(
+					PanelBody,
+					{ title: panelTitle, initialOpen: true, key: 'content' },
+					el(TextControl, {
+						label: __('Title', 'wp-booking-system-luca'),
+						value: attributes.title,
+						onChange: function (value) {
+							setAttributes({ title: value });
+						}
+					})
+				)
+			];
+
+			if (ColorPalette && colors && colors.length) {
+				var colorChildren = colors.map(function (c) {
+					return el(
+						BaseControl,
+						{ label: c.label, key: c.attr, __nextHasNoMarginBottom: true },
+						el(ColorPalette, {
+							value: attributes[c.attr],
+							onChange: function (value) {
+								var update = {};
+								update[c.attr] = value || '';
+								setAttributes(update);
+							}
+						})
+					);
+				});
+				panels.push(
+					el(
+						PanelBody,
+						{ title: __('Colors', 'wp-booking-system-luca'), initialOpen: false, key: 'colors' },
+						colorChildren
+					)
+				);
+			}
+
 			return el(
 				'div',
 				{},
-				el(
-					InspectorControls,
-					{},
-					el(
-						PanelBody,
-						{ title: panelTitle, initialOpen: true },
-						el(TextControl, {
-							label: __('Title', 'wp-booking-system-luca'),
-							value: attributes.title,
-							onChange: function (value) {
-								setAttributes({ title: value });
-							}
-						})
-					)
-				),
+				el(InspectorControls, {}, panels),
 				preview(icon, attributes.title, previewText)
 			);
 		};
@@ -71,9 +97,19 @@
 		category: 'wp-booking-luca',
 		keywords: [__('booking', 'wp-booking-system-luca'), __('calendar', 'wp-booking-system-luca'), __('availability', 'wp-booking-system-luca')],
 		attributes: {
-			title: { type: 'string', default: __('Booking Calendar', 'wp-booking-system-luca') }
+			title: { type: 'string', default: __('Booking Calendar', 'wp-booking-system-luca') },
+			accentColor: { type: 'string', default: '' },
+			bookedColor: { type: 'string', default: '' }
 		},
-		edit: makeEdit('calendar-alt', __('Calendar Settings', 'wp-booking-system-luca'), __('The availability calendar will appear here on the frontend.', 'wp-booking-system-luca')),
+		edit: makeEdit(
+			'calendar-alt',
+			__('Calendar Settings', 'wp-booking-system-luca'),
+			__('The availability calendar will appear here on the frontend.', 'wp-booking-system-luca'),
+			[
+				{ attr: 'accentColor', label: __('Accent color', 'wp-booking-system-luca') },
+				{ attr: 'bookedColor', label: __('Booked color', 'wp-booking-system-luca') }
+			]
+		),
 		save: function () {
 			return null;
 		}
@@ -86,9 +122,23 @@
 		category: 'wp-booking-luca',
 		keywords: [__('booking', 'wp-booking-system-luca'), __('reservation', 'wp-booking-system-luca'), __('form', 'wp-booking-system-luca')],
 		attributes: {
-			title: { type: 'string', default: __('Book Your Stay', 'wp-booking-system-luca') }
+			title: { type: 'string', default: __('Book Your Stay', 'wp-booking-system-luca') },
+			accentColor: { type: 'string', default: '' },
+			buttonBg: { type: 'string', default: '' },
+			buttonColor: { type: 'string', default: '' },
+			buttonHoverBg: { type: 'string', default: '' }
 		},
-		edit: makeEdit('calendar', __('Form Settings', 'wp-booking-system-luca'), __('The booking form will appear here on the frontend.', 'wp-booking-system-luca')),
+		edit: makeEdit(
+			'calendar',
+			__('Form Settings', 'wp-booking-system-luca'),
+			__('The booking form will appear here on the frontend.', 'wp-booking-system-luca'),
+			[
+				{ attr: 'accentColor', label: __('Accent color', 'wp-booking-system-luca') },
+				{ attr: 'buttonBg', label: __('Button background', 'wp-booking-system-luca') },
+				{ attr: 'buttonColor', label: __('Button text', 'wp-booking-system-luca') },
+				{ attr: 'buttonHoverBg', label: __('Button hover background', 'wp-booking-system-luca') }
+			]
+		),
 		save: function () {
 			return null;
 		}
