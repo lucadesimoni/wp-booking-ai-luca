@@ -843,3 +843,13 @@ msgstr ""
 
 msgid "Book another stay"
 msgstr ""
+
+msgid "Available — click to select your dates"
+msgstr ""
+
+msgid "Already booked"
+msgstr ""
+
+msgid "This date has already passed"
+msgstr ""
+

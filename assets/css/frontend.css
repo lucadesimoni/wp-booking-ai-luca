@@ -423,7 +423,15 @@
 }
 .wpbs-calendar-shortcode .wpbs-past-date {
 	color: #bbb;
-	cursor: default;
+	cursor: not-allowed;
+	background-color: #fafafa;
+}
+.wpbs-calendar-shortcode .wpbs-past-date .fc-daygrid-day-number {
+	color: #c4c4c4 !important;
+	opacity: 0.7;
+}
+.wpbs-calendar-shortcode .wpbs-unavailable-date {
+	cursor: not-allowed;
 }
 .wpbs-calendar-shortcode .wpbs-selected-range {
 	background-color: rgba(139, 0, 0, 0.12) !important;

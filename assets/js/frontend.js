@@ -178,6 +178,20 @@
 				if (dateStr < todayStr) { classes.push('wpbs-past-date'); }
 				return classes;
 			},
+			dayCellDidMount: function(arg) {
+				if (!arg.el) { return; }
+				const dateStr = ymd(arg.date);
+				const i18n = (wpbslFrontend && wpbslFrontend.i18n) || {};
+				let tip;
+				if (dateStr < todayStr) {
+					tip = i18n.tipPast || 'Not available';
+				} else if (unavailableDates.indexOf(dateStr) !== -1) {
+					tip = i18n.tipBooked || 'Booked';
+				} else {
+					tip = i18n.tipAvailable || 'Available';
+				}
+				arg.el.setAttribute('title', tip);
+			},
 			dateClick: function(info) {
 				const dateStr = info.dateStr;
 				if (dateStr < todayStr || unavailableDates.indexOf(dateStr) !== -1) { return; }

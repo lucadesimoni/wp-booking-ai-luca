@@ -1,5 +1,9 @@
 *** WP booking Luca Changelog ***
 
+2026.06.16 - version 1.17.0
+ * New - Tooltips on the availability calendar days: hovering shows whether a date is available ("click to select your dates"), already booked, or in the past. Translated into German.
+ * Tweak - Past dates are now clearly deactivated on the calendar (muted background, not-allowed cursor, not selectable) to match the date picker, which already blocked them.
+
 2026.06.16 - version 1.16.0
  * New - Colour controls for the Gutenberg blocks: a Colors panel on the "Booking Form" (accent, button background/text/hover) and "Booking Calendar" (accent, booked) blocks, applied per block instance via uniquely-scoped CSS (with strict colour validation). Non-Elementor users now get the same styling options.
  * New - Sizing controls on the Elementor widgets: button font size and corner radius (form) and day-cell height (calendar).
