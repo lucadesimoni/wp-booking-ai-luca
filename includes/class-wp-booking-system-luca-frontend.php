@@ -82,6 +82,12 @@ class WP_Booking_System_Luca_Frontend {
 					'submitting'    => __( 'Submitting...', 'wp-booking-system-luca' ),
 					'submittedNote' => __( 'A confirmation email with a link to manage your booking is on its way. If you don\'t see it shortly, please check your spam folder.', 'wp-booking-system-luca' ),
 					'bookAnother'   => __( 'Book another stay', 'wp-booking-system-luca' ),
+					'payTitle'      => __( 'Pay now', 'wp-booking-system-luca' ),
+					'payIntro'      => __( 'Scan the QR code with TWINT or your banking app to pay.', 'wp-booking-system-luca' ),
+					'payWithTwint'  => __( 'Pay with TWINT', 'wp-booking-system-luca' ),
+					'labelAmount'   => __( 'Amount:', 'wp-booking-system-luca' ),
+					'labelIban'     => __( 'IBAN:', 'wp-booking-system-luca' ),
+					'labelReference' => __( 'Reference:', 'wp-booking-system-luca' ),
 					'confirmCancel' => __( 'Are you sure you want to cancel this booking?', 'wp-booking-system-luca' ),
 					'cancelled'     => __( 'Cancelled', 'wp-booking-system-luca' ),
 				),
@@ -153,6 +159,12 @@ class WP_Booking_System_Luca_Frontend {
 	 */
 	public function render_booking_form( $atts = array() ) {
 		$this->enqueue_assets();
+
+		// When TWINT/QR payment is configured, load the QR generator so the
+		// post-booking confirmation can offer payment immediately at checkout.
+		if ( (int) get_option( 'wpbsl_qr_enabled', 0 ) && WP_Booking_System_Luca_Helpers::is_valid_ch_iban( WP_Booking_System_Luca_Helpers::normalize_iban( get_option( 'wpbsl_qr_creditor_iban', '' ) ) ) ) {
+			wp_enqueue_script( 'wpbsl-qrcode' );
+		}
 
 		$atts = shortcode_atts(
 			array(
@@ -313,37 +325,24 @@ class WP_Booking_System_Luca_Frontend {
 			</div>
 
 			<?php
-			$qr_iban = WP_Booking_System_Luca_Helpers::normalize_iban( get_option( 'wpbsl_qr_creditor_iban', '' ) );
-			$qr_due  = WP_Booking_System_Luca_Helpers::amount_due( $booking );
-			$qr_cur  = strtoupper( (string) get_option( 'wpbsl_currency', 'CHF' ) );
-			$qr_cur  = in_array( $qr_cur, array( 'CHF', 'EUR' ), true ) ? $qr_cur : 'CHF';
-
-			$qr_pstatus = isset( $booking->payment_status ) ? $booking->payment_status : 'unpaid';
-			if ( (int) get_option( 'wpbsl_qr_enabled', 0 ) && 'cancelled' !== $booking->status && 'refunded' !== $qr_pstatus && $qr_due > 0 && WP_Booking_System_Luca_Helpers::is_valid_ch_iban( $qr_iban ) ) :
+			$pay = wp_booking_system_luca()->email->payment_context( $booking );
+			if ( $pay ) :
 				wp_enqueue_script( 'wpbsl-qrcode' );
-				$qr_ref     = trim( sprintf( 'Booking #%d %s %s', (int) $booking->id, $booking->first_name, $booking->last_name ) );
-				$qr_payload = WP_Booking_System_Luca_Helpers::build_swiss_qr_payload(
-					array(
-						'iban'     => $qr_iban,
-						'name'     => get_option( 'wpbsl_qr_creditor_name', '' ),
-						'address'  => get_option( 'wpbsl_qr_creditor_address', '' ),
-						'city'     => get_option( 'wpbsl_qr_creditor_city', '' ),
-						'country'  => get_option( 'wpbsl_qr_creditor_country', 'CH' ),
-						'amount'   => $qr_due,
-						'currency' => $qr_cur,
-						'message'  => $qr_ref,
-					)
-				);
 				?>
 				<div class="wpbs-qr-pay">
 					<h3><?php esc_html_e( 'Pay with TWINT', 'wp-booking-system-luca' ); ?></h3>
 					<p><?php esc_html_e( 'Scan this QR code with TWINT or your banking app to pay the outstanding balance.', 'wp-booking-system-luca' ); ?></p>
-					<div id="wpbs-qr" class="wpbs-qr" data-payload="<?php echo esc_attr( base64_encode( $qr_payload ) ); ?>" aria-label="<?php esc_attr_e( 'Swiss QR payment code', 'wp-booking-system-luca' ); ?>"></div>
+					<div id="wpbs-qr" class="wpbs-qr" data-payload="<?php echo esc_attr( $pay['qr_payload'] ); ?>" aria-label="<?php esc_attr_e( 'Swiss QR payment code', 'wp-booking-system-luca' ); ?>"></div>
 					<ul class="wpbs-qr-info">
-						<li><strong><?php esc_html_e( 'Amount:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $qr_due, 2 ) . ' ' . $qr_cur ); ?></li>
-						<li><strong><?php esc_html_e( 'IBAN:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( trim( chunk_split( $qr_iban, 4, ' ' ) ) ); ?></li>
-						<li><strong><?php esc_html_e( 'Reference:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $qr_ref ); ?></li>
+						<li><strong><?php esc_html_e( 'Amount:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $pay['amount'] ); ?></li>
+						<?php if ( '' !== $pay['name'] ) : ?><li><?php echo esc_html( $pay['name'] ); ?></li><?php endif; ?>
+						<?php if ( '' !== $pay['bank'] ) : ?><li><?php echo esc_html( $pay['bank'] ); ?></li><?php endif; ?>
+						<li><strong><?php esc_html_e( 'IBAN:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $pay['iban'] ); ?></li>
+						<li><strong><?php esc_html_e( 'Reference:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $pay['reference'] ); ?></li>
 					</ul>
+					<?php if ( '' !== $pay['paylink'] ) : ?>
+						<a class="wpbs-twint-btn" href="<?php echo esc_url( $pay['paylink'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Pay with TWINT', 'wp-booking-system-luca' ); ?></a>
+					<?php endif; ?>
 				</div>
 			<?php endif; ?>
 

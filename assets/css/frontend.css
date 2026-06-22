@@ -696,3 +696,17 @@
 	border-bottom: 1px solid #ececec;
 }
 .wpbs-qr-info li:last-child { border-bottom: none; }
+
+/* TWINT pay-link button (checkout + manage page) */
+.wpbs-twint-btn {
+	display: inline-block;
+	margin-top: 14px;
+	padding: 12px 26px;
+	background: #000000;
+	color: #ffffff !important;
+	text-decoration: none;
+	border-radius: 4px;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+}
+.wpbs-twint-btn:hover { background: #222222; }

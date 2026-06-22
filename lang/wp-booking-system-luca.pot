@@ -905,3 +905,31 @@ msgstr ""
 
 msgid "Refunded"
 msgstr ""
+
+msgid "Payment Details"
+msgstr ""
+
+msgid "Or pay by TWINT:"
+msgstr ""
+
+msgid "You can also scan the Swiss QR code on your booking page."
+msgstr ""
+
+msgid "Bank name (optional)"
+msgstr ""
+
+msgid "Shown in the payment details on the confirmation email and at checkout."
+msgstr ""
+
+msgid "TWINT Pay link (optional)"
+msgstr ""
+
+msgid "Your TWINT pay-link URL (from portal.twint.ch). Shown as a 'Pay with TWINT' button alongside the QR code."
+msgstr ""
+
+msgid "Pay now"
+msgstr ""
+
+msgid "Scan the QR code with TWINT or your banking app to pay."
+msgstr ""
+

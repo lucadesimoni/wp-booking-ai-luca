@@ -320,6 +320,7 @@ class WP_Booking_System_Luca_Email {
 			'{manage_link}'     => '<a href="' . esc_url( $manage_url ) . '" class="button" style="display:inline-block; padding:12px 24px; background-color:#8B0000; color:#ffffff; text-decoration:none; border-radius:4px; margin-top:15px;">' . esc_html__( 'Manage Booking', 'wp-booking-system-luca' ) . '</a>',
 			'{admin_link}'      => '<a href="' . esc_url( $admin_url ) . '" class="button" style="display:inline-block; padding:12px 24px; background-color:#8B0000; color:#ffffff; text-decoration:none; border-radius:4px; margin-top:15px;">' . esc_html__( 'View Booking', 'wp-booking-system-luca' ) . '</a>',
 			'{booking_details}' => $this->render_booking_details( $booking ),
+			'{payment_info}'    => $this->render_payment_info( $booking ),
 		);
 	}
 
@@ -344,6 +345,98 @@ class WP_Booking_System_Luca_Email {
 			<?php if ( ! empty( $booking->notes ) ) : ?>
 				<p><strong><?php esc_html_e( 'Notes:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $booking->notes ); ?></p>
 			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Build the payment context (bank details, amount due, reference, QR
+	 * payload and TWINT pay link) for a booking, or null when QR/TWINT payment
+	 * is not applicable (disabled, no valid IBAN, nothing due, or
+	 * cancelled/refunded). Reused by the email, the manage page and checkout.
+	 *
+	 * @param object $booking Booking object.
+	 * @return array|null
+	 */
+	public function payment_context( $booking ) {
+		if ( ! (int) get_option( 'wpbsl_qr_enabled', 0 ) ) {
+			return null;
+		}
+
+		$iban = WP_Booking_System_Luca_Helpers::normalize_iban( get_option( 'wpbsl_qr_creditor_iban', '' ) );
+		if ( ! WP_Booking_System_Luca_Helpers::is_valid_ch_iban( $iban ) ) {
+			return null;
+		}
+
+		$pstatus = isset( $booking->payment_status ) ? $booking->payment_status : 'unpaid';
+		if ( 'refunded' === $pstatus || ( isset( $booking->status ) && 'cancelled' === $booking->status ) ) {
+			return null;
+		}
+
+		$due = WP_Booking_System_Luca_Helpers::amount_due( $booking );
+		if ( $due <= 0 ) {
+			return null;
+		}
+
+		$cur = strtoupper( (string) get_option( 'wpbsl_currency', 'CHF' ) );
+		$cur = in_array( $cur, array( 'CHF', 'EUR' ), true ) ? $cur : 'CHF';
+		$ref = trim( sprintf( 'Booking #%d %s %s', (int) $booking->id, $booking->first_name, $booking->last_name ) );
+
+		$payload = WP_Booking_System_Luca_Helpers::build_swiss_qr_payload(
+			array(
+				'iban'     => $iban,
+				'name'     => get_option( 'wpbsl_qr_creditor_name', '' ),
+				'address'  => get_option( 'wpbsl_qr_creditor_address', '' ),
+				'city'     => get_option( 'wpbsl_qr_creditor_city', '' ),
+				'country'  => get_option( 'wpbsl_qr_creditor_country', 'CH' ),
+				'amount'   => $due,
+				'currency' => $cur,
+				'message'  => $ref,
+			)
+		);
+
+		return array(
+			'name'       => (string) get_option( 'wpbsl_qr_creditor_name', '' ),
+			'bank'       => (string) get_option( 'wpbsl_qr_bank_name', '' ),
+			'iban'       => trim( chunk_split( $iban, 4, ' ' ) ),
+			'amount'     => number_format( $due, 2 ) . ' ' . $cur,
+			'reference'  => $ref,
+			'paylink'    => (string) get_option( 'wpbsl_qr_twint_paylink', '' ),
+			'qr_payload' => base64_encode( $payload ),
+			'manage_url' => $this->get_manage_url( $booking->booking_token ),
+		);
+	}
+
+	/**
+	 * Render the {payment_info} block for emails. Empty when not applicable.
+	 *
+	 * @param object $booking Booking object.
+	 * @return string
+	 */
+	private function render_payment_info( $booking ) {
+		$ctx = $this->payment_context( $booking );
+		if ( ! $ctx ) {
+			return '';
+		}
+
+		ob_start();
+		?>
+		<div class="payment-info" style="background-color:#f7f7f7; color:#333333; padding:15px; margin:15px 0; border-left:4px solid #8B0000;">
+			<h3 style="color:#333333; margin-top:0;"><?php esc_html_e( 'Payment Details', 'wp-booking-system-luca' ); ?></h3>
+			<p style="margin:8px 0;">
+				<?php if ( '' !== $ctx['name'] ) : ?><?php echo esc_html( $ctx['name'] ); ?><br /><?php endif; ?>
+				<?php if ( '' !== $ctx['bank'] ) : ?><?php echo esc_html( $ctx['bank'] ); ?><br /><?php endif; ?>
+				<strong><?php esc_html_e( 'IBAN:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $ctx['iban'] ); ?>
+			</p>
+			<p style="margin:8px 0;">
+				<strong><?php esc_html_e( 'Amount:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $ctx['amount'] ); ?><br />
+				<strong><?php esc_html_e( 'Reference:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $ctx['reference'] ); ?>
+			</p>
+			<?php if ( '' !== $ctx['paylink'] ) : ?>
+				<p style="margin:10px 0 0;"><?php esc_html_e( 'Or pay by TWINT:', 'wp-booking-system-luca' ); ?> <a href="<?php echo esc_url( $ctx['paylink'] ); ?>" style="color:#8B0000; font-weight:bold;"><?php esc_html_e( 'Pay with TWINT', 'wp-booking-system-luca' ); ?></a></p>
+			<?php endif; ?>
+			<p style="margin:10px 0 0; font-size:13px; color:#666666;"><?php esc_html_e( 'You can also scan the Swiss QR code on your booking page.', 'wp-booking-system-luca' ); ?></p>
 		</div>
 		<?php
 		return ob_get_clean();
@@ -516,7 +609,7 @@ class WP_Booking_System_Luca_Email {
 	 */
 	public function default_confirmation_body() {
 		return __(
-			"Dear {guest_name},\n\nThank you for your booking! We are pleased to confirm your reservation.\n\n{booking_details}\n\nYou can manage or cancel your booking using the link below:\n\n{manage_link}\n\nWe look forward to welcoming you!\n\nBest regards,\n{site_name}",
+			"Dear {guest_name},\n\nThank you for your booking! We are pleased to confirm your reservation.\n\n{booking_details}\n\n{payment_info}\n\nYou can manage or cancel your booking using the link below:\n\n{manage_link}\n\nWe look forward to welcoming you!\n\nBest regards,\n{site_name}",
 			'wp-booking-system-luca'
 		);
 	}

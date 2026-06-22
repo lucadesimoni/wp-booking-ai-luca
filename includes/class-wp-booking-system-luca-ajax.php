@@ -215,8 +215,9 @@ class WP_Booking_System_Luca_Ajax {
 
 		wp_send_json_success(
 			array(
-				'message' => __( 'Booking submitted successfully! Check your email for confirmation.', 'wp-booking-system-luca' ),
+				'message'    => __( 'Booking submitted successfully! Check your email for confirmation.', 'wp-booking-system-luca' ),
 				'booking_id' => $booking_id,
+				'payment'    => wp_booking_system_luca()->email->payment_context( $booking ),
 			)
 		);
 	}

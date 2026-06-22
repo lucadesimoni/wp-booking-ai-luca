@@ -909,3 +909,31 @@ msgstr "Bitte geben Sie eine gültige Schweizer/Liechtensteiner IBAN (CH… oder
 
 msgid "Refunded"
 msgstr "Erstattet"
+
+msgid "Payment Details"
+msgstr "Zahlungsdetails"
+
+msgid "Or pay by TWINT:"
+msgstr "Oder per TWINT bezahlen:"
+
+msgid "You can also scan the Swiss QR code on your booking page."
+msgstr "Sie können auch den Schweizer QR-Code auf Ihrer Buchungsseite scannen."
+
+msgid "Bank name (optional)"
+msgstr "Bankname (optional)"
+
+msgid "Shown in the payment details on the confirmation email and at checkout."
+msgstr "Wird in den Zahlungsdetails der Bestätigungs-E-Mail und beim Checkout angezeigt."
+
+msgid "TWINT Pay link (optional)"
+msgstr "TWINT-Paylink (optional)"
+
+msgid "Your TWINT pay-link URL (from portal.twint.ch). Shown as a 'Pay with TWINT' button alongside the QR code."
+msgstr "Ihre TWINT-Paylink-URL (von portal.twint.ch). Wird als Schaltfläche „Mit TWINT bezahlen“ neben dem QR-Code angezeigt."
+
+msgid "Pay now"
+msgstr "Jetzt bezahlen"
+
+msgid "Scan the QR code with TWINT or your banking app to pay."
+msgstr "Scannen Sie den QR-Code mit TWINT oder Ihrer Banking-App, um zu bezahlen."
+

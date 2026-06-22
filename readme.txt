@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.18.1
+Stable tag: 1.19.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,7 +92,7 @@ Yes. Under WP booking Luca > Settings > Email Templates you can either edit the 
 
 = Can guests pay with TWINT? =
 
-Yes, for free. Under Settings > General > TWINT / QR-bill Payments, enable QR payments and enter your Swiss/Liechtenstein IBAN and address. When a booking has an outstanding balance, the guest's manage-booking page shows a Swiss QR-bill (QR code) for that amount, which they scan with TWINT or any Swiss banking app to pay you directly. This uses the standard Swiss QR-bill — no TWINT merchant account, no API and no transaction fees beyond a normal bank transfer. The QR generator is bundled with the plugin, so nothing is sent to an external service.
+Yes, for free. Under Settings > General > TWINT / QR-bill Payments, enable QR payments and enter your Swiss/Liechtenstein IBAN and address. When a booking has an outstanding balance, the guest's manage-booking page shows a Swiss QR-bill (QR code) for that amount, which they scan with TWINT or any Swiss banking app to pay you directly. The same payment block (bank details, IBAN, amount, reference, QR code and a “Pay with TWINT” button) is shown right after checkout, on the manage-booking page, and — via the {payment_info} merge tag — in the confirmation email. This uses the standard Swiss QR-bill — no TWINT merchant account, no API and no transaction fees beyond a normal bank transfer. The QR generator is bundled with the plugin, so nothing is sent to an external service.
 
 = Does it work with the Astra theme (and Astra Pro)? =
 
@@ -119,6 +119,12 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.19.0 =
+* 2026-06-16
+* Payment info now appears right at checkout: after submitting a booking, the confirmation shows the Swiss QR code, your bank details (account holder, bank name, IBAN), the amount and reference, plus a "Pay with TWINT" button (when a TWINT pay link is configured)
+* New configurable fields: Bank name and a TWINT Pay link URL (Settings > General > TWINT / QR-bill Payments)
+* New {payment_info} email merge tag that outputs the bank details + IBAN + TWINT pay link; it is included in the default confirmation email
 
 = 1.18.0 =
 * 2026-06-16

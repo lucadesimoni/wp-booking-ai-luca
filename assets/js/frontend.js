@@ -96,22 +96,23 @@
 		});
 	}
 
-	/**
-	 * Render the Swiss QR-bill payment code into #wpbs-qr from its base64
-	 * data-payload, drawn on a canvas with the Swiss cross in the centre. The
-	 * guest scans it with TWINT or any Swiss banking app to pay.
-	 */
-	function initQrPayment() {
-		const box = document.getElementById('wpbs-qr');
-		if (!box || typeof WPBSLQRCode === 'undefined' || !box.getAttribute('data-payload')) {
-			return;
-		}
-
-		let payload;
+	/** Base64 → UTF-8 string (with a Latin-1 fallback). */
+	function decodeQrPayload(b64) {
 		try {
-			payload = decodeURIComponent(escape(window.atob(box.getAttribute('data-payload'))));
+			return decodeURIComponent(escape(window.atob(b64)));
 		} catch (e) {
-			try { payload = window.atob(box.getAttribute('data-payload')); } catch (e2) { return; }
+			try { return window.atob(b64); } catch (e2) { return ''; }
+		}
+	}
+
+	/**
+	 * Draw a Swiss QR-bill payment code (with the Swiss cross in the centre)
+	 * into the given element. The guest scans it with TWINT or any Swiss
+	 * banking app to pay.
+	 */
+	function renderSwissQr(box, payload) {
+		if (!box || typeof WPBSLQRCode === 'undefined' || !payload) {
+			return;
 		}
 
 		// errorCorrectLevel 0 = M, required by the Swiss QR-bill; typeNumber 0 = auto.
@@ -156,6 +157,50 @@
 
 		box.innerHTML = '';
 		box.appendChild(canvas);
+	}
+
+	/** Manage-page QR (rendered from the #wpbs-qr data-payload). */
+	function initQrPayment() {
+		const box = document.getElementById('wpbs-qr');
+		if (box && box.getAttribute('data-payload')) {
+			renderSwissQr(box, decodeQrPayload(box.getAttribute('data-payload')));
+		}
+	}
+
+	/**
+	 * Build the checkout payment panel (QR + bank details + optional TWINT
+	 * pay link) from the payment context returned by the booking submission.
+	 */
+	function buildPaymentPanel(p) {
+		const i18n = (wpbslFrontend && wpbslFrontend.i18n) || {};
+		const infoLi = function (label, value) {
+			const li = $('<li></li>');
+			if (label) { li.append($('<strong></strong>').text(label)); li.append(document.createTextNode(' ')); }
+			li.append(document.createTextNode(value));
+			return li;
+		};
+
+		const wrap = $('<div class="wpbs-qr-pay"></div>');
+		wrap.append($('<h3></h3>').text(i18n.payTitle || 'Pay now'));
+		wrap.append($('<p></p>').text(i18n.payIntro || ''));
+		wrap.append($('<div class="wpbs-qr"></div>'));
+
+		const ul = $('<ul class="wpbs-qr-info"></ul>');
+		ul.append(infoLi(i18n.labelAmount || 'Amount:', p.amount));
+		if (p.name) { ul.append(infoLi('', p.name)); }
+		if (p.bank) { ul.append(infoLi('', p.bank)); }
+		ul.append(infoLi(i18n.labelIban || 'IBAN:', p.iban));
+		ul.append(infoLi(i18n.labelReference || 'Reference:', p.reference));
+		wrap.append(ul);
+
+		if (p.paylink) {
+			wrap.append(
+				$('<a class="wpbs-twint-btn" target="_blank" rel="noopener noreferrer"></a>')
+					.attr('href', p.paylink)
+					.text(i18n.payWithTwint || 'Pay with TWINT')
+			);
+		}
+		return wrap;
 	}
 
 	/**
@@ -406,7 +451,7 @@
 			data: formData + '&action=wpbsl_submit_booking&nonce=' + wpbslFrontend.nonce,
 			success: function(response) {
 				if (response.success) {
-					showBookingSuccess(response.data.message);
+					showBookingSuccess(response.data.message, response.data.payment);
 				} else {
 					showMessage('error', response.data.message || 'An error occurred. Please try again.');
 				}
@@ -426,7 +471,7 @@
 	 * Replace the booking form with a clear confirmation panel so the guest
 	 * knows the request went through and isn't tempted to submit again.
 	 */
-	function showBookingSuccess(message) {
+	function showBookingSuccess(message, payment) {
 		const form = $('#wpbs-booking-form');
 		const note = wpbslFrontend.i18n.submittedNote || '';
 
@@ -436,12 +481,26 @@
 		if (note) {
 			panel.append($('<p class="wpbs-confirmation-note"></p>').text(note));
 		}
+
+		// Offer payment right at checkout when configured (QR + bank details + TWINT).
+		let payPanel = null;
+		if (payment && payment.qr_payload) {
+			payPanel = buildPaymentPanel(payment);
+			panel.append(payPanel);
+		}
+
 		const again = $('<button type="button" class="wpbs-book-another"></button>')
 			.text(wpbslFrontend.i18n.bookAnother || 'Book another stay')
 			.on('click', function() { window.location.reload(); });
 		panel.append(again);
 
 		form.hide().after(panel);
+
+		// Render the QR after the panel is in the DOM.
+		if (payPanel) {
+			renderSwissQr(payPanel.find('.wpbs-qr')[0], decodeQrPayload(payment.qr_payload));
+		}
+
 		$('html, body').animate({ scrollTop: panel.offset().top - 100 }, 300);
 	}
 
