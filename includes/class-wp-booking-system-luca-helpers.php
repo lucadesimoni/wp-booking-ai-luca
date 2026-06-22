@@ -19,6 +19,105 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WP_Booking_System_Luca_Helpers {
 
 	/**
+	 * Normalise an IBAN: strip spaces, uppercase.
+	 *
+	 * @param string $iban Raw IBAN.
+	 * @return string
+	 */
+	public static function normalize_iban( $iban ) {
+		return strtoupper( preg_replace( '/\s+/', '', (string) $iban ) );
+	}
+
+	/**
+	 * Whether a string is a structurally valid Swiss/Liechtenstein IBAN
+	 * (CH/LI, 21 chars, ISO 7064 mod-97 == 1). Swiss QR-bills require one.
+	 *
+	 * @param string $iban Raw IBAN.
+	 * @return bool
+	 */
+	public static function is_valid_ch_iban( $iban ) {
+		$iban = self::normalize_iban( $iban );
+		if ( ! preg_match( '/^(CH|LI)[0-9]{2}[0-9A-Z]{17}$/', $iban ) ) {
+			return false;
+		}
+		// Move the first 4 chars to the end, convert letters to numbers, mod 97.
+		$rearranged = substr( $iban, 4 ) . substr( $iban, 0, 4 );
+		$digits     = '';
+		$len        = strlen( $rearranged );
+		for ( $i = 0; $i < $len; $i++ ) {
+			$ch       = $rearranged[ $i ];
+			$digits  .= ctype_alpha( $ch ) ? (string) ( ord( $ch ) - 55 ) : $ch;
+		}
+		// Mod 97 over a long numeric string, in chunks to avoid overflow.
+		$remainder = '';
+		$dlen      = strlen( $digits );
+		for ( $i = 0; $i < $dlen; $i += 7 ) {
+			$remainder = (string) ( (int) ( $remainder . substr( $digits, $i, 7 ) ) % 97 );
+		}
+		return 1 === (int) $remainder;
+	}
+
+	/**
+	 * Build the Swiss QR Code (QR-bill, Swiss Payment Standards 2.0) payload
+	 * string. The guest scans the resulting QR with TWINT or any Swiss banking
+	 * app to pay — no merchant account or fees required beyond a normal IBAN.
+	 *
+	 * @param array $args {
+	 *     @type string $iban     Creditor IBAN (CH/LI).
+	 *     @type string $name     Creditor name.
+	 *     @type string $address  Creditor address line 1 (street + number).
+	 *     @type string $city     Creditor address line 2 (postal code + town).
+	 *     @type string $country  ISO country code (default CH).
+	 *     @type float  $amount   Amount.
+	 *     @type string $currency Currency (CHF/EUR).
+	 *     @type string $message  Unstructured message (e.g. booking reference).
+	 * }
+	 * @return string Newline-separated Swiss QR payload.
+	 */
+	public static function build_swiss_qr_payload( $args ) {
+		$defaults = array(
+			'iban'     => '',
+			'name'     => '',
+			'address'  => '',
+			'city'     => '',
+			'country'  => 'CH',
+			'amount'   => 0,
+			'currency' => 'CHF',
+			'message'  => '',
+		);
+		$a = array_merge( $defaults, $args );
+
+		$clip = function ( $value, $max ) {
+			$value = trim( preg_replace( '/[\r\n]+/', ' ', (string) $value ) );
+			return function_exists( 'mb_substr' ) ? mb_substr( $value, 0, $max ) : substr( $value, 0, $max );
+		};
+
+		$lines = array(
+			'SPC',                                   // QRType.
+			'0200',                                  // Version.
+			'1',                                     // Coding type.
+			self::normalize_iban( $a['iban'] ),      // Account (IBAN).
+			'K',                                     // Creditor address type: combined.
+			$clip( $a['name'], 70 ),                 // Creditor name.
+			$clip( $a['address'], 70 ),              // Address line 1.
+			$clip( $a['city'], 70 ),                 // Address line 2.
+			'',                                      // Postal code (empty for combined).
+			'',                                      // Town (empty for combined).
+			strtoupper( substr( (string) $a['country'], 0, 2 ) ), // Country.
+			'', '', '', '', '', '', '',              // Ultimate creditor (unused).
+			number_format( (float) $a['amount'], 2, '.', '' ),    // Amount.
+			strtoupper( substr( (string) $a['currency'], 0, 3 ) ), // Currency.
+			'', '', '', '', '', '', '',              // Ultimate debtor (unused).
+			'NON',                                   // Reference type.
+			'',                                      // Reference (empty for NON).
+			$clip( $a['message'], 140 ),             // Unstructured message.
+			'EPD',                                   // Trailer.
+		);
+
+		return implode( "\n", $lines );
+	}
+
+	/**
 	 * Allowed payment statuses.
 	 *
 	 * @return array

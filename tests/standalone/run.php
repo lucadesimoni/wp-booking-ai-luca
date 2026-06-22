@@ -390,6 +390,35 @@ check_equals( array( 'from' => 'Alberto', 'to' => 'Luca' ), $diff['owner'], 'own
 check( ! isset( $diff['total_price'] ), 'numeric 500.0 vs 500.00 is not a change' );
 check( ! isset( $diff['first_name'] ), 'unchanged fields are excluded' );
 
+echo "\nHelpers: Swiss IBAN validation\n";
+check( WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'CH9300762011623852957' ), 'valid CH IBAN accepted' );
+check( WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'CH93 0076 2011 6238 5295 7' ), 'spaced CH IBAN accepted' );
+check( WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'LI21088100002324013AA' ), 'valid LI IBAN accepted' );
+check( ! WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'CH9300762011623852958' ), 'wrong check digits rejected' );
+check( ! WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'DE89370400440532013000' ), 'non-CH/LI IBAN rejected' );
+check( ! WP_Booking_System_Luca_Helpers::is_valid_ch_iban( 'CH12' ), 'too-short IBAN rejected' );
+
+echo "\nHelpers: Swiss QR-bill payload\n";
+$qr = WP_Booking_System_Luca_Helpers::build_swiss_qr_payload( array(
+	'iban'    => 'CH93 0076 2011 6238 5295 7',
+	'name'    => 'Chalet Desimoni',
+	'address' => 'Musterstrasse 1',
+	'city'    => '8000 Zuerich',
+	'amount'  => 250,
+	'currency'=> 'CHF',
+	'message' => 'Booking #12 Mark Bianchi',
+) );
+$rows = explode( "\n", $qr );
+check_equals( 'SPC', $rows[0], 'payload starts with SPC' );
+check_equals( '0200', $rows[1], 'version 0200' );
+check_equals( 'CH9300762011623852957', $rows[3], 'IBAN normalised (spaces stripped)' );
+check_equals( '250.00', $rows[18], 'amount formatted with 2 decimals' );
+check_equals( 'CHF', $rows[19], 'currency present' );
+check_equals( 'NON', $rows[27], 'reference type NON' );
+check_equals( 'Booking #12 Mark Bianchi', $rows[29], 'unstructured message present' );
+check_equals( 'EPD', $rows[30], 'payload ends with EPD trailer' );
+check_equals( 31, count( $rows ), 'payload has the 31 Swiss QR elements' );
+
 echo "\nHelpers: outstanding balance\n";
 check_equals( 200.0, WP_Booking_System_Luca_Helpers::amount_due( (object) array( 'total_price' => 500, 'amount_paid' => 300 ) ), 'due = total - paid' );
 check_equals( 0.0, WP_Booking_System_Luca_Helpers::amount_due( (object) array( 'total_price' => 500, 'amount_paid' => 500 ) ), 'fully paid is zero due' );

@@ -857,3 +857,52 @@ msgstr "Bereits gebucht"
 msgid "This date has already passed"
 msgstr "Dieses Datum liegt in der Vergangenheit"
 
+
+msgid "Pay with TWINT"
+msgstr "Mit TWINT bezahlen"
+
+msgid "Scan this QR code with TWINT or your banking app to pay the outstanding balance."
+msgstr "Scannen Sie diesen QR-Code mit TWINT oder Ihrer Banking-App, um den offenen Betrag zu bezahlen."
+
+msgid "Swiss QR payment code"
+msgstr "Schweizer QR-Zahlungscode"
+
+msgid "Amount:"
+msgstr "Betrag:"
+
+msgid "IBAN:"
+msgstr "IBAN:"
+
+msgid "Reference:"
+msgstr "Referenz:"
+
+msgid "TWINT / QR-bill Payments"
+msgstr "TWINT / QR-Rechnung"
+
+msgid "Show a Swiss QR-bill on the guest's booking-management page so they can pay the outstanding balance by scanning it with TWINT or any Swiss banking app. This is free — it only needs your IBAN, with no merchant account or transaction fees."
+msgstr "Zeigen Sie auf der Buchungsverwaltungsseite des Gastes eine Schweizer QR-Rechnung an, damit der offene Betrag per TWINT oder einer beliebigen Schweizer Banking-App durch Scannen bezahlt werden kann. Das ist kostenlos – es wird nur Ihre IBAN benötigt, ohne Händlerkonto oder Transaktionsgebühren."
+
+msgid "Enable QR payments"
+msgstr "QR-Zahlungen aktivieren"
+
+msgid "Offer TWINT / QR-bill payment on the manage-booking page."
+msgstr "TWINT-/QR-Rechnung-Zahlung auf der Buchungsverwaltungsseite anbieten."
+
+msgid "Account holder (name)"
+msgstr "Kontoinhaber (Name)"
+
+msgid "Your Swiss or Liechtenstein IBAN (CH… or LI…)."
+msgstr "Ihre Schweizer oder Liechtensteiner IBAN (CH… oder LI…)."
+
+msgid "Address (street & number)"
+msgstr "Adresse (Strasse & Nummer)"
+
+msgid "Address (postal code & town)"
+msgstr "Adresse (PLZ & Ort)"
+
+msgid "Country code"
+msgstr "Ländercode"
+
+msgid "Please enter a valid Swiss/Liechtenstein IBAN (CH… or LI…) to enable TWINT / QR-bill payments."
+msgstr "Bitte geben Sie eine gültige Schweizer/Liechtensteiner IBAN (CH… oder LI…) ein, um TWINT-/QR-Rechnung-Zahlungen zu aktivieren."
+

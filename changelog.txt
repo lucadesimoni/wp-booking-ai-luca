@@ -1,5 +1,8 @@
 *** WP booking Luca Changelog ***
 
+2026.06.16 - version 1.18.0
+ * New - TWINT / Swiss QR-bill payment integration (free, no merchant account). When enabled, a booking with an outstanding balance shows a Swiss QR code on the guest's manage page; the guest scans it with TWINT or any Swiss banking app to pay. Configure your IBAN and address under Settings > General > TWINT / QR-bill Payments. The payload follows Swiss Payment Standards QR-bill 2.0 and the QR generator (MIT, Kazuhiko Arase) is bundled with the plugin — nothing is sent to an external service.
+
 2026.06.16 - version 1.17.0
  * New - Tooltips on the availability calendar days: hovering shows whether a date is available ("click to select your dates"), already booked, or in the past. Translated into German.
  * Tweak - Past dates are now clearly deactivated on the calendar (muted background, not-allowed cursor, not selectable) to match the date picker, which already blocked them.

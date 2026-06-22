@@ -12,6 +12,9 @@
 		// Initialize the interactive availability calendar (if present)
 		initAvailabilityCalendar();
 
+		// Render the Swiss QR payment code (manage page, if present)
+		initQrPayment();
+
 		// Handle form submission
 		$('#wpbs-booking-form').on('submit', handleFormSubmit);
 		
@@ -91,6 +94,68 @@
 				handleDateChange();
 			}
 		});
+	}
+
+	/**
+	 * Render the Swiss QR-bill payment code into #wpbs-qr from its base64
+	 * data-payload, drawn on a canvas with the Swiss cross in the centre. The
+	 * guest scans it with TWINT or any Swiss banking app to pay.
+	 */
+	function initQrPayment() {
+		const box = document.getElementById('wpbs-qr');
+		if (!box || typeof WPBSLQRCode === 'undefined' || !box.getAttribute('data-payload')) {
+			return;
+		}
+
+		let payload;
+		try {
+			payload = decodeURIComponent(escape(window.atob(box.getAttribute('data-payload'))));
+		} catch (e) {
+			try { payload = window.atob(box.getAttribute('data-payload')); } catch (e2) { return; }
+		}
+
+		// errorCorrectLevel 0 = M, required by the Swiss QR-bill; typeNumber 0 = auto.
+		const qr = new WPBSLQRCode(0, 0);
+		qr.addData(payload);
+		qr.make();
+
+		const count = qr.getModuleCount();
+		const cell = 6;
+		const margin = cell * 4;
+		const size = count * cell + margin * 2;
+
+		const canvas = document.createElement('canvas');
+		canvas.width = size;
+		canvas.height = size;
+		canvas.setAttribute('role', 'img');
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = '#ffffff';
+		ctx.fillRect(0, 0, size, size);
+		ctx.fillStyle = '#000000';
+		for (let r = 0; r < count; r++) {
+			for (let c = 0; c < count; c++) {
+				if (qr.isDark(r, c)) {
+					ctx.fillRect(margin + c * cell, margin + r * cell, cell, cell);
+				}
+			}
+		}
+
+		// Swiss cross in the centre (white cross on a black square with a white border).
+		const center = size / 2;
+		const sq = Math.round(size * 0.14);
+		const bx = Math.round(center - sq / 2);
+		ctx.fillStyle = '#ffffff';
+		ctx.fillRect(bx - 3, bx - 3, sq + 6, sq + 6);
+		ctx.fillStyle = '#000000';
+		ctx.fillRect(bx, bx, sq, sq);
+		ctx.fillStyle = '#ffffff';
+		const arm = Math.round(sq * 0.16);
+		const armLen = Math.round(sq * 0.56);
+		ctx.fillRect(Math.round(center - arm / 2), Math.round(center - armLen / 2), arm, armLen);
+		ctx.fillRect(Math.round(center - armLen / 2), Math.round(center - arm / 2), armLen, arm);
+
+		box.innerHTML = '';
+		box.appendChild(canvas);
 	}
 
 	/**

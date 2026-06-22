@@ -651,3 +651,48 @@
 	text-decoration: none !important;
 	box-shadow: none !important;
 }
+
+/* TWINT / Swiss QR-bill payment panel (manage page) */
+.wpbs-qr-pay {
+	margin: 24px 0;
+	padding: 20px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background: #fafafa;
+	text-align: center;
+}
+.wpbs-qr-pay h3 {
+	margin: 0 0 6px;
+	color: #333;
+}
+.wpbs-qr-pay > p {
+	margin: 0 auto 14px;
+	max-width: 420px;
+	color: #555;
+}
+.wpbs-qr {
+	display: inline-block;
+	background: #fff;
+	padding: 8px;
+	border-radius: 6px;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.wpbs-qr canvas {
+	display: block;
+	width: 240px;
+	height: 240px;
+	max-width: 100%;
+}
+.wpbs-qr-info {
+	list-style: none;
+	margin: 16px auto 0;
+	padding: 0;
+	max-width: 360px;
+	text-align: left;
+	font-size: 0.95rem;
+}
+.wpbs-qr-info li {
+	padding: 6px 0;
+	border-bottom: 1px solid #ececec;
+}
+.wpbs-qr-info li:last-child { border-bottom: none; }

@@ -802,6 +802,14 @@ class WP_Booking_System_Luca_Admin {
 			$smtp_password_input = isset( $_POST['wpbsl_smtp_password'] ) ? trim( (string) wp_unslash( $_POST['wpbsl_smtp_password'] ) ) : '';
 			$smtp_password       = '' === $smtp_password_input ? (string) get_option( 'wpbsl_smtp_password', '' ) : $smtp_password_input;
 
+			// TWINT / Swiss QR-bill payment options.
+			$qr_enabled = isset( $_POST['wpbsl_qr_enabled'] ) ? 1 : 0;
+			$qr_name    = isset( $_POST['wpbsl_qr_creditor_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_qr_creditor_name'] ) ) : '';
+			$qr_iban    = isset( $_POST['wpbsl_qr_creditor_iban'] ) ? WP_Booking_System_Luca_Helpers::normalize_iban( wp_unslash( $_POST['wpbsl_qr_creditor_iban'] ) ) : '';
+			$qr_address = isset( $_POST['wpbsl_qr_creditor_address'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_qr_creditor_address'] ) ) : '';
+			$qr_city    = isset( $_POST['wpbsl_qr_creditor_city'] ) ? sanitize_text_field( wp_unslash( $_POST['wpbsl_qr_creditor_city'] ) ) : '';
+			$qr_country = isset( $_POST['wpbsl_qr_creditor_country'] ) ? strtoupper( substr( sanitize_text_field( wp_unslash( $_POST['wpbsl_qr_creditor_country'] ) ), 0, 2 ) ) : 'CH';
+
 			// Email template options. Subjects are plain text; bodies allow safe HTML.
 			// Saving a blank value resets that template to its built-in default.
 			$template_fields = array(
@@ -845,6 +853,8 @@ class WP_Booking_System_Luca_Admin {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Default guests cannot exceed the chalet capacity.', 'wp-booking-system-luca' ) . '</p></div>';
 			} elseif ( $smtp_enabled && '' === $smtp_host ) {
 				echo '<div class="notice notice-error"><p>' . esc_html__( 'Please enter an SMTP host (e.g. smtp.gmail.com) to enable SMTP delivery.', 'wp-booking-system-luca' ) . '</p></div>';
+			} elseif ( $qr_enabled && ! WP_Booking_System_Luca_Helpers::is_valid_ch_iban( $qr_iban ) ) {
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Please enter a valid Swiss/Liechtenstein IBAN (CHâ¦ or LIâ¦) to enable TWINT / QR-bill payments.', 'wp-booking-system-luca' ) . '</p></div>';
 			} else {
 				update_option( 'wpbsl_price_adult', $price_adult );
 				update_option( 'wpbsl_price_kid', $price_kid );
@@ -872,6 +882,12 @@ class WP_Booking_System_Luca_Admin {
 				update_option( 'wpbsl_smtp_auth', $smtp_auth );
 				update_option( 'wpbsl_smtp_username', $smtp_username );
 				update_option( 'wpbsl_smtp_password', $smtp_password );
+				update_option( 'wpbsl_qr_enabled', $qr_enabled );
+				update_option( 'wpbsl_qr_creditor_name', $qr_name );
+				update_option( 'wpbsl_qr_creditor_iban', $qr_iban );
+				update_option( 'wpbsl_qr_creditor_address', $qr_address );
+				update_option( 'wpbsl_qr_creditor_city', $qr_city );
+				update_option( 'wpbsl_qr_creditor_country', $qr_country );
 				foreach ( $template_values as $field_key => $field_value ) {
 					update_option( $field_key, $field_value );
 				}
@@ -971,6 +987,45 @@ class WP_Booking_System_Luca_Admin {
 						<input type="number" id="wpbsl_chalet_capacity" name="wpbsl_chalet_capacity" value="<?php echo esc_attr( get_option( 'wpbsl_chalet_capacity', 10 ) ); ?>" min="1" class="regular-text" />
 						<p class="description"><?php esc_html_e( 'Maximum number of guests (adults + kids) that can be accommodated.', 'wp-booking-system-luca' ); ?></p>
 					</td>
+				</tr>
+			</table>
+
+			<h2 class="title"><?php esc_html_e( 'TWINT / QR-bill Payments', 'wp-booking-system-luca' ); ?></h2>
+			<p class="description" style="max-width:640px;">
+				<?php esc_html_e( 'Show a Swiss QR-bill on the guest\'s booking-management page so they can pay the outstanding balance by scanning it with TWINT or any Swiss banking app. This is free — it only needs your IBAN, with no merchant account or transaction fees.', 'wp-booking-system-luca' ); ?>
+			</p>
+			<table class="form-table">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Enable QR payments', 'wp-booking-system-luca' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="wpbsl_qr_enabled" value="1" <?php checked( 1, (int) get_option( 'wpbsl_qr_enabled', 0 ) ); ?> />
+							<?php esc_html_e( 'Offer TWINT / QR-bill payment on the manage-booking page.', 'wp-booking-system-luca' ); ?>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_qr_creditor_name"><?php esc_html_e( 'Account holder (name)', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_qr_creditor_name" name="wpbsl_qr_creditor_name" value="<?php echo esc_attr( get_option( 'wpbsl_qr_creditor_name', '' ) ); ?>" class="regular-text" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_qr_creditor_iban"><?php esc_html_e( 'IBAN', 'wp-booking-system-luca' ); ?></label></th>
+					<td>
+						<input type="text" id="wpbsl_qr_creditor_iban" name="wpbsl_qr_creditor_iban" value="<?php echo esc_attr( get_option( 'wpbsl_qr_creditor_iban', '' ) ); ?>" class="regular-text" placeholder="CH93 0076 2011 6238 5295 7" />
+						<p class="description"><?php esc_html_e( 'Your Swiss or Liechtenstein IBAN (CH… or LI…).', 'wp-booking-system-luca' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_qr_creditor_address"><?php esc_html_e( 'Address (street & number)', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_qr_creditor_address" name="wpbsl_qr_creditor_address" value="<?php echo esc_attr( get_option( 'wpbsl_qr_creditor_address', '' ) ); ?>" class="regular-text" placeholder="Musterstrasse 1" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_qr_creditor_city"><?php esc_html_e( 'Address (postal code & town)', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_qr_creditor_city" name="wpbsl_qr_creditor_city" value="<?php echo esc_attr( get_option( 'wpbsl_qr_creditor_city', '' ) ); ?>" class="regular-text" placeholder="8000 Zürich" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="wpbsl_qr_creditor_country"><?php esc_html_e( 'Country code', 'wp-booking-system-luca' ); ?></label></th>
+					<td><input type="text" id="wpbsl_qr_creditor_country" name="wpbsl_qr_creditor_country" value="<?php echo esc_attr( get_option( 'wpbsl_qr_creditor_country', 'CH' ) ); ?>" class="small-text" maxlength="2" placeholder="CH" /></td>
 				</tr>
 			</table>
 

@@ -3,7 +3,7 @@ Contributors: famiglia-desimoni
 Tags: booking, calendar, reservation, booking-system
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.17.0
+Stable tag: 1.18.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,6 +16,7 @@ WP booking Luca is a clean and modern booking solution for WordPress. It provide
 * Admin calendar overview: see every booking at a glance, colour-coded by status, with summary cards
 * Insights dashboard: bookings per guest, owner usage, nights, revenue and payment breakdowns
 * Per-booking payment tracking (status, method: Bank/TWINT/Cash, amount paid) with a full booking editor
+* TWINT / Swiss QR-bill payments: guests pay the outstanding balance by scanning a QR code — free, no merchant account (just your IBAN)
 * Change history: every later edit to a booking is recorded with who changed what, and when
 * CSV export of all bookings and payments (respects the dashboard's date range)
 * Date-range filter on the dashboard, and a payment-reminder email with an outstanding-balance merge tag
@@ -89,6 +90,10 @@ Yes. The booking confirmation (and the admin notification) include an .ics calen
 
 Yes. Under WP booking Luca > Settings > Email Templates you can either edit the plain-text subject and body, or use the drag-and-drop builder to arrange content blocks (Text, Heading, Booking details, Button, Image, Divider). Drag a block by its handle to reorder it. Use merge tags such as {guest_name}, {check_in}, {check_out}, {guests}, {total_price}, {owner}, {visitors_welcome}, {booking_details} and {manage_link}, which are replaced with each booking's details. When a template has blocks, they are used; otherwise the plain-text body applies (clear it to restore the default).
 
+= Can guests pay with TWINT? =
+
+Yes, for free. Under Settings > General > TWINT / QR-bill Payments, enable QR payments and enter your Swiss/Liechtenstein IBAN and address. When a booking has an outstanding balance, the guest's manage-booking page shows a Swiss QR-bill (QR code) for that amount, which they scan with TWINT or any Swiss banking app to pay you directly. This uses the standard Swiss QR-bill — no TWINT merchant account, no API and no transaction fees beyond a normal bank transfer. The QR generator is bundled with the plugin, so nothing is sent to an external service.
+
 = Does it work with the Astra theme (and Astra Pro)? =
 
 Yes. The booking form, buttons, dropdowns and the availability calendar are styled with wrapper-scoped CSS that keeps the plugin's look even when Astra (or Astra Pro) applies its own container-scoped button/input resets, and the calendar links are kept free of theme underlines. The calendar's interactive date selection (click check-in, then check-out) continues to work. The same hardening helps with other opinionated themes too.
@@ -114,6 +119,11 @@ Yes. The All Bookings and Dashboard screens have an "Export CSV" button that dow
 Yes. A complete German translation ships with the plugin (German/Germany and German/Switzerland). Set Settings > General > Site Language to "Deutsch" or "Deutsch (Schweiz)" and the admin screens, the booking form and the emails appear in German. To adjust any wording, edit the .po file under /lang and recompile the .mo with tools/i18n/po2mo.php.
 
 == Changelog ==
+
+= 1.18.0 =
+* 2026-06-16
+* TWINT / Swiss QR-bill payment integration: when enabled, the guest's manage-booking page shows a Swiss QR code for the outstanding balance that they scan with TWINT or any Swiss banking app to pay. This is free — it only needs your IBAN, with no merchant account or transaction fees. Configure it under Settings > General > TWINT / QR-bill Payments
+* The QR generator is bundled with the plugin (no external service), and the payload follows the Swiss Payment Standards QR-bill 2.0 format
 
 = 1.17.0 =
 * 2026-06-16

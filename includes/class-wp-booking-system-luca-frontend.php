@@ -38,6 +38,7 @@ class WP_Booking_System_Luca_Frontend {
 		wp_register_style( 'flatpickr', WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/vendor/flatpickr/flatpickr.min.css', array(), '4.6.13' );
 		wp_register_script( 'flatpickr', WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/vendor/flatpickr/flatpickr.min.js', array(), '4.6.13', true );
 		wp_register_script( 'fullcalendar', WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/vendor/fullcalendar/index.global.min.js', array(), '6.1.10', true );
+		wp_register_script( 'wpbsl-qrcode', WP_BOOKING_SYSTEM_LUCA_PLUGIN_URL . 'assets/vendor/qrcode/qrcode.js', array(), WP_BOOKING_SYSTEM_LUCA_VERSION, true );
 
 		// Plugin assets.
 		wp_register_style(
@@ -310,6 +311,40 @@ class WP_Booking_System_Luca_Frontend {
 				<p><strong><?php esc_html_e( 'Total Price:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $booking->total_price, 2 ) . ' ' . get_option( 'wpbsl_currency', 'CHF' ) ); ?></p>
 				<p><strong><?php esc_html_e( 'Status:', 'wp-booking-system-luca' ); ?></strong> <span class="wpbs-status wpbs-status-<?php echo esc_attr( $booking->status ); ?>"><?php echo esc_html( ucfirst( $booking->status ) ); ?></span></p>
 			</div>
+
+			<?php
+			$qr_iban = WP_Booking_System_Luca_Helpers::normalize_iban( get_option( 'wpbsl_qr_creditor_iban', '' ) );
+			$qr_due  = WP_Booking_System_Luca_Helpers::amount_due( $booking );
+			$qr_cur  = strtoupper( (string) get_option( 'wpbsl_currency', 'CHF' ) );
+			$qr_cur  = in_array( $qr_cur, array( 'CHF', 'EUR' ), true ) ? $qr_cur : 'CHF';
+
+			if ( (int) get_option( 'wpbsl_qr_enabled', 0 ) && 'cancelled' !== $booking->status && $qr_due > 0 && WP_Booking_System_Luca_Helpers::is_valid_ch_iban( $qr_iban ) ) :
+				wp_enqueue_script( 'wpbsl-qrcode' );
+				$qr_ref     = trim( sprintf( 'Booking #%d %s %s', (int) $booking->id, $booking->first_name, $booking->last_name ) );
+				$qr_payload = WP_Booking_System_Luca_Helpers::build_swiss_qr_payload(
+					array(
+						'iban'     => $qr_iban,
+						'name'     => get_option( 'wpbsl_qr_creditor_name', '' ),
+						'address'  => get_option( 'wpbsl_qr_creditor_address', '' ),
+						'city'     => get_option( 'wpbsl_qr_creditor_city', '' ),
+						'country'  => get_option( 'wpbsl_qr_creditor_country', 'CH' ),
+						'amount'   => $qr_due,
+						'currency' => $qr_cur,
+						'message'  => $qr_ref,
+					)
+				);
+				?>
+				<div class="wpbs-qr-pay">
+					<h3><?php esc_html_e( 'Pay with TWINT', 'wp-booking-system-luca' ); ?></h3>
+					<p><?php esc_html_e( 'Scan this QR code with TWINT or your banking app to pay the outstanding balance.', 'wp-booking-system-luca' ); ?></p>
+					<div id="wpbs-qr" class="wpbs-qr" data-payload="<?php echo esc_attr( base64_encode( $qr_payload ) ); ?>" aria-label="<?php esc_attr_e( 'Swiss QR payment code', 'wp-booking-system-luca' ); ?>"></div>
+					<ul class="wpbs-qr-info">
+						<li><strong><?php esc_html_e( 'Amount:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( number_format( $qr_due, 2 ) . ' ' . $qr_cur ); ?></li>
+						<li><strong><?php esc_html_e( 'IBAN:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( trim( chunk_split( $qr_iban, 4, ' ' ) ) ); ?></li>
+						<li><strong><?php esc_html_e( 'Reference:', 'wp-booking-system-luca' ); ?></strong> <?php echo esc_html( $qr_ref ); ?></li>
+					</ul>
+				</div>
+			<?php endif; ?>
 
 			<?php if ( $booking->status !== 'cancelled' ) : ?>
 				<div class="wpbs-booking-actions">
