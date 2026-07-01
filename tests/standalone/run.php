@@ -457,6 +457,34 @@ check_equals( 'Alberto', $s['by_owner'][0]['owner'], 'Alberto leads owner usage 
 check_equals( 7, $s['by_owner'][0]['nights'], 'Alberto owner nights total' );
 check_equals( 1, $s['totals']['visitors'], 'one booking welcomes visitors' );
 
+echo "\nHelpers: status & payment maps\n";
+check_equals( array( 'pending', 'confirmed', 'cancelled' ), WP_Booking_System_Luca_Helpers::allowed_statuses(), 'allowed booking statuses' );
+$ps = WP_Booking_System_Luca_Helpers::payment_statuses();
+check_equals( array( 'unpaid', 'partial', 'paid', 'refunded' ), array_keys( $ps ), 'payment statuses incl. refunded' );
+$pm = WP_Booking_System_Luca_Helpers::payment_methods();
+check_equals( array( 'bank', 'twint', 'bar' ), array_keys( $pm ), 'payment methods (bank/twint/cash)' );
+check( WP_Booking_System_Luca_Helpers::is_valid_status( 'confirmed' ), 'confirmed is a valid status' );
+check( ! WP_Booking_System_Luca_Helpers::is_valid_status( 'refunded' ), 'payment status is not a booking status' );
+
+echo "\nHelpers: IBAN normalization\n";
+check_equals( 'CH2080808007270588572', WP_Booking_System_Luca_Helpers::normalize_iban( ' ch20 8080 8007 2705 8857 2 ' ), 'normalize strips spaces and uppercases' );
+check_equals( '', WP_Booking_System_Luca_Helpers::normalize_iban( '' ), 'empty IBAN normalizes to empty' );
+
+echo "\nHelpers: tracked fields\n";
+$tf = WP_Booking_System_Luca_Helpers::tracked_fields();
+check( isset( $tf['payment_status'], $tf['total_price'], $tf['check_in'], $tf['status'] ), 'tracked fields include the key booking fields' );
+check( is_string( $tf['payment_status'] ) && '' !== $tf['payment_status'], 'each tracked field has a human label' );
+
+echo "\nHelpers: owners parsing edge cases\n";
+check_equals( array( 'Alberto', 'Luca' ), WP_Booking_System_Luca_Helpers::parse_owners( "  Alberto \n\n Luca \n" ), 'owners trimmed and blank lines dropped' );
+check_equals( array(), WP_Booking_System_Luca_Helpers::parse_owners( "\n \n" ), 'all-blank owners list yields empty array' );
+
+echo "\nHelpers: capacity & range edge cases\n";
+check( WP_Booking_System_Luca_Helpers::exceeds_capacity( 8, 3, 10 ), '11 guests exceeds capacity of 10' );
+check( ! WP_Booking_System_Luca_Helpers::exceeds_capacity( 6, 4, 10 ), 'exactly at capacity is allowed' );
+check( ! WP_Booking_System_Luca_Helpers::is_valid_range( '2026-08-05', '2026-08-05' ), 'same-day range is invalid (needs a night)' );
+check( WP_Booking_System_Luca_Helpers::is_valid_range( '2026-08-05', '2026-08-06' ), 'one-night range is valid' );
+
 /* --------------------------------------------------------------------------
  * Summary.
  * ------------------------------------------------------------------------ */
